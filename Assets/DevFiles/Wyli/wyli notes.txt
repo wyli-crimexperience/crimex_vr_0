@@ -1,0 +1,219 @@
+- if an action is done out of sequence (ex: collector bags evidence before chalking it), cancel the action and subtract one point
+	- can add an Enum Mistake.CollectorBagBeforeChalk to a list, to show the player at the end screen
+
+Events
+- before each character enters the scene, must wear PPE at the command post (PPE is already in inventory)
+
+1. First Responder
+	Inventory
+		- wristwatch
+		- first aid kit
+		- notepad
+		- yellow tape
+		- phone
+
+	Tasks
+		> record time of arrival
+			> stare at wristwatch on left wrist
+				> popup: shows current time
+			> open notepad (scroll until notepad shows in left hand then squeeze)
+			> stare at time input field to auto-fill it
+
+		> check pulse
+			> walk towards the corpse, avoiding any evidence
+			> touch corpse neck. a floating ui shows their pulse rate
+			> open notepad (scroll until notepad shows in left hand then squeeze)
+			> stare at pulse input field to auto-fill it
+
+		> cordon area
+			> equip yellow tape (scroll until yellow tape shows in left hand)
+			> squeeze on a pre-designated surface to put a cordon there
+
+			* to check for correctness, the order of placing should be adjacent indices increasing or decreasing
+
+		> interview witnesses
+			> walk up to an NPC and stare at them to initialize a conversation
+			> dialog boxes appear
+			- after each dialog box, important info will be auto-written on to the notepad
+
+		> call police to turnover the crime scene to IOC
+			> open phone (scroll until phone shows in left hand then squeeze)
+			- screen is already in dial UI. only green call button can be pressed
+			> stare at the green call button to press it
+			> First Responder becomes an NPC
+
+2. Investigator-on-Case (IOC) part 1
+	Tasks
+		> receive the scene from the First Responder
+			> walk up to the First Responder and stare at them
+			> popup: Received First Responder's Form
+			- looks like a clipboard with a report form already filled out
+
+		> assess the area
+			> walk around the area perimeter
+			* to check for correctness, all pre-designated areas must have been walked on
+
+		> interview witnesses
+			> do same thing as First Responder's interviews
+
+		> turnover the crime scene to SOCO
+			> walk up to SOCO Team Leader and stare at them
+			> IOC becomes an NPC
+
+3. Scene of the Crime Operation (SOCO) Team Leader
+	Tasks
+		> set up command post
+			> walk up to designated area outside of crime scene and wait there to initiate auto-setup
+
+		> preliminary survey
+			> walk through the crime scene by using one of the search methods (choose appropriate for scenario)
+				- spiral search
+				- wheel search
+				- zone search
+				- strip search (scene 1)
+
+			* to check for correctness, the order of walking on pre-designated areas should start with index 0 and be adjacent indices
+4. SOCO Photographer
+	Tasks
+		> get initial photographs of the scene
+			> stand at a pre-designated place with a pre-designated facing rotation
+				Scene
+				> general view: from entrance towards corpse
+				> mid view: midway between entrance and corpse towards corpse
+				> close-up view: near and towards corpse
+				- these three views will be repeated for each room (except close-up if room does not have interest)
+
+				Body
+				> top view
+				> bottom-to-up
+				> close-up view
+				> injuries
+
+			> equip camera (scroll until camera shows in left hand then squeeze)
+				- it is automatically placed in front of face
+				> squeeze again to take a picture
+				> unequip by scrolling away
+
+		> craft initial sketch of the scene
+			> equip sketchpad (scroll until sketchpad shows in left hand then squeeze)
+				> squeeze again to draw a pic
+				- pre-made texture asset with sketch filter
+				> unequip by scrolling away
+
+5. SOCO Searcher
+	Tasks
+		> place evidence markers and case ID for each relevant evidence
+			> equip evidence marker (scroll until evidence marker shows in left hand then squeeze)
+				> squeeze while looking at an evidence
+				- this places a numbered marker
+				> squeeze while looking at a marker to retrieve it
+
+			* to check for correctness, the order of markers should be equal to the evidence's pre-designated marker index
+
+6. SOCO Measurer
+	Tasks
+		> measure individual pieces of evidence and note it then photograph
+			For Bodies
+			> equip tape measure (scroll until tape measure shows in left hand then squeeze)
+			> squeeze while looking at corpse to auto-place the tape measure already extended
+
+			For Items
+			> equip evidence ruler (scroll until sketchpad shows in left hand then squeeze)
+			> squeeze while looking at item to auto-place the ruler on the item
+
+			> photograph general view with the evidence ruler and case ID
+				> equip case ID
+				> squeeze while looking at evidence to auto-place it
+				> stare at case ID to retrieve it (to place it on the next evidence)
+
+7. SOCO Sketcher
+	Tasks
+		> photograph general view with the evidence ruler and case identifier
+		- triangulation method
+			> stand at a pre-designated place with a pre-designated facing rotation
+
+			> equip camera (scroll until camera shows in left hand then squeeze)
+				- it is automatically placed in front of face
+				> squeeze again to take a picture
+				> unequip by scrolling away
+
+8. SOCO Specialist
+	Tasks
+		> dust the latent fingerprint on the murder weapon
+			> identify the appropriate fingerprint powder to use in this evidence
+			- Victoria pure blue
+			- Magnetic powder
+			- white powder (scene 1)
+			- black powder
+
+			> equip brush (scroll until brush shows in left hand then squeeze)
+				> squeeze while looking at powder container to have it dusted
+					> shake to remove powder
+				> squeeze while looking at murder weapon to reveal fingerprint
+
+		> photograph the latent print
+			> use camera on fingerprint
+			* to check for correctness, raycast from center of camera towards fingerprint
+
+		> lift the latent fingerprint using fingerprint tape
+			> equip fingerprint tape (scroll until fingerprint tape shows in left hand then squeeze)
+				> squeeze while looking at fingerprint
+				- popup: Received Lifted Fingerprint
+					- looks like piece of tape with fingerprint on a filled-up form
+
+9. SOCO Collector
+	Tasks
+		> outline the evidence with chalk or black marker (chalk for dark/rough surfaces, black marker for light/smooth surfaces)
+			> equip chalk
+				> use it on evidence to auto-outline it
+
+		> pack the evidence
+			For Blood
+			> equip sterile swab
+				> use it on blood evidence to pose
+				* this assigns a reference on the swab to identify which object was swabbed
+				> use again to complete swabbing
+				> go to swab rack (at command post) and place it there to let it air dry
+					- beside the swab, there will be a label (masking tape with writing) of the evidence number
+
+			For Objects
+			> equip evidence pack
+				> use it on evidence to pose (halfway placing object into pack)
+					> can also use on swabs in swab rack
+				> use again to complete packing (turns into evidence pack [<item name>])
+
+			> while packing, player should switch to photographer and take picture of the collector posing
+
+		> mark the evidence tag
+			> while holding an evidence pack (with item)...
+				> stare at the opening to tape it
+				> stare at the tape to auto-mark it
+					- format is INITIALS-#EVIDENCE-YEAR (ex: WLO-08-2024)
+				> stare at the evidence tag to auto-fill it
+
+10. IOC or SOCO Team Leader (part 2)
+	- part 2 is triggered after Collector performs their first task
+	Tasks
+		> final survey
+		- walk throughout the crime scene
+		* checking for correctness is same as prelim survey
+
+		> body search
+			> search for any item of identity (ID)
+				> stare at body
+				- popup: found ID
+			> lay all items found at the command post and photograph
+				> player should switch to photographer to take photos
+
+11. Evidence Custodian
+	Tasks
+		> inventory all personal belongings recovered from the victim's body
+		- looks like a clipboard with checklist that lists the items
+		> sign the chain of custody form
+
+
+12. IOC (part 3)
+	- part 3 is triggered after Evidence Custodian
+	Tasks
+		> sign the Release of Crime Scene form
+		> remove cordon
