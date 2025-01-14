@@ -8,7 +8,7 @@ Events
 	Inventory
 		- wristwatch
 		- first aid kit
-		- notepad
+		- notepad, pen
 		- yellow tape
 		- phone
 
@@ -17,13 +17,15 @@ Events
 			> stare at wristwatch on left wrist
 				> popup: shows current time
 			> open notepad (scroll until notepad shows in left hand then squeeze)
-			> stare at time input field to auto-fill it
+				> equip pen (scroll until pen shows in RIGHT hand)
+				> squeeze pen on time input field to auto-fill it
 
 		> check pulse
 			> walk towards the corpse, avoiding any evidence
 			> touch corpse neck. a floating ui shows their pulse rate
 			> open notepad (scroll until notepad shows in left hand then squeeze)
-			> stare at pulse input field to auto-fill it
+				> equip pen (scroll until pen shows in RIGHT hand)
+				> squeeze pen on pulse input field to auto-fill it
 
 		> cordon area
 			> equip yellow tape (scroll until yellow tape shows in left hand)
@@ -104,9 +106,9 @@ Events
 	Tasks
 		> place evidence markers and case ID for each relevant evidence
 			> equip evidence marker (scroll until evidence marker shows in left hand then squeeze)
-				> squeeze while looking at an evidence
+				> squeeze on an evidence
 				- this places a numbered marker
-				> squeeze while looking at a marker to retrieve it
+				> squeeze on a marker to retrieve it
 
 			* to check for correctness, the order of markers should be equal to the evidence's pre-designated marker index
 
@@ -115,15 +117,15 @@ Events
 		> measure individual pieces of evidence and note it then photograph
 			For Bodies
 			> equip tape measure (scroll until tape measure shows in left hand then squeeze)
-			> squeeze while looking at corpse to auto-place the tape measure already extended
+			> squeeze on a corpse to auto-place the tape measure already extended
 
 			For Items
 			> equip evidence ruler (scroll until sketchpad shows in left hand then squeeze)
-			> squeeze while looking at item to auto-place the ruler on the item
+			> squeeze on an item to auto-place the ruler on the item
 
 			> photograph general view with the evidence ruler and case ID
 				> equip case ID
-				> squeeze while looking at evidence to auto-place it
+				> squeeze on an evidence to auto-place it
 				> stare at case ID to retrieve it (to place it on the next evidence)
 
 7. SOCO Sketcher
@@ -147,9 +149,9 @@ Events
 			- black powder
 
 			> equip brush (scroll until brush shows in left hand then squeeze)
-				> squeeze while looking at powder container to have it dusted
+				> squeeze on a powder container to have it dusted
 					> shake to remove powder
-				> squeeze while looking at murder weapon to reveal fingerprint
+				> squeeze on a murder weapon to reveal fingerprint
 
 		> photograph the latent print
 			> use camera on fingerprint
@@ -157,7 +159,7 @@ Events
 
 		> lift the latent fingerprint using fingerprint tape
 			> equip fingerprint tape (scroll until fingerprint tape shows in left hand then squeeze)
-				> squeeze while looking at fingerprint
+				> squeeze on a fingerprint
 				- popup: Received Lifted Fingerprint
 					- looks like piece of tape with fingerprint on a filled-up form
 
