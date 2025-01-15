@@ -26,7 +26,7 @@ PrefabInstance:
     - target: {fileID: 8151769691542984033, guid: b4c9df4ef06e35e42b151bc7ac45e7b2,
         type: 3}
       propertyPath: m_Name
-      value: XR Interaction Setup (MP Variant) Variant
+      value: XR Interaction Setup (MP Variant) Trimmed
       objectReference: {fileID: 0}
     - target: {fileID: 8151769691542984034, guid: b4c9df4ef06e35e42b151bc7ac45e7b2,
         type: 3}

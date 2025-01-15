@@ -97,45 +97,31 @@ public class ManagerGlobal : MonoBehaviour {
         UpdateHandItemIndex(1, handItemIndexRight - 1);
     }
     private void UpdateHandItemIndex(int typeHand, int index) {
+
         switch (typeHand) {
             case 0: {
                 if (index == -1) { index = handItemsLeft.Count - 1; }
                 if (index == handItemsLeft.Count) { index = 0; }
                 handItemIndexLeft = index;
 
-                SetHandItem(0, handItemsLeft[index]);
+                for (int i = 0; i < handItemsLeft.Count; i++) { 
+                    if (handItemsLeft[i] != null) {
+                        handItemsLeft[i].gameObject.SetActive(i == index);
+                    }
+                }
             } break;
 
             case 1: {
                 if (index == -1) { index = handItemsRight.Count - 1; }
                 if (index == handItemsRight.Count) { index = 0; }
                 handItemIndexRight = index;
-
-                SetHandItem(1, handItemsRight[index]);
+                    
+                for (int i = 0; i < handItemsRight.Count; i++) { 
+                    if (handItemsRight[i] != null) {
+                        handItemsRight[i].gameObject.SetActive(i == index);
+                    }
+                }
             } break;
-
-            default: break;
-        }
-    }
-
-
-
-    // general utils
-    private void SetHandItem(int typeHand, HandItem handItem) {
-        switch (typeHand) {
-            case 0: {
-                foreach (HandItem hi in handItemsLeft) {
-                    handItem.gameObject.SetActive(hi == handItem);
-                }
-            }
-            break;
-
-            case 1: {
-                foreach (HandItem hi in handItemsRight) {
-                    handItem.gameObject.SetActive(hi == handItem);
-                }
-            }
-            break;
 
             default: break;
         }
