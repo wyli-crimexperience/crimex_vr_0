@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 using TMPro;
 
@@ -53,39 +54,85 @@ public enum TypeItem {
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
 
+    [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight;
     [SerializeField] private HandItem handItemNotepad, handItemPen, handItemPoliceTape, handItemPhone;
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
 
-    private TypeItem typeItemLeft, typeItemRight;
+    private int handItemIndexLeft, handItemIndexRight;
 
 
 
     private void Awake() {
         Instance = this;
 
-        SetHandItem(0, TypeItem.None);
-        SetHandItem(1, TypeItem.None);
+        primaryButtonLeft.action.performed += PrimaryButtonLeft;
+        secondaryButtonLeft.action.performed += SecondaryButtonLeft;
+        primaryButtonRight.action.performed += PrimaryButtonRight;
+        secondaryButtonRight.action.performed += SecondaryButtonRight;
+
+        handItemsLeft.Insert(0, null);
+        handItemsRight.Insert(0, null);
+
+        UpdateHandItemIndex(0, 0);
+        UpdateHandItemIndex(1, 0);
 
         ActivateWristwatch(false);
+    }
+    private void OnDestroy() {
+        primaryButtonLeft.action.performed -= PrimaryButtonLeft;
+        secondaryButtonLeft.action.performed -= SecondaryButtonLeft;
+        primaryButtonRight.action.performed -= PrimaryButtonRight;
+        secondaryButtonRight.action.performed -= SecondaryButtonRight;
+    }
+    private void PrimaryButtonLeft(InputAction.CallbackContext context) {
+        UpdateHandItemIndex(0, handItemIndexLeft + 1);
+    }
+    private void SecondaryButtonLeft(InputAction.CallbackContext context) {
+        UpdateHandItemIndex(0, handItemIndexLeft - 1);
+    }
+    private void PrimaryButtonRight(InputAction.CallbackContext context) {
+        UpdateHandItemIndex(1, handItemIndexRight + 1);
+    }
+    private void SecondaryButtonRight(InputAction.CallbackContext context) {
+        UpdateHandItemIndex(1, handItemIndexRight - 1);
+    }
+    private void UpdateHandItemIndex(int typeHand, int index) {
+        switch (typeHand) {
+            case 0: {
+                if (index == -1) { index = handItemsLeft.Count - 1; }
+                if (index == handItemsLeft.Count) { index = 0; }
+                handItemIndexLeft = index;
+
+                SetHandItem(0, handItemsLeft[index]);
+            } break;
+
+            case 1: {
+                if (index == -1) { index = handItemsRight.Count - 1; }
+                if (index == handItemsRight.Count) { index = 0; }
+                handItemIndexRight = index;
+
+                SetHandItem(1, handItemsRight[index]);
+            } break;
+
+            default: break;
+        }
     }
 
 
 
     // general utils
-    private void SetHandItem(int typeHand, TypeItem typeItem) {
+    private void SetHandItem(int typeHand, HandItem handItem) {
         switch (typeHand) {
             case 0: {
-                typeItemLeft = typeItem;
-                foreach (HandItem handItem in handItemsLeft) {
-                    handItem.gameObject.SetActive(handItem.TypeItem == typeItem);
+                foreach (HandItem hi in handItemsLeft) {
+                    handItem.gameObject.SetActive(hi == handItem);
                 }
             }
             break;
 
             case 1: {
-                typeItemRight = typeItem;
-                foreach (HandItem handItem in handItemsRight) {
-                    handItem.gameObject.SetActive(handItem.TypeItem == typeItem);
+                foreach (HandItem hi in handItemsRight) {
+                    handItem.gameObject.SetActive(hi == handItem);
                 }
             }
             break;

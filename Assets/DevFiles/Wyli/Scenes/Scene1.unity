@@ -2423,6 +2423,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e25551018e698546922f67825fce1e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primaryButtonLeft: {fileID: -2275149063356110010, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  secondaryButtonLeft: {fileID: 8225012844972663301, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  primaryButtonRight: {fileID: 873706871085010175, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
+  secondaryButtonRight: {fileID: -5728554588893584349, guid: c348712bda248c246b8c49b3db54643f,
+    type: 3}
   handItemNotepad: {fileID: 1470637177841995363}
   handItemPen: {fileID: 3293723302721445826}
   handItemPoliceTape: {fileID: 8912964825891071057}
