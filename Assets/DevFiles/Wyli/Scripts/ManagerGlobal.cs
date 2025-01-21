@@ -58,6 +58,8 @@ public class ManagerGlobal : MonoBehaviour {
 
     private const float THOUGHT_TIMER_MAX = 3f;
 
+    public HolderData HolderData;
+
     [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
     [SerializeField] private Notepad notepad;
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();

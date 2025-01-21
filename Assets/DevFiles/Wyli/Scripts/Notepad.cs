@@ -16,14 +16,6 @@ public class Notepad : MonoBehaviour {
         SetTextTime("");
         SetTextPulse("");
     }
-
-    public void SetTextTime(string str) {
-        txtTime.text = str;
-    }
-    public void SetTextPulse(string str) {
-        txtPulse.text = str;
-    }
-
     private void OnTriggerEnter(Collider other) {
         HandItem handItem = other.GetComponent<HandItem>();
         if (handItem != null && handItem.TypeItem == TypeItem.Pen) {
@@ -35,6 +27,13 @@ public class Notepad : MonoBehaviour {
         if (other.gameObject == pen.gameObject) {
             ManagerGlobal.Instance.SetCanWriteNotepad(false);
         }
+    }
+
+    public void SetTextTime(string str) {
+        txtTime.text = str;
+    }
+    public void SetTextPulse(string str) {
+        txtPulse.text = str;
     }
 
 }
