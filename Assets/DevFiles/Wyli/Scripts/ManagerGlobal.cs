@@ -15,7 +15,7 @@ public enum TypeItem {
     // first responder
     Notepad,
     Pen,
-    PoliceTape,
+    PoliceTapeRoll,
     Phone,
     
     // investigator-on-case part 1
@@ -62,6 +62,10 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private Notepad notepad;
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
     [SerializeField] private CanvasGroup cgThought;
+    [SerializeField] private Transform containerPoliceTape;
+    [SerializeField] private Transform handLeft;
+
+    [SerializeField] private GameObject prefabPoliceTape;
 
     private int handItemIndexLeft, handItemIndexRight;
     private float thoughtTimer = 0;
@@ -70,6 +74,10 @@ public class ManagerGlobal : MonoBehaviour {
     private DateTime timeOfArrival;
     private bool canWriteNotepad, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
     private int pulse;
+
+    private PoliceTape policeTapeCurrent;
+    private Vector3 posPoliceTapeStart, tapeBetween, tapeScale, tapeRot;
+    private float tapeDist;
 
 
 
@@ -105,6 +113,22 @@ public class ManagerGlobal : MonoBehaviour {
         primaryButtonRight.action.performed -= PrimaryButtonRight;
         secondaryButtonRight.action.performed -= SecondaryButtonRight;
     }
+    private void Update() {
+        if (policeTapeCurrent != null) {
+            tapeBetween = handLeft.position - posPoliceTapeStart;
+            policeTapeCurrent.transform.position = posPoliceTapeStart + (tapeBetween * 0.5f);
+
+            tapeDist = tapeBetween.magnitude;
+            tapeScale = policeTapeCurrent.transform.localScale;
+            tapeScale.z = tapeDist * 0.1f;
+            policeTapeCurrent.transform.localScale = tapeScale;
+
+            tapeRot = Quaternion.LookRotation(tapeBetween.normalized).eulerAngles;
+            tapeRot.z = 90;
+            policeTapeCurrent.transform.eulerAngles = tapeRot;
+        }
+    }
+
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
         UpdateHandItemIndex(0, handItemIndexLeft + 1);
     }
@@ -118,7 +142,16 @@ public class ManagerGlobal : MonoBehaviour {
         UpdateHandItemIndex(1, handItemIndexRight - 1);
     }
     private void PinchLeft(InputAction.CallbackContext context) {
-
+        if (context.performed) {
+            if (GetTypeItemLeft() == TypeItem.PoliceTapeRoll) {
+                if (policeTapeCurrent == null) {
+                    policeTapeCurrent = Instantiate(prefabPoliceTape, containerPoliceTape).GetComponent<PoliceTape>();
+                    posPoliceTapeStart = handLeft.transform.position;
+                } else {
+                    policeTapeCurrent = null;
+                }
+            }
+        }
     }
     private void PinchRight(InputAction.CallbackContext context) {
         if (context.performed) {
