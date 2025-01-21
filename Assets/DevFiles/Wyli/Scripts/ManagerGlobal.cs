@@ -68,7 +68,7 @@ public class ManagerGlobal : MonoBehaviour {
     private Coroutine corThoughtTimer;
 
     private DateTime timeOfArrival;
-    private bool hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
+    private bool canWriteNotepad, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
     private int pulse;
 
 
@@ -89,6 +89,7 @@ public class ManagerGlobal : MonoBehaviour {
         UpdateHandItemIndex(0, 0);
         UpdateHandItemIndex(1, 0);
         timeOfArrival = DateTime.MinValue;
+        canWriteNotepad = false;
         hasCheckedTimeOfArrival = false;
         hasCheckedPulse = false;
         hasWrittenTimeOfArrival = false;
@@ -121,7 +122,7 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void PinchRight(InputAction.CallbackContext context) {
         if (context.performed) {
-            if (GetTypeItemLeft() == TypeItem.Notepad && GetTypeItemRight() == TypeItem.Pen) {
+            if (canWriteNotepad && GetTypeItemLeft() == TypeItem.Notepad && GetTypeItemRight() == TypeItem.Pen) {
                 while (true) {
                     if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
                         notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
@@ -217,5 +218,10 @@ public class ManagerGlobal : MonoBehaviour {
 
         thoughtTimer = THOUGHT_TIMER_MAX;
         corThoughtTimer ??= StartCoroutine(IE_ShowThought());
+    }
+
+    // notepad + pen
+    public void SetCanWriteNotepad(bool b) {
+        canWriteNotepad = b;
     }
 }
