@@ -3,6 +3,7 @@ using UnityEngine;
 
 
 public enum TypeFingerprintPowder {
+    None,
     VictoriaPureBlue,
     Magnetic,
     White,
