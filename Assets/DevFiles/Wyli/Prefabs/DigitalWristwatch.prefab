@@ -246,8 +246,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4893306901559040706}
         m_TargetAssemblyTypeName: Wristwatch, Assembly-CSharp
-        m_MethodName: ActivateWristwatch
-        m_Mode: 6
+        m_MethodName: GazeWristwatch
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -258,19 +258,7 @@ MonoBehaviour:
         m_CallState: 2
   m_HoverExited:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4893306901559040706}
-        m_TargetAssemblyTypeName: Wristwatch, Assembly-CSharp
-        m_MethodName: ActivateWristwatch
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_FirstSelectEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -315,67 +303,67 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.4999998
+      value: 1.4999999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.4999998
+      value: 1.4999996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.4999994
+      value: 1.4999995
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.03269903
+      value: 0.0026206379
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2335927
+      value: 0.20759976
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0028521442
+      value: -0.025862157
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.71541905
+      value: 0.5411228
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.062683456
+      value: -0.45103115
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.018558413
+      value: 0.48437762
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.6956307
+      value: -0.5187827
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 0.828
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 82.882
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 30
+      value: -86.854
       objectReference: {fileID: 0}
     - target: {fileID: -3166305532281441760, guid: dc29858f5dcf585428a618993adfeebf,
         type: 3}

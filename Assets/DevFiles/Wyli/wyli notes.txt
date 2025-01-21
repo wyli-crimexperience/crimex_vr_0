@@ -1,3 +1,5 @@
+https://www.canva.com/design/DAGPDHLNEx8/vsjbciLyy0MWYlW93TjAIg/view?utm_content=DAGPDHLNEx8&utm_campaign=designshare&utm_medium=link&utm_source=editor#136
+
 - if an action is done out of sequence (ex: collector bags evidence before chalking it), cancel the action and subtract one point
 	- can add an Enum Mistake.CollectorBagBeforeChalk to a list, to show the player at the end screen
 
@@ -18,7 +20,7 @@ Events
 				> popup: shows current time
 			> open notepad (scroll until notepad shows in left hand then squeeze)
 				> equip pen (scroll until pen shows in RIGHT hand)
-				> squeeze pen on time input field to auto-fill it
+				> squeeze pen on time input field to auto-fill it (wristwatch is standard time but here it's military)
 
 		> check pulse
 			> walk towards the corpse, avoiding any evidence

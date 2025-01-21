@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -54,11 +55,16 @@ public enum TypeItem {
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
 
+    private const float THOUGHT_TIMER_MAX = 3f;
+
     [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight;
     [SerializeField] private HandItem handItemNotepad, handItemPen, handItemPoliceTape, handItemPhone;
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
+    [SerializeField] private CanvasGroup cgThought;
 
     private int handItemIndexLeft, handItemIndexRight;
+    private float thoughtTimer = 0;
+    private Coroutine corThoughtTimer;
 
 
 
@@ -76,7 +82,7 @@ public class ManagerGlobal : MonoBehaviour {
         UpdateHandItemIndex(0, 0);
         UpdateHandItemIndex(1, 0);
 
-        ActivateWristwatch(false);
+        containerPopupThought.SetActive(false);
     }
     private void OnDestroy() {
         primaryButtonLeft.action.performed -= PrimaryButtonLeft;
@@ -129,17 +135,28 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
-    // wristwatch
-    [SerializeField] private GameObject containerPopupWristWatch;
-    [SerializeField] private TextMeshProUGUI txtWristwatchTime;
-    public void ActivateWristwatch(bool isActive) {
-        if (isActive) {
-            string text = System.DateTime.Now.ToString("hh:mm tt");
-            txtWristwatchTime.text = text;
+    // thoughts
+    [SerializeField] private GameObject containerPopupThought;
+    [SerializeField] private TextMeshProUGUI txtThought;
 
-            containerPopupWristWatch.SetActive(true);
-        } else {
-            containerPopupWristWatch.SetActive(false);
+    // wristwatch
+    public void GazeWristwatch() {
+        txtThought.text = $"It's {System.DateTime.Now:hh:mm tt}";
+
+        thoughtTimer = THOUGHT_TIMER_MAX;
+        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
+    }
+    private IEnumerator IE_ShowThought() {
+        containerPopupThought.SetActive(true);
+
+        while (thoughtTimer > 0) {
+            cgThought.alpha = Mathf.Lerp(0, 1, thoughtTimer / THOUGHT_TIMER_MAX);
+
+            thoughtTimer -= Time.deltaTime;
+            yield return null;
         }
+
+        containerPopupThought.SetActive(false);
+        corThoughtTimer = null;
     }
 }
