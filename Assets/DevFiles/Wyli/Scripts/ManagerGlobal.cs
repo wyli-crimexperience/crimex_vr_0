@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -57,14 +58,18 @@ public class ManagerGlobal : MonoBehaviour {
 
     private const float THOUGHT_TIMER_MAX = 3f;
 
-    [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight;
-    [SerializeField] private HandItem handItemNotepad, handItemPen, handItemPoliceTape, handItemPhone, handItemFirstResponderForm;
+    [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
+    [SerializeField] private Notepad notepad;
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
     [SerializeField] private CanvasGroup cgThought;
 
     private int handItemIndexLeft, handItemIndexRight;
     private float thoughtTimer = 0;
     private Coroutine corThoughtTimer;
+
+    private DateTime timeOfArrival;
+    private bool hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
+    private int pulse;
 
 
 
@@ -75,12 +80,21 @@ public class ManagerGlobal : MonoBehaviour {
         secondaryButtonLeft.action.performed += SecondaryButtonLeft;
         primaryButtonRight.action.performed += PrimaryButtonRight;
         secondaryButtonRight.action.performed += SecondaryButtonRight;
+        pinchLeft.action.performed += PinchLeft;
+        pinchRight.action.performed += PinchRight;
 
         handItemsLeft.Insert(0, null);
         handItemsRight.Insert(0, null);
 
         UpdateHandItemIndex(0, 0);
         UpdateHandItemIndex(1, 0);
+        timeOfArrival = DateTime.MinValue;
+        hasCheckedTimeOfArrival = false;
+        hasCheckedPulse = false;
+        hasWrittenTimeOfArrival = false;
+        hasWrittenPulse = false;
+        //pulse = UnityEngine.Random.Range(60, 100);
+        pulse = 0;
 
         containerPopupThought.SetActive(false);
     }
@@ -101,6 +115,36 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
         UpdateHandItemIndex(1, handItemIndexRight - 1);
+    }
+    private void PinchLeft(InputAction.CallbackContext context) {
+
+    }
+    private void PinchRight(InputAction.CallbackContext context) {
+        if (context.performed) {
+            if (GetTypeItemLeft() == TypeItem.Notepad && GetTypeItemRight() == TypeItem.Pen) {
+                while (true) {
+                    if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
+                        notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
+                        hasWrittenTimeOfArrival = true;
+                        break;
+                    }
+                    if (!hasWrittenPulse && hasCheckedPulse) {
+                        notepad.SetTextPulse($"{pulse} BPM");
+                        hasWrittenPulse = true;
+                        break;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    private TypeItem GetTypeItemLeft() {
+        if (handItemIndexLeft == 0) return TypeItem.None;
+        return handItemsLeft[handItemIndexLeft].TypeItem;
+    }
+    private TypeItem GetTypeItemRight() {
+        if (handItemIndexRight == 0) return TypeItem.None;
+        return handItemsRight[handItemIndexRight].TypeItem;
     }
     private void UpdateHandItemIndex(int typeHand, int index) {
 
@@ -131,6 +175,7 @@ public class ManagerGlobal : MonoBehaviour {
 
             default: break;
         }
+
     }
 
 
@@ -140,8 +185,12 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI txtThought;
 
     // wristwatch
-    public void GazeWristwatch() {
-        txtThought.text = $"It's {System.DateTime.Now:hh:mm tt}";
+    public void CheckWristwatch() {
+        if (!hasCheckedTimeOfArrival) {
+            timeOfArrival = DateTime.Now;
+            hasCheckedTimeOfArrival = true;
+        }
+        txtThought.text = $"It's {DateTime.Now:hh:mm tt}";
 
         thoughtTimer = THOUGHT_TIMER_MAX;
         corThoughtTimer ??= StartCoroutine(IE_ShowThought());
@@ -158,5 +207,15 @@ public class ManagerGlobal : MonoBehaviour {
 
         containerPopupThought.SetActive(false);
         corThoughtTimer = null;
+    }
+
+    // pulse
+    public void CheckPulse() {
+        hasCheckedPulse = true;
+
+        txtThought.text = $"Their pulse is {pulse} BPM";
+
+        thoughtTimer = THOUGHT_TIMER_MAX;
+        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
     }
 }
