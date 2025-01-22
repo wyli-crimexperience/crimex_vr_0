@@ -8,7 +8,7 @@ public class Notepad : MonoBehaviour {
 
     [SerializeField] private TextMeshProUGUI txtTime, txtPulse;
 
-    private HandItem pen;
+    private HandItem handItemPen;
 
 
 
@@ -19,12 +19,13 @@ public class Notepad : MonoBehaviour {
     private void OnTriggerEnter(Collider other) {
         HandItem handItem = other.GetComponent<HandItem>();
         if (handItem != null && handItem.TypeItem == TypeItem.Pen) {
-            pen = handItem;
+            handItemPen = handItem;
             ManagerGlobal.Instance.SetCanWriteNotepad(true);
         }
     }
     private void OnTriggerExit(Collider other) {
-        if (pen.gameObject != null && other.gameObject != null && pen.gameObject == other.gameObject) {
+        HandItem handItem = other.GetComponent<HandItem>();
+        if (handItem != null && handItemPen != null && handItem == handItemPen) {
             ManagerGlobal.Instance.SetCanWriteNotepad(false);
         }
     }

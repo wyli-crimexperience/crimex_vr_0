@@ -35,7 +35,7 @@ public enum TypeItem {
 
     // soco specialist
     FingerprintBrush,
-    FingerprintTape,
+    FingerprintTapeRoll,
     LiftedFingerprint,
 
     // soco collector
@@ -61,13 +61,14 @@ public class ManagerGlobal : MonoBehaviour {
     public HolderData HolderData;
 
     [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
-    [SerializeField] private Notepad notepad;
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
+    [SerializeField] private Notepad notepad;
+    [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
     [SerializeField] private Transform handLeft;
 
-    [SerializeField] private GameObject prefabPoliceTape;
+    [SerializeField] private GameObject prefabPoliceTape, prefabLiftedFingerprint;
 
     private int handItemIndexLeft, handItemIndexRight;
     private float thoughtTimer = 0;
@@ -153,6 +154,11 @@ public class ManagerGlobal : MonoBehaviour {
                     policeTapeCurrent = null;
                 }
             }
+            if (GetTypeItemLeft() == TypeItem.FingerprintTapeRoll) {
+                if (fingerprintTapeRoll.FingerprintCurrent != null) {
+                    SpawnLiftedFingerprint(fingerprintTapeRoll.FingerprintCurrent);
+                }
+            }
         }
     }
     private void PinchRight(InputAction.CallbackContext context) {
@@ -219,21 +225,13 @@ public class ManagerGlobal : MonoBehaviour {
     // thoughts
     [SerializeField] private GameObject containerPopupThought;
     [SerializeField] private TextMeshProUGUI txtThought;
-
-    // wristwatch
-    public void CheckWristwatch() {
-        if (!hasCheckedTimeOfArrival) {
-            timeOfArrival = DateTime.Now;
-            hasCheckedTimeOfArrival = true;
-        }
-        txtThought.text = $"It's {DateTime.Now:hh:mm tt}";
-
-        thoughtTimer = THOUGHT_TIMER_MAX;
-        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
-    }
     private IEnumerator IE_ShowThought() {
         containerPopupThought.SetActive(true);
 
+        cgThought.alpha = 1;
+        yield return new WaitForSeconds(THOUGHT_TIMER_MAX);
+
+        thoughtTimer = THOUGHT_TIMER_MAX;
         while (thoughtTimer > 0) {
             cgThought.alpha = Mathf.Lerp(0, 1, thoughtTimer / THOUGHT_TIMER_MAX);
 
@@ -244,19 +242,44 @@ public class ManagerGlobal : MonoBehaviour {
         containerPopupThought.SetActive(false);
         corThoughtTimer = null;
     }
+    private void ShowThought(string str) {
+        txtThought.text = str;
+
+        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
+    }
+
+    // wristwatch
+    public void CheckWristwatch() {
+        if (!hasCheckedTimeOfArrival) {
+            timeOfArrival = DateTime.Now;
+            hasCheckedTimeOfArrival = true;
+        }
+
+        ShowThought($"It's {DateTime.Now:hh:mm tt}");
+    }
 
     // pulse
     public void CheckPulse() {
         hasCheckedPulse = true;
 
-        txtThought.text = $"Their pulse is {pulse} BPM";
-
-        thoughtTimer = THOUGHT_TIMER_MAX;
-        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
+        ShowThought($"Their pulse is {pulse} BPM");
     }
 
     // notepad + pen
     public void SetCanWriteNotepad(bool b) {
         canWriteNotepad = b;
+    }
+
+    // fingerprint lifting
+    private void SpawnLiftedFingerprint(Fingerprint fingerprintSource) {
+        LiftedFingerprint liftedFingerprint = Instantiate(prefabLiftedFingerprint, handLeft).GetComponent<LiftedFingerprint>();
+        liftedFingerprint.Init(fingerprintSource);
+        liftedFingerprint.gameObject.SetActive(false);
+
+        handItemsLeft.Add(liftedFingerprint.HandItem);
+
+        fingerprintSource.Lift();
+
+        ShowThought($"I now have a Lifted Fingerprint Form");
     }
 }

@@ -1209,6 +1209,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 782968447824754861}
+    - targetCorrespondingSourceObject: {fileID: 6502182839619065283, guid: c5408958bbe53a742bab0c5bd7b3829e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2087824891950785357}
     - targetCorrespondingSourceObject: {fileID: 1852576806548013000, guid: c5408958bbe53a742bab0c5bd7b3829e,
         type: 3}
       insertIndex: -1
@@ -2439,4 +2443,83 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7373987147593593222, guid: 1b60ffef6e9a11a4997fae9d9e5c6da2,
     type: 3}
   m_PrefabInstance: {fileID: 7820504714842360107}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7956777778538751165
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4678332102534594756}
+    m_Modifications:
+    - target: {fileID: 3423238835728038845, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_Name
+      value: FingerprintTapeRoll
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423238835728038845, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0007
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0837
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.039
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.006825748
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.09011655
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.9948437
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.046026405
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 5.325
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 179.696
+      objectReference: {fileID: 0}
+    - target: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 10.338
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86, type: 3}
+--- !u!4 &2087824891950785357 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8256600698317686768, guid: a1d5a13999ce11d42b7d2f4fb6fd5b86,
+    type: 3}
+  m_PrefabInstance: {fileID: 7956777778538751165}
   m_PrefabAsset: {fileID: 0}

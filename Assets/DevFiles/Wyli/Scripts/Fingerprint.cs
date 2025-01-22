@@ -1,5 +1,7 @@
 using UnityEngine;
 
+
+
 public class Fingerprint : MonoBehaviour {
 
     [SerializeField] private GameObject objFingerprint;
@@ -9,24 +11,49 @@ public class Fingerprint : MonoBehaviour {
 
 
 
-    public TypeFingerprintPowder TypeFingerprintPowder { get; private set; }
+    public bool IsLifted { get; private set; }
+    public void Lift() {
+        IsLifted = true;
+        SetTypeFingerprintPowder(TypeFingerprintPowder.None);
+    }
+    public bool IsDisplayOnly;
+    public TypeFingerprintPowder TypeFingerprintPowder;
 
-    private void Start() {
+
+
+    private void Awake() {
         matFingerprint = mrFingerprint.material;
+    }
+    private void Start() {
+        IsLifted = false;
+        IsDisplayOnly = false;
 
-        objFingerprint.SetActive(false);
+        UpdateVisual();
     }
     private void OnTriggerEnter(Collider other) {
-        FingerprintBrush fingerprintBrush = other.GetComponent<FingerprintBrush>();
-        if (fingerprintBrush != null && fingerprintBrush.TypeFingerprintPowder != TypeFingerprintPowder.None) {
-            objFingerprint.SetActive(true);
+        if (!IsLifted && !IsDisplayOnly) {
+            FingerprintBrush fingerprintBrush = other.GetComponent<FingerprintBrush>();
+            if (fingerprintBrush != null && fingerprintBrush.TypeFingerprintPowder != TypeFingerprintPowder.None) {
+                objFingerprint.SetActive(true);
 
-            SetTypeFingerprintPowder(fingerprintBrush.TypeFingerprintPowder);
+                SetTypeFingerprintPowder(fingerprintBrush.TypeFingerprintPowder);
+            }
         }
     }
 
+
+
     public void SetTypeFingerprintPowder(TypeFingerprintPowder typeFingerprintPowder) {
         TypeFingerprintPowder = typeFingerprintPowder;
-        matFingerprint.color = ManagerGlobal.Instance.HolderData.GetColorOfFingerprintPowderType(typeFingerprintPowder);
+        UpdateVisual();
     }
+    private void UpdateVisual() {
+        if (TypeFingerprintPowder == TypeFingerprintPowder.None) {
+            objFingerprint.SetActive(false);
+        } else {
+            objFingerprint.SetActive(true);
+            matFingerprint.color = ManagerGlobal.Instance.HolderData.GetColorOfFingerprintPowderType(TypeFingerprintPowder);
+        }
+    }
+
 }

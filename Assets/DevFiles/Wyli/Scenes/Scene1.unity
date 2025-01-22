@@ -122,6 +122,18 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &10751616 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6401326889372727466, guid: a17bbe0f56cd22849bf975a6fecc3a12,
+    type: 3}
+  m_PrefabInstance: {fileID: 5351456334213681045}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd9e8b07167de8842abc820200f8a483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &125438578 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4528344420703768165, guid: a17bbe0f56cd22849bf975a6fecc3a12,
@@ -2278,19 +2290,23 @@ MonoBehaviour:
     type: 3}
   pinchRight: {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f,
     type: 3}
-  notepad: {fileID: 1964414387}
   handItemsLeft:
   - {fileID: 1964414386}
   - {fileID: 1677820939}
   - {fileID: 125438578}
   - {fileID: 1510348720}
   - {fileID: 2332585065114357384}
+  - {fileID: 5351456334213681046}
   handItemsRight:
   - {fileID: 717312483}
+  notepad: {fileID: 1964414387}
+  fingerprintTapeRoll: {fileID: 10751616}
   cgThought: {fileID: 662048727}
   containerPoliceTape: {fileID: 1314054480}
   handLeft: {fileID: 5351456334213681099}
   prefabPoliceTape: {fileID: 6862119201951572595, guid: 4f5334fcade3e984181240539dd4f87d,
+    type: 3}
+  prefabLiftedFingerprint: {fileID: 8229647630343937780, guid: 63a4643456fb28842a1530594303e488,
     type: 3}
   containerPopupThought: {fileID: 662048722}
   txtThought: {fileID: 1431060498}
@@ -5995,11 +6011,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4750715613412990720, guid: a17bbe0f56cd22849bf975a6fecc3a12,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a17bbe0f56cd22849bf975a6fecc3a12, type: 3}
+--- !u!114 &5351456334213681046 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8260595293636161841, guid: a17bbe0f56cd22849bf975a6fecc3a12,
+    type: 3}
+  m_PrefabInstance: {fileID: 5351456334213681045}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05974b4bbbb785f46856d575903e1872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5351456334213681099 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4678332102534594756, guid: a17bbe0f56cd22849bf975a6fecc3a12,
