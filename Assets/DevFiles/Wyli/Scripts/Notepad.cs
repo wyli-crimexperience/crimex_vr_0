@@ -24,7 +24,7 @@ public class Notepad : MonoBehaviour {
         }
     }
     private void OnTriggerExit(Collider other) {
-        if (other.gameObject == pen.gameObject) {
+        if (pen.gameObject != null && pen.gameObject == other.gameObject) {
             ManagerGlobal.Instance.SetCanWriteNotepad(false);
         }
     }
