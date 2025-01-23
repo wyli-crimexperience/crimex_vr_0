@@ -43,6 +43,7 @@ public enum TypeItem {
     Chalk,
     SterileSwab,
     EvidencePack,
+    EvidencePackSealTapeRoll,
 
     // ioc or soco team leader part 2
     ItemOfIdentification,
@@ -65,6 +66,7 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
     [SerializeField] private Notepad notepad;
     [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
+    [SerializeField] private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     [SerializeField] private EvidencePack evidencePack;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
@@ -77,7 +79,7 @@ public class ManagerGlobal : MonoBehaviour {
     private Coroutine corThoughtTimer;
 
     private DateTime timeOfArrival;
-    private bool canWriteNotepad, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
+    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
     private int pulse;
 
     private PoliceTape policeTapeCurrent;
@@ -170,19 +172,31 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void PinchRight(InputAction.CallbackContext context) {
         if (context.performed) {
-            if (canWriteNotepad && GetTypeItemLeft() == TypeItem.Notepad && GetTypeItemRight() == TypeItem.Pen) {
-                while (true) {
-                    if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
-                        notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
-                        hasWrittenTimeOfArrival = true;
+            if (GetTypeItemRight() == TypeItem.Pen) {
+                if (canWriteNotepad && GetTypeItemLeft() == TypeItem.Notepad) {
+                    while (true) {
+                        if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
+                            notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
+                            hasWrittenTimeOfArrival = true;
+                            break;
+                        }
+                        if (!hasWrittenPulse && hasCheckedPulse) {
+                            notepad.SetTextPulse($"{pulse} BPM");
+                            hasWrittenPulse = true;
+                            break;
+                        }
                         break;
                     }
-                    if (!hasWrittenPulse && hasCheckedPulse) {
-                        notepad.SetTextPulse($"{pulse} BPM");
-                        hasWrittenPulse = true;
-                        break;
+                }
+                if (canWriteEvidencePackSeal && GetTypeItemLeft() == TypeItem.EvidencePack) {
+                    if (evidencePack.EvidencePackSeal.IsTaped) {
+                        evidencePack.EvidencePackSeal.SetMarked(true);
                     }
-                    break;
+                }
+            }
+            if (GetTypeItemLeft() == TypeItem.EvidencePack && GetTypeItemRight() == TypeItem.EvidencePackSealTapeRoll) {
+                if (evidencePackSealTapeRoll.EvidencePackSealCurrent != null) {
+                    evidencePackSealTapeRoll.EvidencePackSealCurrent.SetTaped(true);
                 }
             }
         }
@@ -280,6 +294,11 @@ public class ManagerGlobal : MonoBehaviour {
     // notepad + pen
     public void SetCanWriteNotepad(bool b) {
         canWriteNotepad = b;
+    }
+
+    // evidence pack seal + pen
+    public void SetCanWriteEvidencePackSeal(bool b) {
+        canWriteEvidencePackSeal = b;
     }
 
     // fingerprint lifting

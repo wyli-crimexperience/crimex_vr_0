@@ -5,6 +5,8 @@ using UnityEngine;
 public class EvidencePack : MonoBehaviour {
 
     [SerializeField] private GameObject containerOpen, containerClosed;
+    [SerializeField] private EvidencePackSeal evidencePackSeal;
+    public EvidencePackSeal EvidencePackSeal => evidencePackSeal;
 
     public Evidence EvidenceCurrent { get; private set; }
     public Evidence EvidencePacked { get; private set; }
