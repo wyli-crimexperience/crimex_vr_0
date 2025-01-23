@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 using TMPro;
+using UnityEngine.Rendering;
 
 
 
@@ -247,6 +248,7 @@ public class ManagerGlobal : MonoBehaviour {
 
         containerPopupThought.SetActive(false);
         corThoughtTimer = null;
+        txtThought.text = "Hmmm...";
     }
     private void ShowThought(string str) {
         txtThought.text = str;
@@ -268,7 +270,11 @@ public class ManagerGlobal : MonoBehaviour {
     public void CheckPulse() {
         hasCheckedPulse = true;
 
-        ShowThought($"Their pulse is {pulse} BPM");
+        if (pulse == 0) {
+            ShowThought("They have no more pulse...");
+        } else {
+            ShowThought($"Their pulse is {pulse} BPM");
+        }
     }
 
     // notepad + pen
