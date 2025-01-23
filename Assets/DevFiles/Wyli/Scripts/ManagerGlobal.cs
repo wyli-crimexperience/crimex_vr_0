@@ -64,6 +64,7 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
     [SerializeField] private Notepad notepad;
     [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
+    [SerializeField] private EvidencePack evidencePack;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
     [SerializeField] private Transform handLeft;
@@ -157,6 +158,11 @@ public class ManagerGlobal : MonoBehaviour {
             if (GetTypeItemLeft() == TypeItem.FingerprintTapeRoll) {
                 if (fingerprintTapeRoll.FingerprintCurrent != null) {
                     SpawnLiftedFingerprint(fingerprintTapeRoll.FingerprintCurrent);
+                }
+            }
+            if (GetTypeItemLeft() == TypeItem.EvidencePack) {
+                if (evidencePack.EvidenceCurrent != null) {
+                    evidencePack.PackEvidence();
                 }
             }
         }
