@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 using TMPro;
-using UnityEngine.Rendering;
 
 
 
@@ -55,6 +54,9 @@ public enum TypeItem {
     ReleaseOfCrimeSceneForm
 
 }
+
+
+
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
 
@@ -276,7 +278,7 @@ public class ManagerGlobal : MonoBehaviour {
             timeOfArrival = DateTime.Now;
             hasCheckedTimeOfArrival = true;
         }
-
+        // todo: datetime.now is not good since each scene has a time setting
         ShowThought($"It's {DateTime.Now:hh:mm tt}");
     }
 
@@ -312,5 +314,11 @@ public class ManagerGlobal : MonoBehaviour {
         fingerprintSource.Lift();
 
         ShowThought($"I now have a Lifted Fingerprint Form");
+    }
+
+    // witness
+    public void ConverseWitness(Witness witness)
+    {
+        ShowThought($"");
     }
 }
