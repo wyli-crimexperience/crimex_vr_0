@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bd66ef85658da6e43924c156a8078691
+guid: 5060c0395820f8a47903b42bbc0051a4
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: tool_mark
-    second: {fileID: 2100000, guid: fa00e44b54574d14e8ce773587a3fa0a, type: 2}
+    second: {fileID: 2100000, guid: dd1b92dff5e30cc498ec720e801aa7cf, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
