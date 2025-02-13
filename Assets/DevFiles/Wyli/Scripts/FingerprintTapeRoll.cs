@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FingerprintTapeRoll : MonoBehaviour {
 
+    [SerializeField] private Fingerprint fingerprintDisplay;
+
     public Fingerprint FingerprintCurrent { get; private set; }
 
 
@@ -19,6 +21,13 @@ public class FingerprintTapeRoll : MonoBehaviour {
         if (fingerprint != null && FingerprintCurrent != null && fingerprint == FingerprintCurrent) {
             FingerprintCurrent = null;
         }
+    }
+
+
+
+    public void LiftFingerprint(Fingerprint fingerprintSource) {
+        fingerprintDisplay.SetTypeFingerprintPowder(fingerprintSource.TypeFingerprintPowder);
+        fingerprintDisplay.IsDisplayOnly = true;
     }
 
 }

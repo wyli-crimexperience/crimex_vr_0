@@ -63,7 +63,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7373987147593593222}
   - component: {fileID: 6964371114458482245}
-  - component: {fileID: 4910986604386966674}
   - component: {fileID: 128519888077600594}
   - component: {fileID: 232191561530009430}
   - component: {fileID: 628061448280257414}
@@ -103,20 +102,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfaa04caa4c36d1428442d5afb3dcf7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mrBrushTip: {fileID: 6427271795443758265}
---- !u!114 &4910986604386966674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3504298248458009893}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05974b4bbbb785f46856d575903e1872, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   TypeItem: 12
+  mrBrushTip: {fileID: 6427271795443758265}
 --- !u!54 &128519888077600594
 Rigidbody:
   m_ObjectHideFlags: 0
