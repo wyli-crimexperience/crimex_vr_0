@@ -13,9 +13,18 @@ MonoBehaviour:
   m_Name: Scene1_Witness1
   m_EditorClassIdentifier: 
   dialogue:
-  - Thank you for speaking with us, Mr. Borromeo. Can you tell us what you saw?
-  - "Yeah\u2026 I was at home, watching TV. Around 8 p.m., I heard a loud thud from
-    next door. It was strange, but I figured maybe someone dropped something heavy."
-  - "About fifteen minutes later, I thought I heard footsteps outside, but when I
-    looked out the window, no one was there. That\u2019s all I noticed."
-  - Thank you, Mr. Borromeo. This is helpful.
+  - speakerName: You
+    speakerText: Thank you for speaking with us, Mr. Borromeo. Can you tell us what
+      you saw?
+  - speakerName: Mr. Borromeo
+    speakerText: "Yeah\u2026 I was at home, watching TV. Around 8 p.m., I heard a
+      loud thud from next door. It was strange, but I figured maybe someone dropped
+      something heavy."
+  - speakerName: Mr. Borromeo
+    speakerText: "About fifteen minutes later, I thought I heard footsteps outside,
+      but when I looked out the window, no one was there. That\u2019s all I noticed."
+  - speakerName: You
+    speakerText: Thank you, Mr. Borromeo. This is helpful. Would it be okay if we
+      invite you to be a witness when this case goes up to court?
+  - speakerName: Mr. Borromeo
+    speakerText: Absolutely. Anything to serve justice for our fellow neighbor.

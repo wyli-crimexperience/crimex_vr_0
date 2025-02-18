@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ae887bafd241044863aa5add079678, type: 3}
+  m_Name: Scene1_Witness2
+  m_EditorClassIdentifier: 
+  dialogue:
+  - speakerName: You
+    speakerText: Thank you for speaking with us, Ms. Salvatore. Can you tell us what
+      you saw?
+  - speakerName: Ms. Salvatore
+    speakerText: I own a mini store inside my home and I sold Jose Martinez and his
+      friend two 2x2 bottles of gin. I can hear them laughing while watching a basketball
+      game at his TV. A few moments later I heard arguments and then a glass shattered...
+      and then a loud thud... Then it was silent after that.
+  - speakerName: You
+    speakerText: After the silence, what did you do?
+  - speakerName: Ms. Salvatore
+    speakerText: "I just peeped through the window and that\u2019s when I saw Jose
+      lying on the floor with blood all over his body. I immediately called the nearby
+      police."
+  - speakerName: You
+    speakerText: Thank you Ms. Salvatore, this is helpful. Would it be okay if we
+      invite you to be a witness when this case goes up to court?
+  - speakerName: Ms. Salvatore
+    speakerText: Me...? What if his friend shows up at my door? My life would be
+      put in danger!
+  - speakerName: You
+    speakerText: Do not worry Ms. Salvatore, we have a arranged a program for the
+      protection of our witnesses like you.
+  - speakerName: Ms. Salvatore
+    speakerText: Okay, I trust you in this, sir.

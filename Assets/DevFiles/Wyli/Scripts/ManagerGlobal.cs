@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-using TMPro;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+
+using TMPro;
+using System.Linq;
 
 
 
@@ -76,8 +76,9 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
     [SerializeField] private Transform handLeftTarget, handRightTarget;
-
     [SerializeField] private GameObject prefabPoliceTape;
+    [SerializeField] private GameObject goDialogue;
+    [SerializeField] private TextMeshProUGUI txtDialogue;
 
     private HandItem handItemLeft, handItemRight;
 
@@ -91,6 +92,9 @@ public class ManagerGlobal : MonoBehaviour {
     private PoliceTape policeTapeCurrent;
     private Vector3 posPoliceTapeStart, tapeBetween, tapeScale, tapeRot;
     private float tapeDist;
+
+    private DialogueData currentDialogue;
+    private int dialogueIndex;
 
 
 
@@ -300,6 +304,17 @@ public class ManagerGlobal : MonoBehaviour {
 
     // witness
     public void ConverseWitness(Witness witness) {
-        ShowThought($"");
+        currentDialogue = witness.DialogueData;
+        dialogueIndex = -1;
+
+        NextDialogue();
+    }
+    private void NextDialogue() {
+        dialogueIndex += 1;
+        if (dialogueIndex < currentDialogue.Dialogue.Length) {
+            txtDialogue.text = currentDialogue.Dialogue[dialogueIndex].speakerText;
+        } else {
+            currentDialogue = null;
+        }
     }
 }
