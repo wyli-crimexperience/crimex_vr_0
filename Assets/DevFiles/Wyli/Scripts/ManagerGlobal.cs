@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 using TMPro;
+using System.Linq;
 
 
 
@@ -65,18 +67,21 @@ public class ManagerGlobal : MonoBehaviour {
     public HolderData HolderData;
 
     [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
-    [SerializeField] private List<HandItem> handItemsLeft = new List<HandItem>(), handItemsRight = new List<HandItem>();
+    [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
     [SerializeField] private Notepad notepad;
+    [SerializeField] private Transform policeTapeRoll;
     [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
     [SerializeField] private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     [SerializeField] private EvidencePack evidencePack;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
-    [SerializeField] private Transform handLeft;
+    [SerializeField] private Transform handLeftTarget, handRightTarget;
+    [SerializeField] private GameObject prefabPoliceTape;
+    [SerializeField] private GameObject goDialogue;
+    [SerializeField] private TextMeshProUGUI txtDialogue;
 
-    [SerializeField] private GameObject prefabPoliceTape, prefabLiftedFingerprint;
+    private HandItem handItemLeft, handItemRight;
 
-    private int handItemIndexLeft, handItemIndexRight;
     private float thoughtTimer = 0;
     private Coroutine corThoughtTimer;
 
@@ -87,6 +92,9 @@ public class ManagerGlobal : MonoBehaviour {
     private PoliceTape policeTapeCurrent;
     private Vector3 posPoliceTapeStart, tapeBetween, tapeScale, tapeRot;
     private float tapeDist;
+
+    private DialogueData currentDialogue;
+    private int dialogueIndex;
 
 
 
@@ -100,11 +108,6 @@ public class ManagerGlobal : MonoBehaviour {
         pinchLeft.action.performed += PinchLeft;
         pinchRight.action.performed += PinchRight;
 
-        handItemsLeft.Insert(0, null);
-        handItemsRight.Insert(0, null);
-
-        UpdateHandItemIndex(0, 0);
-        UpdateHandItemIndex(1, 0);
         timeOfArrival = DateTime.MinValue;
         canWriteNotepad = false;
         hasCheckedTimeOfArrival = false;
@@ -124,7 +127,7 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void Update() {
         if (policeTapeCurrent != null) {
-            tapeBetween = handLeft.position - posPoliceTapeStart;
+            tapeBetween = policeTapeRoll.position - posPoliceTapeStart;
             policeTapeCurrent.transform.position = posPoliceTapeStart + (tapeBetween * 0.5f);
 
             tapeDist = tapeBetween.magnitude;
@@ -139,108 +142,98 @@ public class ManagerGlobal : MonoBehaviour {
     }
 
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
-        UpdateHandItemIndex(0, handItemIndexLeft + 1);
+        // todo: change role to next
     }
     private void SecondaryButtonLeft(InputAction.CallbackContext context) {
-        UpdateHandItemIndex(0, handItemIndexLeft - 1);
+        // todo: change role to previous
     }
     private void PrimaryButtonRight(InputAction.CallbackContext context) {
-        UpdateHandItemIndex(1, handItemIndexRight + 1);
+        // todo: change role to next
     }
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
-        UpdateHandItemIndex(1, handItemIndexRight - 1);
+        // todo: change role to previous
     }
     private void PinchLeft(InputAction.CallbackContext context) {
-        if (context.performed) {
-            if (GetTypeItemLeft() == TypeItem.PoliceTapeRoll) {
-                if (policeTapeCurrent == null) {
-                    policeTapeCurrent = Instantiate(prefabPoliceTape, containerPoliceTape).GetComponent<PoliceTape>();
-                    posPoliceTapeStart = handLeft.transform.position;
-                } else {
-                    policeTapeCurrent = null;
-                }
-            }
-            if (GetTypeItemLeft() == TypeItem.FingerprintTapeRoll) {
-                if (fingerprintTapeRoll.FingerprintCurrent != null) {
-                    SpawnLiftedFingerprint(fingerprintTapeRoll.FingerprintCurrent);
-                }
-            }
-            if (GetTypeItemLeft() == TypeItem.EvidencePack) {
-                if (evidencePack.EvidenceCurrent != null) {
-                    evidencePack.PackEvidence();
-                }
-            }
-        }
+        if (context.performed) { Pinch(TypeItemLeft, TypeItemRight); }
     }
     private void PinchRight(InputAction.CallbackContext context) {
-        if (context.performed) {
-            if (GetTypeItemRight() == TypeItem.Pen) {
-                if (canWriteNotepad && GetTypeItemLeft() == TypeItem.Notepad) {
-                    while (true) {
-                        if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
-                            notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
-                            hasWrittenTimeOfArrival = true;
-                            break;
-                        }
-                        if (!hasWrittenPulse && hasCheckedPulse) {
-                            notepad.SetTextPulse($"{pulse} BPM");
-                            hasWrittenPulse = true;
-                            break;
-                        }
+        if (context.performed) { Pinch(TypeItemRight, TypeItemLeft); }
+    }
+    private void Pinch(TypeItem typeItem1, TypeItem typeItem2) {
+        // police tape
+        if (typeItem1 == TypeItem.PoliceTapeRoll) {
+            if (policeTapeCurrent == null) {
+                policeTapeCurrent = Instantiate(prefabPoliceTape, containerPoliceTape).GetComponent<PoliceTape>();
+                posPoliceTapeStart = policeTapeRoll.transform.position;
+            } else {
+                policeTapeCurrent = null;
+            }
+        }
+
+        // fingerprint tape
+        if (typeItem1 == TypeItem.FingerprintTapeRoll) {
+            if (fingerprintTapeRoll.FingerprintCurrent != null) {
+                LiftFingerprint(fingerprintTapeRoll.FingerprintCurrent);
+            }
+        }
+
+        // evidence pack
+        if (typeItem1 == TypeItem.EvidencePack) {
+            if (evidencePack.EvidenceCurrent != null) {
+                evidencePack.PackEvidence();
+            }
+        }
+
+        // pen
+        if (typeItem1 == TypeItem.Pen) {
+            // pen on notepad
+            if (canWriteNotepad && typeItem2 == TypeItem.Notepad) {
+                while (true) {
+                    if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
+                        notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
+                        hasWrittenTimeOfArrival = true;
                         break;
                     }
-                }
-                if (canWriteEvidencePackSeal && GetTypeItemLeft() == TypeItem.EvidencePack) {
-                    if (evidencePack.EvidencePackSeal.IsTaped) {
-                        evidencePack.EvidencePackSeal.SetMarked(true);
+                    if (!hasWrittenPulse && hasCheckedPulse) {
+                        notepad.SetTextPulse($"{pulse} BPM");
+                        hasWrittenPulse = true;
+                        break;
                     }
+                    break;
                 }
             }
-            if (GetTypeItemLeft() == TypeItem.EvidencePack && GetTypeItemRight() == TypeItem.EvidencePackSealTapeRoll) {
-                if (evidencePackSealTapeRoll.EvidencePackSealCurrent != null) {
-                    evidencePackSealTapeRoll.EvidencePackSealCurrent.SetTaped(true);
+            // pen on evidence pack
+            if (canWriteEvidencePackSeal && typeItem2 == TypeItem.EvidencePack) {
+                if (evidencePack.EvidencePackSeal.IsTaped) {
+                    evidencePack.EvidencePackSeal.SetMarked(true);
                 }
             }
         }
-    }
-    private TypeItem GetTypeItemLeft() {
-        if (handItemIndexLeft == 0) return TypeItem.None;
-        return handItemsLeft[handItemIndexLeft].TypeItem;
-    }
-    private TypeItem GetTypeItemRight() {
-        if (handItemIndexRight == 0) return TypeItem.None;
-        return handItemsRight[handItemIndexRight].TypeItem;
-    }
-    private void UpdateHandItemIndex(int typeHand, int index) {
 
-        switch (typeHand) {
-            case 0: {
-                if (index == -1) { index = handItemsLeft.Count - 1; }
-                if (index == handItemsLeft.Count) { index = 0; }
-                handItemIndexLeft = index;
-
-                for (int i = 0; i < handItemsLeft.Count; i++) { 
-                    if (handItemsLeft[i] != null) {
-                        handItemsLeft[i].gameObject.SetActive(i == index);
-                    }
-                }
-            } break;
-
-            case 1: {
-                if (index == -1) { index = handItemsRight.Count - 1; }
-                if (index == handItemsRight.Count) { index = 0; }
-                handItemIndexRight = index;
-                    
-                for (int i = 0; i < handItemsRight.Count; i++) { 
-                    if (handItemsRight[i] != null) {
-                        handItemsRight[i].gameObject.SetActive(i == index);
-                    }
-                }
-            } break;
-
-            default: break;
+        // evidence pack seal tape on evidence pack
+        if (typeItem1 == TypeItem.EvidencePackSealTapeRoll && typeItem2 == TypeItem.EvidencePack) {
+            if (evidencePackSealTapeRoll.EvidencePackSealCurrent != null) {
+                evidencePackSealTapeRoll.EvidencePackSealCurrent.SetTaped(true);
+            }
         }
-
+    }
+    private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
+    private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
+    public void GrabInteractable(HandItem handItem) {
+        if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
+            handItemLeft = handItem;
+        }
+        if ((XRGrabInteractable)interactorRight.firstInteractableSelected == handItem.Interactable) {
+            handItemRight = handItem;
+        }
+    }
+    public void ReleaseInteractable(HandItem handItem) {
+        if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
+            handItemLeft = null;
+        }
+        if ((XRGrabInteractable)interactorRight.firstInteractableSelected == handItem.Interactable) {
+            handItemRight = null;
+        }
     }
 
 
@@ -304,21 +297,24 @@ public class ManagerGlobal : MonoBehaviour {
     }
 
     // fingerprint lifting
-    private void SpawnLiftedFingerprint(Fingerprint fingerprintSource) {
-        LiftedFingerprint liftedFingerprint = Instantiate(prefabLiftedFingerprint, handLeft).GetComponent<LiftedFingerprint>();
-        liftedFingerprint.Init(fingerprintSource);
-        liftedFingerprint.gameObject.SetActive(false);
-
-        handItemsLeft.Add(liftedFingerprint.HandItem);
-
+    private void LiftFingerprint(Fingerprint fingerprintSource) {
+        fingerprintTapeRoll.LiftFingerprint(fingerprintSource);
         fingerprintSource.Lift();
-
-        ShowThought($"I now have a Lifted Fingerprint Form");
     }
 
     // witness
-    public void ConverseWitness(Witness witness)
-    {
-        ShowThought($"");
+    public void ConverseWitness(Witness witness) {
+        currentDialogue = witness.DialogueData;
+        dialogueIndex = -1;
+
+        NextDialogue();
+    }
+    private void NextDialogue() {
+        dialogueIndex += 1;
+        if (dialogueIndex < currentDialogue.Dialogue.Length) {
+            txtDialogue.text = currentDialogue.Dialogue[dialogueIndex].speakerText;
+        } else {
+            currentDialogue = null;
+        }
     }
 }

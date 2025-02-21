@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 
 
-public class FingerprintBrush : MonoBehaviour {
+public class FingerprintBrush : HandItem {
 
     [SerializeField] private MeshRenderer mrBrushTip;
 
