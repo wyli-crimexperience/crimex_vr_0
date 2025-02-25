@@ -3,13 +3,22 @@
 =============
 
 > briefcase
-- 	fix buggy item grabbing
-- 	fix items not following initial placing
+*- 	fix buggy item grabbing
+*- 	fix items not following initial placing
+- 	fix placing items does not go where it looks like they should go
 - don't set rotation of item to its socket
 
 > police tape
+- 	fix collider bounds
 - only clickable when tape is colliding with a solid object (aka no floating tape)
 - if you drop the tape midway, pressing trigger should not stop the taping
+
+> notepad
+- 	fix collider bounds
+
+> phone
+- 	fix collider bounds
+
 
 
 ==============
