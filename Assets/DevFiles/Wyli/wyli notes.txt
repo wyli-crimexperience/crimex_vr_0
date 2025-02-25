@@ -1,3 +1,21 @@
+=============
+=== TO-DO ===
+=============
+
+> briefcase
+- 	fix buggy item grabbing
+- 	fix items not following initial placing
+- don't set rotation of item to its socket
+
+> police tape
+- only clickable when tape is colliding with a solid object (aka no floating tape)
+- if you drop the tape midway, pressing trigger should not stop the taping
+
+
+==============
+=== DESIGN ===
+==============
+
 https://www.canva.com/design/DAGPDHLNEx8/vsjbciLyy0MWYlW93TjAIg/view?utm_content=DAGPDHLNEx8&utm_campaign=designshare&utm_medium=link&utm_source=editor#136
 
 - if an action is done out of sequence (ex: collector bags evidence before chalking it), cancel the action and subtract one point
