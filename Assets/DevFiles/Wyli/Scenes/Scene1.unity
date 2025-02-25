@@ -138,7 +138,7 @@ PrefabInstance:
     - target: {fileID: 984097551218082416, guid: 05bf7e5a60d630f4b9d53396fb9f06cd,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.117
+      value: 0.24
       objectReference: {fileID: 0}
     - target: {fileID: 984097551218082416, guid: 05bf7e5a60d630f4b9d53396fb9f06cd,
         type: 3}
@@ -7115,6 +7115,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3245387219685669285, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
+      propertyPath: m_CastRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3245387219685669285, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
       propertyPath: m_PhysicsLayerMask.m_Bits
       value: 1537
       objectReference: {fileID: 0}
@@ -7297,6 +7302,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -23
+      objectReference: {fileID: 0}
+    - target: {fileID: 5483536902699607866, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_CastRadius
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 5483536902699607866, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
