@@ -7,7 +7,6 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 using TMPro;
-using System.Linq;
 
 
 
@@ -62,7 +61,7 @@ public enum TypeItem {
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
 
-    private const float THOUGHT_TIMER_MAX = 3f;
+    private const float THOUGHT_TIMER_MAX = 3f, DIST_CONVERSE = 2f;
 
     public HolderData HolderData;
 
@@ -75,10 +74,10 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private EvidencePack evidencePack;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
-    [SerializeField] private Transform handLeftTarget, handRightTarget;
+    [SerializeField] private Transform player, handLeftTarget, handRightTarget;
     [SerializeField] private GameObject prefabPoliceTape;
-    [SerializeField] private GameObject goDialogue;
-    [SerializeField] private TextMeshProUGUI txtDialogue;
+    [SerializeField] private GameObject goThought, goDialogue;
+    [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
 
     private HandItem handItemLeft, handItemRight;
 
@@ -93,7 +92,7 @@ public class ManagerGlobal : MonoBehaviour {
     private Vector3 posPoliceTapeStart, tapeBetween, tapeScale, tapeRot;
     private float tapeDist;
 
-    private DialogueData currentDialogue;
+    private Witness currentWitness;
     private int dialogueIndex;
 
 
@@ -117,7 +116,8 @@ public class ManagerGlobal : MonoBehaviour {
         //pulse = UnityEngine.Random.Range(60, 100);
         pulse = 0;
 
-        containerPopupThought.SetActive(false);
+        goThought.SetActive(false);
+        goDialogue.SetActive(false);
     }
     private void OnDestroy() {
         primaryButtonLeft.action.performed -= PrimaryButtonLeft;
@@ -139,16 +139,25 @@ public class ManagerGlobal : MonoBehaviour {
             tapeRot.z = 90;
             policeTapeCurrent.transform.eulerAngles = tapeRot;
         }
+
+        if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.position) > DIST_CONVERSE) {
+            StopDialogue();
+            currentWitness = null;
+        }
     }
 
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
-        // todo: change role to next
+        if (currentWitness != null) {
+            NextDialogue();
+        }
     }
     private void SecondaryButtonLeft(InputAction.CallbackContext context) {
         // todo: change role to previous
     }
     private void PrimaryButtonRight(InputAction.CallbackContext context) {
-        // todo: change role to next
+        if (currentWitness != null) {
+            NextDialogue();
+        }
     }
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
         // todo: change role to previous
@@ -238,11 +247,9 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
-    // thoughts
-    [SerializeField] private GameObject containerPopupThought;
-    [SerializeField] private TextMeshProUGUI txtThought;
+    // thought
     private IEnumerator IE_ShowThought() {
-        containerPopupThought.SetActive(true);
+        goThought.SetActive(true);
 
         cgThought.alpha = 1;
         yield return new WaitForSeconds(THOUGHT_TIMER_MAX);
@@ -255,7 +262,7 @@ public class ManagerGlobal : MonoBehaviour {
             yield return null;
         }
 
-        containerPopupThought.SetActive(false);
+        goThought.SetActive(false);
         corThoughtTimer = null;
         txtThought.text = "Hmmm...";
     }
@@ -302,19 +309,30 @@ public class ManagerGlobal : MonoBehaviour {
         fingerprintSource.Lift();
     }
 
-    // witness
+    // witness dialogue
     public void ConverseWitness(Witness witness) {
-        currentDialogue = witness.DialogueData;
-        dialogueIndex = -1;
+        if (currentWitness != null || Vector3.Distance(witness.transform.position, player.position) > DIST_CONVERSE) { return; }
 
+
+
+        currentWitness = witness;
+
+        goDialogue.SetActive(true);
+        dialogueIndex = -1;
         NextDialogue();
     }
     private void NextDialogue() {
         dialogueIndex += 1;
-        if (dialogueIndex < currentDialogue.Dialogue.Length) {
-            txtDialogue.text = currentDialogue.Dialogue[dialogueIndex].speakerText;
+        if (dialogueIndex < currentWitness.DialogueData.Dialogue.Length) {
+            txtDialogue.text = currentWitness.DialogueData.Dialogue[dialogueIndex].speakerText;
         } else {
-            currentDialogue = null;
+            StopDialogue();
+
+            currentWitness.DoneConversing();
+            currentWitness = null;
         }
+    }
+    private void StopDialogue() {
+        goDialogue.SetActive(false);
     }
 }

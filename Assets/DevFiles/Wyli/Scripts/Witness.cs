@@ -7,10 +7,17 @@ public class Witness : MonoBehaviour {
     [SerializeField] private DialogueData dialogueData;
     public DialogueData DialogueData => dialogueData;
 
+    private bool isDoneConversing;
+
 
 
     public void GazeWitness() {
-        ManagerGlobal.Instance.ConverseWitness(this);
+        if (!isDoneConversing) {
+            ManagerGlobal.Instance.ConverseWitness(this);
+        }
+    }
+    public void DoneConversing() {
+        isDoneConversing = true;
     }
 
 }
