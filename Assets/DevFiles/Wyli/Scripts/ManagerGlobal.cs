@@ -67,6 +67,9 @@ public class ManagerGlobal : MonoBehaviour {
 
     [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
     [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
+    public NearFarInteractor InteractorLeft => interactorLeft;
+    public NearFarInteractor InteractorRight => interactorRight;
+
     [SerializeField] private Notepad notepad;
     [SerializeField] private Transform policeTapeRoll;
     [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
@@ -75,6 +78,9 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
     [SerializeField] private Transform player, handLeftTarget, handRightTarget;
+    public Transform HandLeftTarget => handLeftTarget;
+    public Transform HandRightTarget => handRightTarget;
+
     [SerializeField] private GameObject prefabPoliceTape;
     [SerializeField] private GameObject goThought, goDialogue;
     [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
@@ -228,7 +234,7 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
     private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
-    public void GrabInteractable(HandItem handItem) {
+    public void GrabItem(HandItem handItem) {
         if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
             handItemLeft = handItem;
         }
@@ -236,7 +242,7 @@ public class ManagerGlobal : MonoBehaviour {
             handItemRight = handItem;
         }
     }
-    public void ReleaseInteractable(HandItem handItem) {
+    public void ReleaseItem(HandItem handItem) {
         if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
             handItemLeft = null;
         }
@@ -266,7 +272,7 @@ public class ManagerGlobal : MonoBehaviour {
         corThoughtTimer = null;
         txtThought.text = "Hmmm...";
     }
-    private void ShowThought(string str) {
+    public void ShowThought(string str) {
         txtThought.text = str;
 
         corThoughtTimer ??= StartCoroutine(IE_ShowThought());

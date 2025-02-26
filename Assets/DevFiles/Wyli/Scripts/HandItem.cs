@@ -26,10 +26,10 @@ public class HandItem : MonoBehaviour {
     }
 
     public void Grab() {
-        ManagerGlobal.Instance.GrabInteractable(this);
+        ManagerGlobal.Instance.GrabItem(this);
     }
     public void Release() {
-        ManagerGlobal.Instance.ReleaseInteractable(this);
+        ManagerGlobal.Instance.ReleaseItem(this);
     }
 
 }

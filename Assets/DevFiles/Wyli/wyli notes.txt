@@ -9,8 +9,6 @@
 - only clickable when tape is colliding with a solid object (aka no floating tape)
 - if you drop the tape midway, pressing trigger should not stop the taping
 
-> reduce hand interaction radius
-
 
 
 ==============
