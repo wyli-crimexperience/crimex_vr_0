@@ -69,6 +69,7 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
     public NearFarInteractor InteractorLeft => interactorLeft;
     public NearFarInteractor InteractorRight => interactorRight;
+    [SerializeField] private IXRFilter_HandToBriefcaseItem ixrFilter_handToBriefcaseItem;
 
     [SerializeField] private Notepad notepad;
     [SerializeField] private Transform policeTapeRoll;
@@ -124,6 +125,20 @@ public class ManagerGlobal : MonoBehaviour {
 
         goThought.SetActive(false);
         goDialogue.SetActive(false);
+    }
+    private void OnEnable() {
+        interactorLeft.selectFilters.Add(ixrFilter_handToBriefcaseItem);
+        interactorLeft.hoverFilters.Add(ixrFilter_handToBriefcaseItem);
+
+        interactorRight.selectFilters.Add(ixrFilter_handToBriefcaseItem);
+        interactorRight.hoverFilters.Add(ixrFilter_handToBriefcaseItem);
+    }
+    private void OnDisable() {
+        interactorLeft.selectFilters.Remove(ixrFilter_handToBriefcaseItem);
+        interactorLeft.hoverFilters.Remove(ixrFilter_handToBriefcaseItem);
+
+        interactorRight.selectFilters.Remove(ixrFilter_handToBriefcaseItem);
+        interactorRight.hoverFilters.Remove(ixrFilter_handToBriefcaseItem);
     }
     private void OnDestroy() {
         primaryButtonLeft.action.performed -= PrimaryButtonLeft;
@@ -235,18 +250,18 @@ public class ManagerGlobal : MonoBehaviour {
     private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
     private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
     public void GrabItem(HandItem handItem) {
-        if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
+        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
             handItemLeft = handItem;
         }
-        if ((XRGrabInteractable)interactorRight.firstInteractableSelected == handItem.Interactable) {
+        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
             handItemRight = handItem;
         }
     }
     public void ReleaseItem(HandItem handItem) {
-        if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
+        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
             handItemLeft = null;
         }
-        if ((XRGrabInteractable)interactorRight.firstInteractableSelected == handItem.Interactable) {
+        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
             handItemRight = null;
         }
     }

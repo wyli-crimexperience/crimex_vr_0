@@ -3,8 +3,10 @@
 =============
 
 > briefcase
-- items inside should only be grabbable if lid is open
-- put up the handle so that players have something immediately intuitive to grab
+- 	items inside should only be grabbable if lid is open
+	- 	when item enters/exits a briefcase, set to briefcase/null accordingly
+	- items should not enter briefcase if it is closed
+- 	put up the handle so that players have something immediately intuitive to grab
 - don't set rotation of item to its socket
 
 > police tape

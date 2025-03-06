@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 
 
@@ -9,8 +8,8 @@ public class HandItem : MonoBehaviour {
     [SerializeField] private XRGrabInteractable interactable;
     public XRGrabInteractable Interactable => interactable;
     // the briefcase socket i should start at
-    [SerializeField] private XRSocketInteractor socketBriefcase;
-    public XRSocketInteractor SocketBriefcase => socketBriefcase;
+    [SerializeField] private XRSocketInteractorBriefcase socketBriefcase;
+    public XRSocketInteractorBriefcase SocketBriefcase => socketBriefcase;
     // my briefcase center detector
     [SerializeField] private BriefcaseItemCenter briefcaseItemCenter;
     public BriefcaseItemCenter BriefcaseItemCenter => briefcaseItemCenter;
@@ -19,11 +18,12 @@ public class HandItem : MonoBehaviour {
 
 
 
-    private void Awake() {
-        if (socketBriefcase != null) {
-            socketBriefcase.startingSelectedInteractable = interactable;
-        }
+    public void InitBriefcase() {
+        // assumes that socketBriefcase != null
+        socketBriefcase.startingSelectedInteractable = interactable;
     }
+
+
 
     public void Grab() {
         ManagerGlobal.Instance.GrabItem(this);
@@ -32,4 +32,9 @@ public class HandItem : MonoBehaviour {
         ManagerGlobal.Instance.ReleaseItem(this);
     }
 
+
+
+    public void SetSocketBriefcase(XRSocketInteractorBriefcase _socketBriefcase) {
+        socketBriefcase = _socketBriefcase;
+    }
 }
