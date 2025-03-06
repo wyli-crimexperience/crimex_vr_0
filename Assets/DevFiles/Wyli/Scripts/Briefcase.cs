@@ -38,7 +38,8 @@ public class Briefcase : MonoBehaviour {
         if (isGrabbingLid) {
             lid.transform.localRotation = Quaternion.AngleAxis(
                 StaticUtils.ClampAngle(
-                    -Vector3.SignedAngle(-briefcaseObject.forward, Vector3.ProjectOnPlane(handGrabbingLid.transform.position - lid.transform.position, lid.transform.right), Vector3.forward),
+                    Vector3.SignedAngle(-briefcaseObject.forward, Vector3.ProjectOnPlane(handGrabbingLid.transform.position - lid.transform.position, lid.transform.right),
+                    briefcaseObject.forward.x < 0 ? Vector3.forward : -Vector3.forward) * (briefcaseObject.up.y > 0 ? -1 : 1),
                     -180, 0),
                 Vector3.right);
         }

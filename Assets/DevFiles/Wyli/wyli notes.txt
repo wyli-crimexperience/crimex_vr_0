@@ -3,6 +3,8 @@
 =============
 
 > briefcase
+- items inside should only be grabbable if lid is open
+- put up the handle so that players have something immediately intuitive to grab
 - don't set rotation of item to its socket
 
 > police tape
