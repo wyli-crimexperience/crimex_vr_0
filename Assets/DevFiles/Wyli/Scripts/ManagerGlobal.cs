@@ -61,7 +61,7 @@ public enum TypeItem {
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
 
-    private const float THOUGHT_TIMER_MAX = 3f, DIST_CONVERSE = 2f;
+    private const float THOUGHT_TIMER_MAX = 3f, DIST_CONVERSE = 1.5f;
 
     public HolderData HolderData;
 

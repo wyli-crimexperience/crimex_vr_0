@@ -4766,7 +4766,7 @@ MonoBehaviour:
   ixrFilter_handToBriefcaseItem: {fileID: 1836964632}
   cgThought: {fileID: 662048727}
   containerPoliceTape: {fileID: 1314054480}
-  player: {fileID: 120495581}
+  player: {fileID: 1846233441}
   handLeftTarget: {fileID: 279656708}
   handRightTarget: {fileID: 176525488}
   goThought: {fileID: 662048722}
