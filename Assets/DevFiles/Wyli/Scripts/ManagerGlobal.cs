@@ -153,11 +153,11 @@ public class ManagerGlobal : MonoBehaviour {
 
             tapeDist = tapeBetween.magnitude;
             tapeScale = policeTapeCurrent.transform.localScale;
-            tapeScale.z = tapeDist * 0.1f;
+            tapeScale.z = tapeDist;
             policeTapeCurrent.transform.localScale = tapeScale;
 
             tapeRot = Quaternion.LookRotation(tapeBetween.normalized).eulerAngles;
-            tapeRot.z = 90;
+            tapeRot.z = -90;
             policeTapeCurrent.transform.eulerAngles = tapeRot;
         }
 
