@@ -28,18 +28,6 @@ public class Notepad : HandItem {
             penTip = null;
         }
     }
-    //private void OnTriggerEnter(Collider other) {
-    //    if (penTip == null && other.CompareTag("PenTip")) {
-    //        penTip = other.gameObject;
-    //        ManagerGlobal.Instance.SetCanWriteNotepad(true);
-    //    }
-    //}
-    //private void OnTriggerExit(Collider other) {
-    //    if (other.CompareTag("PenTip") && other.gameObject == penTip) {
-    //        ManagerGlobal.Instance.SetCanWriteNotepad(false);
-    //        penTip = null;
-    //    }
-    //}
 
     public void SetTextTime(string str) {
         txtTime.text = str;

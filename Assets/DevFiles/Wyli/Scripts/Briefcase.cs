@@ -15,7 +15,7 @@ public class Briefcase : MonoBehaviour {
     private bool isGrabbingLid;
     private Transform handGrabbingLid;
     private float lidAngle;
-    public bool IsOpen => Mathf.Abs(lidAngle) > 11.25f && Mathf.Abs(lidAngle) < 168.75f;
+    public bool IsOpen => Mathf.Abs(lidAngle) > 11.25f;
 
 
 
@@ -49,7 +49,6 @@ public class Briefcase : MonoBehaviour {
                     -180, 0);
             lid.transform.localRotation = Quaternion.AngleAxis(lidAngle, Vector3.right);
         }
-        //ManagerGlobal.Instance.ShowThought($"{lidAngle}");
     }
 
 

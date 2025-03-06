@@ -71,22 +71,23 @@ public class ManagerGlobal : MonoBehaviour {
     public NearFarInteractor InteractorRight => interactorRight;
     [SerializeField] private IXRFilter_HandToBriefcaseItem ixrFilter_handToBriefcaseItem;
 
-    [SerializeField] private Notepad notepad;
-    [SerializeField] private Transform policeTapeRoll;
-    [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
-    [SerializeField] private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
-    [SerializeField] private EvidencePack evidencePack;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
+    public Transform ContainerPoliceTape => containerPoliceTape;
     [SerializeField] private Transform player, handLeftTarget, handRightTarget;
     public Transform HandLeftTarget => handLeftTarget;
     public Transform HandRightTarget => handRightTarget;
 
-    [SerializeField] private GameObject prefabPoliceTape;
     [SerializeField] private GameObject goThought, goDialogue;
     [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
 
+    // hand items
     private HandItem handItemLeft, handItemRight;
+    private Notepad notepad;
+    private PoliceTapeRoll policeTapeRoll;
+    private FingerprintTapeRoll fingerprintTapeRoll;
+    private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
+    private EvidencePack evidencePack;
 
     private float thoughtTimer = 0;
     private Coroutine corThoughtTimer;
@@ -94,10 +95,6 @@ public class ManagerGlobal : MonoBehaviour {
     private DateTime timeOfArrival;
     private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
     private int pulse;
-
-    private PoliceTape policeTapeCurrent;
-    private Vector3 posPoliceTapeStart, tapeBetween, tapeScale, tapeRot;
-    private float tapeDist;
 
     private Witness currentWitness;
     private int dialogueIndex;
@@ -147,19 +144,7 @@ public class ManagerGlobal : MonoBehaviour {
         secondaryButtonRight.action.performed -= SecondaryButtonRight;
     }
     private void Update() {
-        if (policeTapeCurrent != null) {
-            tapeBetween = policeTapeRoll.position - posPoliceTapeStart;
-            policeTapeCurrent.transform.position = posPoliceTapeStart + (tapeBetween * 0.5f);
-
-            tapeDist = tapeBetween.magnitude;
-            tapeScale = policeTapeCurrent.transform.localScale;
-            tapeScale.z = tapeDist;
-            policeTapeCurrent.transform.localScale = tapeScale;
-
-            tapeRot = Quaternion.LookRotation(tapeBetween.normalized).eulerAngles;
-            tapeRot.z = -90;
-            policeTapeCurrent.transform.eulerAngles = tapeRot;
-        }
+        //ManagerGlobal.Instance.ShowThought($"{TypeItemLeft} / {TypeItemRight}");
 
         if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.position) > DIST_CONVERSE) {
             StopDialogue();
@@ -192,12 +177,7 @@ public class ManagerGlobal : MonoBehaviour {
     private void Pinch(TypeItem typeItem1, TypeItem typeItem2) {
         // police tape
         if (typeItem1 == TypeItem.PoliceTapeRoll) {
-            if (policeTapeCurrent == null) {
-                policeTapeCurrent = Instantiate(prefabPoliceTape, containerPoliceTape).GetComponent<PoliceTape>();
-                posPoliceTapeStart = policeTapeRoll.transform.position;
-            } else {
-                policeTapeCurrent = null;
-            }
+            policeTapeRoll.TriggerTape();
         }
 
         // fingerprint tape
@@ -252,18 +232,30 @@ public class ManagerGlobal : MonoBehaviour {
     public void GrabItem(HandItem handItem) {
         if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
             handItemLeft = handItem;
+            AssignGrabbedItem(handItem);
         }
         if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
             handItemRight = handItem;
+            AssignGrabbedItem(handItem);
         }
     }
     public void ReleaseItem(HandItem handItem) {
-        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
+        if (handItemLeft == handItem) {
             handItemLeft = null;
+            UnassignGrabbedItem(handItem);
         }
-        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
+        if (handItemRight == handItem) {
             handItemRight = null;
+            UnassignGrabbedItem(handItem);
         }
+    }
+    private void AssignGrabbedItem(HandItem handItem) {
+        if (handItem is Notepad _notepad) { notepad = _notepad; }
+        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
+    }
+    private void UnassignGrabbedItem(HandItem handItem) {
+        if (handItem is Notepad) { notepad = null; }
+        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
 
 

@@ -4,8 +4,16 @@
 
 > police tape
 - 	update texture
-- only clickable when tape is colliding with a solid object (aka no floating tape)
-- if you drop the tape midway, pressing trigger should not stop the taping
+- 	only clickable when tape is colliding with a solid object (aka no floating tape)
+- 	if you drop the tape midway, pressing trigger should not stop the taping
+
+> briefcase
+- 	fix: full open treated as closed
+
+> witness interview
+- fix: distance check valid even if too far
+
+> instead of manager handling actions, it should be handling Players which will handle those actions
 
 
 

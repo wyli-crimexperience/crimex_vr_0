@@ -46,13 +46,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3414745205642168827}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05974b4bbbb785f46856d575903e1872, type: 3}
+  m_Script: {fileID: 11500000, guid: 07d24c3b1b1363e4e9909f8722262e37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 4419574643122265972}
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 2012481340105076809}
   TypeItem: 3
+  prefabPoliceTape: {fileID: 6862119201951572595, guid: 4f5334fcade3e984181240539dd4f87d,
+    type: 3}
 --- !u!54 &6741757336560348518
 Rigidbody:
   m_ObjectHideFlags: 0
