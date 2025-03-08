@@ -12,8 +12,10 @@ public class Witness : MonoBehaviour {
 
 
     public void GazeWitness() {
-        if (!isDoneConversing) {
-            ManagerGlobal.Instance.ConverseWitness(this);
+        if (isDoneConversing) {
+            ManagerGlobal.Instance.ShowThought("I've already talked to them...");
+        } else {
+            ManagerGlobal.Instance.StartConversation(this);
         }
     }
     public void DoneConversing() {

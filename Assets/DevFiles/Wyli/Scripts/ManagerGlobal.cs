@@ -97,6 +97,8 @@ public class ManagerGlobal : MonoBehaviour {
     private int pulse;
 
     private Witness currentWitness;
+    private Phone currentPhone;
+    private DialogueData currentDialogue;
     private int dialogueIndex;
 
 
@@ -150,10 +152,14 @@ public class ManagerGlobal : MonoBehaviour {
             StopDialogue();
             currentWitness = null;
         }
+        if (currentPhone != null && Vector3.Distance(currentPhone.transform.position, player.position) > DIST_CONVERSE) {
+            StopDialogue();
+            currentPhone = null;
+        }
     }
 
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
-        if (currentWitness != null) {
+        if (currentDialogue != null) {
             NextDialogue();
         }
     }
@@ -161,7 +167,7 @@ public class ManagerGlobal : MonoBehaviour {
         // todo: change role to previous
     }
     private void PrimaryButtonRight(InputAction.CallbackContext context) {
-        if (currentWitness != null) {
+        if (currentDialogue != null) {
             NextDialogue();
         }
     }
@@ -334,30 +340,57 @@ public class ManagerGlobal : MonoBehaviour {
         fingerprintSource.Lift();
     }
 
-    // witness dialogue
-    public void ConverseWitness(Witness witness) {
+    // dialogue
+    private void ClearCurrentConversation() {
+        currentWitness = null;
+        currentPhone = null;
+    }
+    public void StartConversation(Witness witness) {
         if (currentWitness != null || Vector3.Distance(witness.transform.position, player.position) > DIST_CONVERSE) { return; }
 
 
 
+        ClearCurrentConversation();
         currentWitness = witness;
+        currentDialogue = witness.DialogueData;
 
+        StartConservation();
+    }
+    public void StartConversation(Phone phone) {
+        if (currentPhone != null || Vector3.Distance(phone.transform.position, player.position) > DIST_CONVERSE) { return; }
+
+
+
+        ClearCurrentConversation();
+        currentPhone = phone;
+        currentDialogue = phone.DialogueData;
+
+        StartConservation();
+    }
+    private void StartConservation() {
         goDialogue.SetActive(true);
         dialogueIndex = -1;
         NextDialogue();
     }
     private void NextDialogue() {
         dialogueIndex += 1;
-        if (dialogueIndex < currentWitness.DialogueData.Dialogue.Length) {
-            txtDialogue.text = currentWitness.DialogueData.Dialogue[dialogueIndex].speakerText;
+        if (dialogueIndex < currentDialogue.Dialogue.Length) {
+            txtDialogue.text = currentDialogue.Dialogue[dialogueIndex].speakerText;
         } else {
             StopDialogue();
 
-            currentWitness.DoneConversing();
-            currentWitness = null;
+            if (currentWitness != null) {
+                currentWitness.DoneConversing();
+                currentWitness = null;
+            }
+            if (currentPhone != null) {
+                currentPhone.DoneConversing();
+                currentPhone = null;
+            }
         }
     }
     private void StopDialogue() {
         goDialogue.SetActive(false);
+        currentDialogue = null;
     }
 }

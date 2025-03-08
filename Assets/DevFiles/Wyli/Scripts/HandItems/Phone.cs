@@ -19,6 +19,11 @@ public class Phone : HandItem {
     private List<PhoneButton> contacts = new List<PhoneButton>();
     private PhoneButton currentContact;
 
+    [SerializeField] private DialogueData dialogueData;
+    public DialogueData DialogueData => dialogueData;
+
+    private bool isDoneConversing;
+
 
 
     private void Start() {
@@ -45,10 +50,17 @@ public class Phone : HandItem {
 
 
         if (currentContact.TypePhoneContact == TypePhoneContact.TacticalOperationsCenter) {
-            // todo: initiate dialogue
+            if (isDoneConversing) {
+                ManagerGlobal.Instance.ShowThought("I've already talked to them...");
+            } else {
+                ManagerGlobal.Instance.StartConversation(this);
+            }
         } else {
             ManagerGlobal.Instance.ShowThought("They might not be the right people to call right now...");
         }
+    }
+    public void DoneConversing() {
+        isDoneConversing = true;
     }
 
 }

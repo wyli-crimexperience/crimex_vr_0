@@ -3372,6 +3372,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6680314052941699233, guid: 1ee51bd01e282874bad376dd754f1442,
         type: 3}
+      propertyPath: dialogueData
+      value: 
+      objectReference: {fileID: 11400000, guid: c5da5ffcb323cb44fa0c70a83bcec34b,
+        type: 2}
+    - target: {fileID: 6680314052941699233, guid: 1ee51bd01e282874bad376dd754f1442,
+        type: 3}
       propertyPath: socketBriefcase
       value: 
       objectReference: {fileID: 5460121236262554862}
