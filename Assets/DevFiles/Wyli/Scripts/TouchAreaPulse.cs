@@ -1,9 +1,13 @@
 using UnityEngine;
 
+
+
 public class TouchAreaPulse : MonoBehaviour {
 
-    public void CheckPulse() {
-        ManagerGlobal.Instance.CheckPulse();
+    private void OnTriggerEnter(Collider collider) {
+        if (collider.CompareTag("Fingertip")) {
+            ManagerGlobal.Instance.CheckPulse();
+        }
     }
 
 }

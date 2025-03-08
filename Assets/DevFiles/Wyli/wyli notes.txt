@@ -10,8 +10,6 @@
 
 > wristwatch
 
-> instead of manager handling actions, it should be handling Players which will handle those actions
-
 > character changing
 - previous character turns into npc
 
