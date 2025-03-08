@@ -263,8 +263,19 @@ public class ManagerGlobal : MonoBehaviour {
     // thought
     private IEnumerator IE_ShowThought() {
         goThought.SetActive(true);
-
         cgThought.alpha = 1;
+
+        // animate in
+        float duration = 0f;
+        while (duration < 0.5f) {
+            goThought.transform.localScale = Vector3.Lerp(Vector3.forward, new Vector3(0.01f, 0.01f, 1), duration / 0.5f);
+            goThought.transform.localPosition = Vector3.Lerp(Vector3.zero, new Vector3(0, 0.25f, 0.67f), duration / 0.5f);
+
+            duration += Time.deltaTime;
+            yield return null;
+        }
+
+        // fade out
         yield return new WaitForSeconds(THOUGHT_TIMER_MAX);
 
         thoughtTimer = THOUGHT_TIMER_MAX;
@@ -275,9 +286,10 @@ public class ManagerGlobal : MonoBehaviour {
             yield return null;
         }
 
+        // reset
         goThought.SetActive(false);
-        corThoughtTimer = null;
         txtThought.text = "Hmmm...";
+        corThoughtTimer = null;
     }
     public void ShowThought(string str) {
         txtThought.text = str;

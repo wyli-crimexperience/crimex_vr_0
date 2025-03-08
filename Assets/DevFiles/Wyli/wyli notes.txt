@@ -4,7 +4,7 @@
 
 > phone
 - while held, trigger to open screen
-- select the correct contact (Tactical Operations Center)
+*- 	select the correct contact (Tactical Operations Center)
 - go through dialogue call
 	- dialogue disappears if phone is too far
 
