@@ -51,9 +51,26 @@ public enum TypeItem {
     // evidence custodian
     EvidenceChecklist,
 
-    // ioc part 3
+    // ioc part 3,
     ReleaseOfCrimeSceneForm
 
+}
+public enum TypeRole {
+    None,
+
+    // scene 1
+    FirstResponder,
+    InvestigatorOnCase,
+    SOCOTeamLead,
+    Photographer,
+    Searcher,
+    Measurer,
+    Sketcher,
+    FingerprintSpecialist,
+    Collector,
+    EvidenceCustodian,
+
+    // scene 2
 }
 
 
@@ -164,7 +181,7 @@ public class ManagerGlobal : MonoBehaviour {
         }
     }
     private void SecondaryButtonLeft(InputAction.CallbackContext context) {
-        // todo: change role to previous
+        // todo: add a function here
     }
     private void PrimaryButtonRight(InputAction.CallbackContext context) {
         if (currentDialogue != null) {
@@ -172,7 +189,7 @@ public class ManagerGlobal : MonoBehaviour {
         }
     }
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
-        // todo: change role to previous
+        // todo: add a function here
     }
     private void PinchLeft(InputAction.CallbackContext context) {
         if (context.performed) { Pinch(TypeItemLeft, TypeItemRight); }
@@ -392,5 +409,22 @@ public class ManagerGlobal : MonoBehaviour {
     private void StopDialogue() {
         goDialogue.SetActive(false);
         currentDialogue = null;
+    }
+
+    // string formatting
+    public string GetRoleName(TypeRole typeRole) {
+        switch (typeRole) {
+            case TypeRole.FirstResponder: return "First Responder";
+            case TypeRole.InvestigatorOnCase: return "Investigator-On-Case";
+            case TypeRole.SOCOTeamLead: return "SOCO Team Lead";
+            case TypeRole.Photographer: return "Photographer";
+            case TypeRole.Searcher: return "Searcher";
+            case TypeRole.Measurer: return "Measurer";
+            case TypeRole.Sketcher: return "Sketcher";
+            case TypeRole.FingerprintSpecialist: return "Fingerprint Specialist";
+            case TypeRole.Collector: return "Collector";
+            case TypeRole.EvidenceCustodian: return "Evidence Custodian";
+            default: return "";
+        }
     }
 }

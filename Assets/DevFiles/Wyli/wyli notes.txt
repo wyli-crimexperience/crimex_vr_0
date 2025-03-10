@@ -2,13 +2,20 @@
 === TO-DO ===
 =============
 
-> phone
-- while held, trigger to open screen
-- go through dialogue call
-	- dialogue disappears if phone is too far
+> role changing
+- press primary button to pause everything and open role select menu
+	- does not work during dialogue since primary button is used for nexting that
+	- will close any existing thought
+	- upon opening, highlight the name of your current role
+	- move thumbstick to scroll through roles
+		- new roles will only show up if they are already valid
+	- press thumbstick to choose role
+		- selecting current simply closes menu
+		- selecting new turns current character into npc, then goes into new character
 
-> character changing
-- previous character turns into npc
+
+
+> hide parts of player mesh that are too close to camera
 
 
 
