@@ -3,23 +3,13 @@
 =============
 
 > role changing
-- 	press primary button to pause everything and open role select menu
-	- 	does not work during dialogue since primary button is used for nexting that
-	- 	will close any existing thought
-	- 	upon opening, highlight the name of your current role
-	- 	move thumbstick to scroll through roles
-		- new roles will only show up if they are already valid
-	- 	press primary button to choose role
-		- 	selecting current simply closes menu
-		- selecting new turns current character into npc, then goes into new character
-
-
-
-> 	briefcase should be inside each player prefab, with their items already active
+	- 	selecting different role turns current character into npc, then goes into new character
+	- fix: held items teleporting to new character
 
 
 
 > hide parts of player mesh that are too close to camera
+	- try: separate arms-hands into another object then cull everything else
 
 
 
@@ -34,6 +24,8 @@
 > add "next" button in dialogue
 
 > custom hand poses for each grabbable object
+
+> new roles (in change role list) will only show up if they are already valid (or not, to test player knowledge)
 
 
 

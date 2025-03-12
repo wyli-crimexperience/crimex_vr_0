@@ -8,6 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 using TMPro;
+using UnityEngine.UI;
 
 
 
@@ -96,7 +97,13 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private Transform handLeftTarget, handRightTarget;
     public Transform HandLeftTarget => handLeftTarget;
     public Transform HandRightTarget => handRightTarget;
+    [SerializeField] private Transform xrInteractionSetup;
+    [SerializeField] private Transform vrTargetLeftHand, vrTargetRightHand, vrTargetHead;
+    public Transform VRTargetLeftHand => vrTargetLeftHand;
+    public Transform VRTargetRightHand => vrTargetRightHand;
+    public Transform VRTargetHead => vrTargetHead;
 
+    [SerializeField] private ScrollRect srChangeRole;
     [SerializeField] private GameObject goChangeRole, goThought, goDialogue;
     [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
 
@@ -126,6 +133,9 @@ public class ManagerGlobal : MonoBehaviour {
     private List<ListItemRole> listItemRoles = new List<ListItemRole>();
     private int indexRole;
 
+    private Vector3 playerStartPos;
+    private Dictionary<TypeRole, Player> dictPlayers = new Dictionary<TypeRole, Player>();
+
 
 
     private void Awake() {
@@ -134,11 +144,11 @@ public class ManagerGlobal : MonoBehaviour {
         HolderData.PrimaryButtonLeft.action.performed += PrimaryButtonLeft;
         HolderData.SecondaryButtonLeft.action.performed += SecondaryButtonLeft;
         HolderData.PinchLeft.action.performed += PinchLeft;
-        HolderData.ThumbstickLeft.action.performed += ThumbstickLeft;
+        HolderData.ThumbstickLeft.action.started += ThumbstickLeftTap;
         HolderData.PrimaryButtonRight.action.performed += PrimaryButtonRight;
         HolderData.SecondaryButtonRight.action.performed += SecondaryButtonRight;
         HolderData.PinchRight.action.performed += PinchRight;
-        HolderData.ThumbstickRight.action.performed += ThumbstickRight;
+        HolderData.ThumbstickRight.action.started += ThumbstickRightTap;
 
         timeOfArrival = DateTime.MinValue;
         canWriteNotepad = false;
@@ -151,6 +161,13 @@ public class ManagerGlobal : MonoBehaviour {
 
         goThought.SetActive(false);
         goDialogue.SetActive(false);
+
+        // init player
+        if (player != null) {
+            playerStartPos = player.transform.position;
+            player.Init(player.TypeRole);
+            dictPlayers.Add(player.TypeRole, player);
+        }
 
         // roles ui
         ListItemRole listItemRole;
@@ -181,14 +198,14 @@ public class ManagerGlobal : MonoBehaviour {
         HolderData.PrimaryButtonLeft.action.performed -= PrimaryButtonLeft;
         HolderData.SecondaryButtonLeft.action.performed -= SecondaryButtonLeft;
         HolderData.PinchLeft.action.performed -= PinchLeft;
-        HolderData.ThumbstickLeft.action.performed -= ThumbstickLeft;
+        HolderData.ThumbstickLeft.action.started -= ThumbstickLeftTap;
         HolderData.PrimaryButtonRight.action.performed -= PrimaryButtonRight;
         HolderData.SecondaryButtonRight.action.performed -= SecondaryButtonRight;
         HolderData.PinchRight.action.performed -= PinchRight;
-        HolderData.ThumbstickRight.action.performed -= ThumbstickRight;
+        HolderData.ThumbstickRight.action.started -= ThumbstickRightTap;
     }
     private void Update() {
-        //ManagerGlobal.Instance.ShowThought($"{TypeItemLeft} / {TypeItemRight}");
+        //ManagerGlobal.Instance.ShowThought($"{srChangeRole.verticalNormalizedPosition}");
 
         if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.transform.position) > DIST_CONVERSE) {
             StopDialogue();
@@ -216,12 +233,28 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void ToggleMenuChangeRole(bool b) {
         goChangeRole.SetActive(b);
+        Time.timeScale = b ? 0 : 1;
         if (b) {
             // todo: pause whole game
-            Time.timeScale = b ? 0 : 1;
         } else {
-            // todo: change roles
-            print($"changing role to {listItemRoles[indexRole].TypeRole}");
+            // change roles
+            // deactivate current player
+            player.SetActive(false);
+
+            // activate new player
+            // check if player already exists; if so, just switch to that
+            TypeRole typeRole = listItemRoles[indexRole].TypeRole;
+            if (dictPlayers.ContainsKey(typeRole)) {
+                player = dictPlayers[typeRole];
+            } else { // else, spawn a new player and store to dictionary
+                player = Instantiate(HolderData.GetPrefabPlayer(typeRole)).GetComponent<Player>();
+                player.Init(typeRole);
+                player.transform.position = playerStartPos;
+                dictPlayers.Add(typeRole, player);
+            }
+            xrInteractionSetup.position = player.transform.position;
+            xrInteractionSetup.localRotation = player.transform.localRotation;
+            player.SetActive(true);
         }
     }
     private void SecondaryButtonLeft(InputAction.CallbackContext context) {
@@ -319,27 +352,36 @@ public class ManagerGlobal : MonoBehaviour {
         if (handItem is Notepad) { notepad = null; }
         else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
-    private void ThumbstickLeft(InputAction.CallbackContext context) {
-        Thumbstick(context.ReadValue<Vector2>());
+    private void ThumbstickLeftTap(InputAction.CallbackContext context) {
+        ThumbstickTap(context.ReadValue<Vector2>());
     }
-    private void ThumbstickRight(InputAction.CallbackContext context) {
-        Thumbstick(context.ReadValue<Vector2>());
+    private void ThumbstickRightTap(InputAction.CallbackContext context) {
+        ThumbstickTap(context.ReadValue<Vector2>());
     }
-    private void Thumbstick(Vector2 vector2) {
+    private void ThumbstickTap(Vector2 vector2) {
         if (Mathf.Abs(vector2.x) > Mathf.Abs(vector2.y)) {
             // horizontal input
         } else if (Mathf.Abs(vector2.y) > Mathf.Abs(vector2.x)) {
             // vertical input
+            // change roles
             if (goChangeRole.activeInHierarchy) {
                 // scroll through roles
-                if (vector2.y > 0) {
+                if (vector2.y < 0) {
                     indexRole += 1;
-                } else if (vector2.y < 0) {
+                    if (indexRole > listItemRoles.Count - 1) {
+                        indexRole = 0;
+                    }
+                } else if (vector2.y > 0) {
                     indexRole -= 1;
+                    if (indexRole < 0) {
+                        indexRole = listItemRoles.Count - 1;
+                    }
                 }
+
                 for (int i = 0; i < listItemRoles.Count; i++) {
                     listItemRoles[i].SetSelected(i == indexRole);
                 }
+                srChangeRole.verticalNormalizedPosition = Mathf.Clamp01(1 - (2f * indexRole / listItemRoles.Count));
             }
         }
     }

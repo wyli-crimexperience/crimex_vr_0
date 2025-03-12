@@ -20,7 +20,7 @@ public class ListItemRole : MonoBehaviour {
         txtName.text = ManagerGlobal.Instance.GetRoleName(typeRole);
     }
     public void SetSelected(bool b) {
-        imgButton.color = new Color(1, 1, 1, b ? 1 : 0.5f);
+        imgButton.color = new Color(1, 1, 1, b ? 1 : 0);
     }
 
 }

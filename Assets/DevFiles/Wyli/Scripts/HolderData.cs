@@ -16,6 +16,16 @@ public class HolderData : ScriptableObject {
     public InputActionReference PinchRight => pinchRight;
     public InputActionReference ThumbstickRight => thumbstickRight;
 
+    [SerializeField] private GameObject prefabPlayerFirstResponder, prefabPlayerInvestigatorOnCase;
+    public GameObject GetPrefabPlayer(TypeRole typeRole) {
+        return typeRole switch {
+            TypeRole.FirstResponder => prefabPlayerFirstResponder,
+            TypeRole.InvestigatorOnCase => prefabPlayerInvestigatorOnCase,
+
+            _ => prefabPlayerFirstResponder,
+        };
+    }
+
     [SerializeField] private Color colBlack, colFluorescent, colGray, colWhite, colMagnetic;
 
 

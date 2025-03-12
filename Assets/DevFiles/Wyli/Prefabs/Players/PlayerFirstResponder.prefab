@@ -477,6 +477,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4948b096e90ad834f996a9ca743405f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ikTarget: {fileID: 3660863019026201362}
+  typeRole: 1
 --- !u!1 &4742849584279569876
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,36 +2240,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Fingertip
-      objectReference: {fileID: 0}
-    - target: {fileID: 3852415984715496514, guid: b8d89332412dad94285c312e00c933bc,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3852415984715496514, guid: b8d89332412dad94285c312e00c933bc,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.3470927
-      objectReference: {fileID: 0}
-    - target: {fileID: 3852415984715496514, guid: b8d89332412dad94285c312e00c933bc,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.5221557
-      objectReference: {fileID: 0}
-    - target: {fileID: 3852415984715496514, guid: b8d89332412dad94285c312e00c933bc,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9823428
-      objectReference: {fileID: 0}
-    - target: {fileID: 3852415984715496514, guid: b8d89332412dad94285c312e00c933bc,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.18708988
-      objectReference: {fileID: 0}
-    - target: {fileID: 3852415984715496514, guid: b8d89332412dad94285c312e00c933bc,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6755102141793831271, guid: b8d89332412dad94285c312e00c933bc,
         type: 3}
