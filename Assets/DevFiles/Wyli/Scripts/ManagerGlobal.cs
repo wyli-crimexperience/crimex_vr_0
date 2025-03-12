@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -82,21 +83,25 @@ public class ManagerGlobal : MonoBehaviour {
 
     public HolderData HolderData;
 
-    [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
     [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
     public NearFarInteractor InteractorLeft => interactorLeft;
     public NearFarInteractor InteractorRight => interactorRight;
     [SerializeField] private IXRFilter_HandToBriefcaseItem ixrFilter_handToBriefcaseItem;
 
+    [SerializeField] private Player player;
+
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
     public Transform ContainerPoliceTape => containerPoliceTape;
-    [SerializeField] private Transform player, handLeftTarget, handRightTarget;
+    [SerializeField] private Transform handLeftTarget, handRightTarget;
     public Transform HandLeftTarget => handLeftTarget;
     public Transform HandRightTarget => handRightTarget;
 
-    [SerializeField] private GameObject goThought, goDialogue;
+    [SerializeField] private GameObject goChangeRole, goThought, goDialogue;
     [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
+
+    [SerializeField] private GameObject prefabRole;
+    [SerializeField] private Transform containerRoles;
 
     // hand items
     private HandItem handItemLeft, handItemRight;
@@ -118,17 +123,22 @@ public class ManagerGlobal : MonoBehaviour {
     private DialogueData currentDialogue;
     private int dialogueIndex;
 
+    private List<ListItemRole> listItemRoles = new List<ListItemRole>();
+    private int indexRole;
+
 
 
     private void Awake() {
         Instance = this;
 
-        primaryButtonLeft.action.performed += PrimaryButtonLeft;
-        secondaryButtonLeft.action.performed += SecondaryButtonLeft;
-        primaryButtonRight.action.performed += PrimaryButtonRight;
-        secondaryButtonRight.action.performed += SecondaryButtonRight;
-        pinchLeft.action.performed += PinchLeft;
-        pinchRight.action.performed += PinchRight;
+        HolderData.PrimaryButtonLeft.action.performed += PrimaryButtonLeft;
+        HolderData.SecondaryButtonLeft.action.performed += SecondaryButtonLeft;
+        HolderData.PinchLeft.action.performed += PinchLeft;
+        HolderData.ThumbstickLeft.action.performed += ThumbstickLeft;
+        HolderData.PrimaryButtonRight.action.performed += PrimaryButtonRight;
+        HolderData.SecondaryButtonRight.action.performed += SecondaryButtonRight;
+        HolderData.PinchRight.action.performed += PinchRight;
+        HolderData.ThumbstickRight.action.performed += ThumbstickRight;
 
         timeOfArrival = DateTime.MinValue;
         canWriteNotepad = false;
@@ -141,6 +151,17 @@ public class ManagerGlobal : MonoBehaviour {
 
         goThought.SetActive(false);
         goDialogue.SetActive(false);
+
+        // roles ui
+        ListItemRole listItemRole;
+        foreach (TypeRole typeRole in Enum.GetValues(typeof(TypeRole))) {
+            if (typeRole == TypeRole.None) { continue; }
+
+            listItemRole = Instantiate(prefabRole, containerRoles).GetComponent<ListItemRole>();
+            listItemRole.Init(typeRole);
+            listItemRole.SetSelected(typeRole == player.TypeRole);
+            listItemRoles.Add(listItemRole);
+        }
     }
     private void OnEnable() {
         interactorLeft.selectFilters.Add(ixrFilter_handToBriefcaseItem);
@@ -157,36 +178,54 @@ public class ManagerGlobal : MonoBehaviour {
         interactorRight.hoverFilters.Remove(ixrFilter_handToBriefcaseItem);
     }
     private void OnDestroy() {
-        primaryButtonLeft.action.performed -= PrimaryButtonLeft;
-        secondaryButtonLeft.action.performed -= SecondaryButtonLeft;
-        primaryButtonRight.action.performed -= PrimaryButtonRight;
-        secondaryButtonRight.action.performed -= SecondaryButtonRight;
+        HolderData.PrimaryButtonLeft.action.performed -= PrimaryButtonLeft;
+        HolderData.SecondaryButtonLeft.action.performed -= SecondaryButtonLeft;
+        HolderData.PinchLeft.action.performed -= PinchLeft;
+        HolderData.ThumbstickLeft.action.performed -= ThumbstickLeft;
+        HolderData.PrimaryButtonRight.action.performed -= PrimaryButtonRight;
+        HolderData.SecondaryButtonRight.action.performed -= SecondaryButtonRight;
+        HolderData.PinchRight.action.performed -= PinchRight;
+        HolderData.ThumbstickRight.action.performed -= ThumbstickRight;
     }
     private void Update() {
         //ManagerGlobal.Instance.ShowThought($"{TypeItemLeft} / {TypeItemRight}");
 
-        if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.position) > DIST_CONVERSE) {
+        if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.transform.position) > DIST_CONVERSE) {
             StopDialogue();
             currentWitness = null;
         }
-        if (currentPhone != null && Vector3.Distance(currentPhone.transform.position, player.position) > DIST_CONVERSE) {
+        if (currentPhone != null && Vector3.Distance(currentPhone.transform.position, player.transform.position) > DIST_CONVERSE) {
             StopDialogue();
             currentPhone = null;
         }
     }
 
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
-        if (currentDialogue != null) {
+        PrimaryButton();
+    }
+    private void PrimaryButtonRight(InputAction.CallbackContext context) {
+        PrimaryButton();
+    }
+    private void PrimaryButton() {
+        if (currentDialogue == null) {
+            goThought.SetActive(false);
+            ToggleMenuChangeRole(!goChangeRole.activeSelf);
+        } else {
             NextDialogue();
+        }
+    }
+    private void ToggleMenuChangeRole(bool b) {
+        goChangeRole.SetActive(b);
+        if (b) {
+            // todo: pause whole game
+            Time.timeScale = b ? 0 : 1;
+        } else {
+            // todo: change roles
+            print($"changing role to {listItemRoles[indexRole].TypeRole}");
         }
     }
     private void SecondaryButtonLeft(InputAction.CallbackContext context) {
         // todo: add a function here
-    }
-    private void PrimaryButtonRight(InputAction.CallbackContext context) {
-        if (currentDialogue != null) {
-            NextDialogue();
-        }
     }
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
         // todo: add a function here
@@ -280,6 +319,30 @@ public class ManagerGlobal : MonoBehaviour {
         if (handItem is Notepad) { notepad = null; }
         else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
+    private void ThumbstickLeft(InputAction.CallbackContext context) {
+        Thumbstick(context.ReadValue<Vector2>());
+    }
+    private void ThumbstickRight(InputAction.CallbackContext context) {
+        Thumbstick(context.ReadValue<Vector2>());
+    }
+    private void Thumbstick(Vector2 vector2) {
+        if (Mathf.Abs(vector2.x) > Mathf.Abs(vector2.y)) {
+            // horizontal input
+        } else if (Mathf.Abs(vector2.y) > Mathf.Abs(vector2.x)) {
+            // vertical input
+            if (goChangeRole.activeInHierarchy) {
+                // scroll through roles
+                if (vector2.y > 0) {
+                    indexRole += 1;
+                } else if (vector2.y < 0) {
+                    indexRole -= 1;
+                }
+                for (int i = 0; i < listItemRoles.Count; i++) {
+                    listItemRoles[i].SetSelected(i == indexRole);
+                }
+            }
+        }
+    }
 
 
 
@@ -363,7 +426,7 @@ public class ManagerGlobal : MonoBehaviour {
         currentPhone = null;
     }
     public void StartConversation(Witness witness) {
-        if (currentWitness != null || Vector3.Distance(witness.transform.position, player.position) > DIST_CONVERSE) { return; }
+        if (currentWitness != null || Vector3.Distance(witness.transform.position, player.transform.position) > DIST_CONVERSE) { return; }
 
 
 
@@ -374,7 +437,7 @@ public class ManagerGlobal : MonoBehaviour {
         StartConservation();
     }
     public void StartConversation(Phone phone) {
-        if (currentPhone != null || Vector3.Distance(phone.transform.position, player.position) > DIST_CONVERSE) { return; }
+        if (currentPhone != null || Vector3.Distance(phone.transform.position, player.transform.position) > DIST_CONVERSE) { return; }
 
 
 

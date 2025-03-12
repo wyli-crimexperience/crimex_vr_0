@@ -1,9 +1,20 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 
 [CreateAssetMenu(fileName = "HolderData", menuName = "Scriptable Objects/HolderData")]
 public class HolderData : ScriptableObject {
+
+    [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, pinchLeft, thumbstickLeft, primaryButtonRight, secondaryButtonRight, pinchRight, thumbstickRight;
+    public InputActionReference PrimaryButtonLeft => primaryButtonLeft;
+    public InputActionReference SecondaryButtonLeft => secondaryButtonLeft;
+    public InputActionReference PinchLeft => pinchLeft;
+    public InputActionReference ThumbstickLeft => thumbstickLeft;
+    public InputActionReference PrimaryButtonRight => primaryButtonRight;
+    public InputActionReference SecondaryButtonRight => secondaryButtonRight;
+    public InputActionReference PinchRight => pinchRight;
+    public InputActionReference ThumbstickRight => thumbstickRight;
 
     [SerializeField] private Color colBlack, colFluorescent, colGray, colWhite, colMagnetic;
 
