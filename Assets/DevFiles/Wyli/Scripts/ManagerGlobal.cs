@@ -237,25 +237,52 @@ public class ManagerGlobal : MonoBehaviour {
         if (b) {
             // todo: pause whole game
         } else {
-            // change roles
-            // deactivate current player
-            player.SetActive(false);
-
-            // activate new player
-            // check if player already exists; if so, just switch to that
-            TypeRole typeRole = listItemRoles[indexRole].TypeRole;
-            if (dictPlayers.ContainsKey(typeRole)) {
-                player = dictPlayers[typeRole];
-            } else { // else, spawn a new player and store to dictionary
-                player = Instantiate(HolderData.GetPrefabPlayer(typeRole)).GetComponent<Player>();
-                player.Init(typeRole);
-                player.transform.position = playerStartPos;
-                dictPlayers.Add(typeRole, player);
-            }
-            xrInteractionSetup.position = player.transform.position;
-            xrInteractionSetup.localRotation = player.transform.localRotation;
-            player.SetActive(true);
+            StopCoroutine(IE_ChangeRole());
+            StartCoroutine(IE_ChangeRole());
         }
+    }
+    private IEnumerator IE_ChangeRole() {
+        // retain held items
+        interactorLeft.allowSelect = false;
+        interactorRight.allowSelect = false;
+        HandItem handItemLeft = null, handItemRight = null;
+        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft) {
+            handItemLeft = interactableLeft.GetComponent<HandItem>();
+        }
+        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight) {
+            handItemRight = interactableRight.GetComponent<HandItem>();
+        }
+        if (handItemLeft != null || handItemRight != null) {
+            yield return new WaitForEndOfFrame();
+            if (handItemLeft != null) {
+                handItemLeft.SetPaused(true);
+            }
+            if (handItemRight != null) {
+                handItemRight.SetPaused(true);
+            }
+        }
+
+        // deactivate current player
+        player.SetActive(false);
+
+        // activate new player
+        // check if player already exists; if so, just switch to that
+        TypeRole typeRole = listItemRoles[indexRole].TypeRole;
+        if (dictPlayers.ContainsKey(typeRole)) {
+            player = dictPlayers[typeRole];
+        } else { // else, spawn a new player and store to dictionary
+            player = Instantiate(HolderData.GetPrefabPlayer(typeRole)).GetComponent<Player>();
+            player.Init(typeRole);
+            dictPlayers.Add(typeRole, player);
+        }
+        Vector3 pos = player.transform.position;
+        pos.y = playerStartPos.y;
+        xrInteractionSetup.SetPositionAndRotation(pos, player.transform.rotation);
+        player.SetActive(true);
+
+        // re-enable interactors
+        interactorLeft.allowSelect = true;
+        interactorRight.allowSelect = true;
     }
     private void SecondaryButtonLeft(InputAction.CallbackContext context) {
         // todo: add a function here

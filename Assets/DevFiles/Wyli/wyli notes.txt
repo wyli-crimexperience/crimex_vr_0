@@ -4,7 +4,10 @@
 
 > role changing
 	- 	selecting different role turns current character into npc, then goes into new character
-	- fix: held items teleporting to new character
+	- 	fix: held items teleporting to new character
+	- fix: position and rotation upon switch is slightly wrong
+
+> hand poses still missing
 
 
 

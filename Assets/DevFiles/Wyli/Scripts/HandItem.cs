@@ -16,6 +16,14 @@ public class HandItem : MonoBehaviour {
     // my item type
     public TypeItem TypeItem;
 
+    private Rigidbody rb;
+
+
+
+    private void Awake() {
+        rb = GetComponent<Rigidbody>();
+    }
+
 
 
     public void InitBriefcase() {
@@ -23,13 +31,15 @@ public class HandItem : MonoBehaviour {
         socketBriefcase.startingSelectedInteractable = interactable;
     }
 
-
-
     public void Grab() {
         ManagerGlobal.Instance.GrabItem(this);
     }
     public void Release() {
         ManagerGlobal.Instance.ReleaseItem(this);
+        rb.isKinematic = false;
+    }
+    public void SetPaused(bool b) {
+        rb.isKinematic = b;
     }
 
 
