@@ -2,7 +2,7 @@ using UnityEngine;
 
 
 
-public class Camera : HandItem {
+public class Camera : HandItemBriefcase {
 
 
 

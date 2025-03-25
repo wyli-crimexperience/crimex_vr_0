@@ -354,9 +354,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 28877825068472322}
+  TypeItem: 8
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 5878391177679706079}
-  TypeItem: 7
 --- !u!54 &1614791100207867644
 Rigidbody:
   m_ObjectHideFlags: 0

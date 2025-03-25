@@ -4,7 +4,7 @@ using TMPro;
 
 
 
-public class Notepad : HandItem {
+public class Notepad : HandItemBriefcase {
 
     [SerializeField] private TextMeshProUGUI txtTime, txtPulse;
 

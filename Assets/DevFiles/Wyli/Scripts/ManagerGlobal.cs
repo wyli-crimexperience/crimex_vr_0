@@ -14,6 +14,7 @@ using UnityEngine.UI;
 
 public enum TypeItem {
     None,
+    Briefcase,
 
     // first responder
     Notepad,
@@ -22,7 +23,7 @@ public enum TypeItem {
     Phone,
     
     // investigator-on-case part 1
-    FirstResponderForm,
+    FormFirstResponder,
 
     // soco team leader
     CommandPostSetUp,
@@ -93,6 +94,7 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private IXRFilter_HandToBriefcaseItem ixrFilter_handToBriefcaseItem;
 
     [SerializeField] private Player player;
+    public TypeRole TypeRolePlayer => player == null ? TypeRole.None : player.TypeRole;
 
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
@@ -116,10 +118,13 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private GameObject prefabCommandPost;
     private GameObject commandPost;
 
+    [SerializeField] private GameObject prefabFormFirstResponder;
+
     // hand items
     private HandItem handItemLeft, handItemRight;
     private Notepad notepad;
     private PoliceTapeRoll policeTapeRoll;
+    private FormFirstResponder formFirstResponder;
     private FingerprintTapeRoll fingerprintTapeRoll;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
@@ -128,7 +133,20 @@ public class ManagerGlobal : MonoBehaviour {
     private Coroutine corThoughtTimer;
     private GameObject thoughtSender;
 
-    private DateTime timeOfArrival;
+    private DateTime dateTimeIncident, dateTimeReported, dateTimeFirstResponderArrived, dateTimeCordoned, dateTimeCalledTOC, dateTimeFilledUp, dateTimeInvestigatorArrived, dateTimeInvestigatorReceived;
+    public DateTime DateTimeReported => dateTimeReported;
+    public DateTime DateTimeFirstResponderArrived => dateTimeFirstResponderArrived;
+    public DateTime DateTimeCordoned => dateTimeCordoned;
+    public DateTime DateTimeCalledTOC => dateTimeCalledTOC;
+    public void SetDateTimeCalledTOC() {
+        dateTimeCalledTOC = StaticUtils.ConvertToEvening(DateTime.Now);
+    }
+    public DateTime DateTimeFilledUp => dateTimeFilledUp;
+    public DateTime DateTimeInvestigatorArrived => dateTimeInvestigatorArrived;
+    public DateTime DateTimeInvestigatorReceived => dateTimeInvestigatorReceived;
+    public void SetDateTimeInvestigatorReceived() {
+        dateTimeInvestigatorReceived = StaticUtils.ConvertToEvening(DateTime.Now);
+    }
     private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
     private int pulse;
 
@@ -158,14 +176,16 @@ public class ManagerGlobal : MonoBehaviour {
         HolderData.PinchRight.action.performed += PinchRight;
         HolderData.ThumbstickRight.action.started += ThumbstickRightTap;
 
-        timeOfArrival = DateTime.MinValue;
         canWriteNotepad = false;
         hasCheckedTimeOfArrival = false;
         hasCheckedPulse = false;
         hasWrittenTimeOfArrival = false;
         hasWrittenPulse = false;
-        //pulse = UnityEngine.Random.Range(60, 100);
         pulse = 0;
+        // todo: this is only scene 1. make it adapt
+        dateTimeIncident = StaticUtils.ConvertToEvening(DateTime.Now).AddHours(-0.5f);
+        dateTimeReported = dateTimeIncident.AddHours(0.25f);
+        dateTimeFirstResponderArrived = dateTimeReported.AddHours(0.25f);
 
         goThought.SetActive(false);
         goDialogue.SetActive(false);
@@ -284,6 +304,10 @@ public class ManagerGlobal : MonoBehaviour {
             player.transform.SetPositionAndRotation(playerStartPos, playerStartRot);
             player.Init(typeRole);
             dictPlayers.Add(typeRole, player);
+
+            if (player.TypeRole == TypeRole.InvestigatorOnCase) {
+                dateTimeInvestigatorArrived = StaticUtils.ConvertToEvening(DateTime.Now);
+            }
         }
         player.SetActive(true);
 
@@ -314,7 +338,7 @@ public class ManagerGlobal : MonoBehaviour {
             if (canWriteNotepad && typeItem2 == TypeItem.Notepad) {
                 while (true) {
                     if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
-                        notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
+                        notepad.SetTextTime(dateTimeFirstResponderArrived.ToString("HH: mm"));
                         hasWrittenTimeOfArrival = true;
                         break;
                     }
@@ -337,6 +361,9 @@ public class ManagerGlobal : MonoBehaviour {
         // police tape
         if (typeItem1 == TypeItem.PoliceTapeRoll) {
             policeTapeRoll.TriggerTape();
+
+            // todo: set time cordoned to after cordoning, not at the start
+            dateTimeCordoned = StaticUtils.ConvertToEvening(DateTime.Now);
         }
 
         // command post set-up
@@ -348,6 +375,11 @@ public class ManagerGlobal : MonoBehaviour {
             Vector3 pos = player.transform.position;
             pos.y = 0.486f;
             commandPost.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
+        }
+
+        // first responder form
+        if (typeItem1 == TypeItem.FormFirstResponder) {
+            formFirstResponder.TogglePage();
         }
 
         // fingerprint tape
@@ -395,10 +427,15 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void AssignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad _notepad) { notepad = _notepad; }
+        else if (handItem is FormFirstResponder _formFirstResponder) {
+            formFirstResponder = _formFirstResponder;
+            formFirstResponder.Receive();
+        }
         else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
     }
     private void UnassignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad) { notepad = null; }
+        else if (handItem is FormFirstResponder) { formFirstResponder = null; }
         else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
@@ -492,17 +529,18 @@ public class ManagerGlobal : MonoBehaviour {
     // wristwatch
     public void CheckWristwatch(GameObject sender) {
         if (!hasCheckedTimeOfArrival) {
-            timeOfArrival = DateTime.Now;
+            // todo: this is only scene 1. make it adapt
+            dateTimeFirstResponderArrived = StaticUtils.ConvertToEvening(DateTime.Now);
             hasCheckedTimeOfArrival = true;
         }
-        // todo: datetime.now is not good since each scene has a time setting
-        ShowThought(sender, $"It's {DateTime.Now:hh:mm tt}");
+        ShowThought(sender, $"It's {dateTimeFirstResponderArrived:hh:mm tt}");
     }
 
     // pulse
     public void CheckPulse(GameObject sender) {
         hasCheckedPulse = true;
 
+        // todo: pulse should be set in EvidenceBody, and assigned to their TouchAreaPulse/s instead of here
         if (pulse == 0) {
             ShowThought(sender, "They have no more pulse...");
         } else {
@@ -513,6 +551,21 @@ public class ManagerGlobal : MonoBehaviour {
     // notepad + pen
     public void SetCanWriteNotepad(bool b) {
         canWriteNotepad = b;
+    }
+
+    // first responder form
+    public bool SpawnFirstResponderForm(Player firstResponder) {
+        if (Vector3.Distance(firstResponder.transform.position, player.transform.position) > DIST_CONVERSE) { return false; }
+
+
+
+        dateTimeFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+
+        HandItem form = Instantiate(prefabFormFirstResponder).GetComponent<HandItem>();
+        form.SetPaused(true);
+        form.transform.SetPositionAndRotation(firstResponder.HandLeft.position, firstResponder.HandLeft.rotation);
+
+        return true;
     }
 
     // evidence pack seal + pen
@@ -584,18 +637,18 @@ public class ManagerGlobal : MonoBehaviour {
 
     // string formatting
     public string GetRoleName(TypeRole typeRole) {
-        switch (typeRole) {
-            case TypeRole.FirstResponder: return "First Responder";
-            case TypeRole.InvestigatorOnCase: return "Investigator-On-Case";
-            case TypeRole.SOCOTeamLead: return "SOCO Team Lead";
-            case TypeRole.Photographer: return "Photographer";
-            case TypeRole.Searcher: return "Searcher";
-            case TypeRole.Measurer: return "Measurer";
-            case TypeRole.Sketcher: return "Sketcher";
-            case TypeRole.FingerprintSpecialist: return "Fingerprint Specialist";
-            case TypeRole.Collector: return "Collector";
-            case TypeRole.EvidenceCustodian: return "Evidence Custodian";
-            default: return "";
-        }
+        return typeRole switch {
+            TypeRole.FirstResponder => "First Responder",
+            TypeRole.InvestigatorOnCase => "Investigator-On-Case",
+            TypeRole.SOCOTeamLead => "SOCO Team Lead",
+            TypeRole.Photographer => "Photographer",
+            TypeRole.Searcher => "Searcher",
+            TypeRole.Measurer => "Measurer",
+            TypeRole.Sketcher => "Sketcher",
+            TypeRole.FingerprintSpecialist => "Fingerprint Specialist",
+            TypeRole.Collector => "Collector",
+            TypeRole.EvidenceCustodian => "Evidence Custodian",
+            _ => "",
+        };
     }
 }

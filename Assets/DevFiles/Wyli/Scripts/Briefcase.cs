@@ -17,8 +17,13 @@ public class Briefcase : MonoBehaviour {
     private float lidAngle;
     public bool IsOpen => Mathf.Abs(lidAngle) > 11.25f;
 
+    private Rigidbody rb;
 
 
+
+    private void Awake() {
+        rb = GetComponent<Rigidbody>();
+    }
     private IEnumerator Start() {
         transform.parent = transform.parent.root.parent;
 
@@ -28,7 +33,7 @@ public class Briefcase : MonoBehaviour {
         }
         yield return new WaitForEndOfFrame();
 
-        foreach (HandItem item in items) {
+        foreach (HandItemBriefcase item in items) {
             item.SocketBriefcase.socketActive = true;
             item.transform.position = item.SocketBriefcase.transform.position;
         }
@@ -39,7 +44,7 @@ public class Briefcase : MonoBehaviour {
         }
         yield return new WaitForEndOfFrame();
 
-        foreach (HandItem item in items) {
+        foreach (HandItemBriefcase item in items) {
             item.InitBriefcase();
         }
     }
@@ -67,6 +72,16 @@ public class Briefcase : MonoBehaviour {
     public void ReleaseLid() {
         isGrabbingLid = false;
         handGrabbingLid = null;
+    }
+    //public void Grab() {
+    //    ManagerGlobal.Instance.GrabBriefcase(this);
+    //}
+    //public void Release() {
+    //    ManagerGlobal.Instance.ReleaseBriefcase(this);
+    //    rb.isKinematic = false;
+    //}
+    public void SetPaused(bool b) {
+        rb.isKinematic = b;
     }
 
 }

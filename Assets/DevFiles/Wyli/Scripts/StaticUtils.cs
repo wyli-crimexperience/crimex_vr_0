@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 
 
@@ -15,6 +17,19 @@ public static class StaticUtils {
         if (offset > 0)
             current = Mathf.MoveTowardsAngle(current, midAngle, offset);
         return current;
+    }
+
+    public static DateTime ConvertToMorning(DateTime date) {
+        if (date.Hour < 6 || date.Hour > 18) {
+            date.AddHours(12);
+        }
+        return date;
+    }
+    public static DateTime ConvertToEvening(DateTime date) {
+        if (date.Hour > 6 || date.Hour < 18) {
+            date.AddHours(12);
+        }
+        return date;
     }
 
 }

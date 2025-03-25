@@ -431,9 +431,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 8965872106370147716}
+  TypeItem: 2
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 4919019562871362207}
-  TypeItem: 1
   txtTime: {fileID: 5362621179201777519}
   txtPulse: {fileID: 4761641950698335353}
 --- !u!54 &3818084060902840917

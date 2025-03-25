@@ -1,24 +1,34 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 
 
 public class Player : MonoBehaviour {
 
+    [SerializeField] private Transform handLeft;
+    public Transform HandLeft => handLeft;
+    [SerializeField] private Collider coll;
     [SerializeField] IKTargetFollowVRRig ikTarget;
 
     [SerializeField] private TypeRole typeRole;
     public TypeRole TypeRole => typeRole;
 
     private List<MonoBehaviour> components = new List<MonoBehaviour>();
+    private bool isDoneConversing;
 
 
 
     private void Awake() {
         foreach (MonoBehaviour component in GetComponents<MonoBehaviour>()) {
+            if (component is XRSimpleInteractable) { continue; }
+
+
+
             components.Add(component);
         }
+        if (coll != null) { coll.enabled = false; }
     }
 
 
@@ -34,6 +44,22 @@ public class Player : MonoBehaviour {
         foreach (MonoBehaviour component in components) {
             component.enabled = b;
         }
+        if (coll != null) { coll.enabled = !b; }
+    }
+
+    public void GazePlayer() {
+        if (isDoneConversing) {
+            ManagerGlobal.Instance.ShowThought(gameObject, "I've already talked to them...");
+        } else {
+            if (ManagerGlobal.Instance.TypeRolePlayer == TypeRole.InvestigatorOnCase && typeRole == TypeRole.FirstResponder) {
+                if (ManagerGlobal.Instance.SpawnFirstResponderForm(this)) {
+                    isDoneConversing = true;
+                }
+            }
+        }
+    }
+    public void DoneConversing() {
+        isDoneConversing = true;
     }
 
 }

@@ -13,7 +13,7 @@ public enum TypePhoneContact {
     ChiefSOCO,
     BombSquad
 }
-public class Phone : HandItem {
+public class Phone : HandItemBriefcase {
 
     [SerializeField] private GameObject prefabPhoneButtonContact;
     [SerializeField] private Transform containerContacts;
@@ -83,6 +83,9 @@ public class Phone : HandItem {
     }
     public void DoneConversing() {
         isDoneConversing = true;
+        if (correctContact == TypePhoneContact.TacticalOperationsCenter) {
+            ManagerGlobal.Instance.SetDateTimeCalledTOC();
+        }
     }
 
 }

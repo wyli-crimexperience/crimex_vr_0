@@ -9,7 +9,7 @@ public class IXRFilter_HandToBriefcaseItem : MonoBehaviour, IXRHoverFilter, IXRS
 
     public bool canProcess => true;
 
-    private HandItem _handItem;
+    private HandItemBriefcase _handItemBriefcase;
 
 
 
@@ -26,9 +26,9 @@ public class IXRFilter_HandToBriefcaseItem : MonoBehaviour, IXRHoverFilter, IXRS
         return true;
     }
     private bool Process(MonoBehaviour gameObject) {
-        _handItem = gameObject.GetComponent<HandItem>();
-        if (_handItem != null && _handItem.SocketBriefcase != null) {
-            return _handItem.SocketBriefcase.Briefcase.IsOpen;
+        _handItemBriefcase = gameObject.GetComponent<HandItemBriefcase>();
+        if (_handItemBriefcase != null && _handItemBriefcase.SocketBriefcase != null) {
+            return _handItemBriefcase.SocketBriefcase.Briefcase.IsOpen;
         }
         return true;
     }

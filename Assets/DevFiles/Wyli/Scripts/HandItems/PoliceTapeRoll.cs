@@ -2,7 +2,7 @@ using UnityEngine;
 
 
 
-public class PoliceTapeRoll : HandItem {
+public class PoliceTapeRoll : HandItemBriefcase {
 
     [SerializeField] private GameObject prefabPoliceTape;
 
