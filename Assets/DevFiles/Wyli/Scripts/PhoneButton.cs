@@ -49,9 +49,11 @@ public class PhoneButton : MonoBehaviour {
 
         switch (typePhoneContact) {
             case TypePhoneContact.DSWD: { txtName.text = "DSWD"; } break;
-            case TypePhoneContact.FireMarshall: { txtName.text = "Fire Marshall"; } break;
+            case TypePhoneContact.FireMarshal: { txtName.text = "Fire Marshal"; } break;
             case TypePhoneContact.TacticalOperationsCenter: { txtName.text = "Tactical Operations Center"; } break;
             case TypePhoneContact.UnitDispatchOffice: { txtName.text = "Unit Dispatch Office"; } break;
+            case TypePhoneContact.ChiefSOCO: { txtName.text = "Chief SOCO"; } break;
+            case TypePhoneContact.BombSquad: { txtName.text = "Bomb Squad"; } break;
             default: { txtName.text = ""; } break;
         }
     }

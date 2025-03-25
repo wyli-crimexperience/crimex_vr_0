@@ -194,6 +194,8 @@ MonoBehaviour:
   prefabPhoneButtonContact: {fileID: 7070547236247212215, guid: c7f81833a033f8342958ed2024ac557d,
     type: 3}
   containerContacts: {fileID: 7211679082951530742}
+  correctContact: 0
+  dialogueData: {fileID: 0}
 --- !u!54 &8613808997283023423
 Rigidbody:
   m_ObjectHideFlags: 0

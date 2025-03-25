@@ -7,32 +7,54 @@ using UnityEngine;
 public enum TypePhoneContact {
     None,
     DSWD,
-    FireMarshall,
+    FireMarshal,
     TacticalOperationsCenter,
-    UnitDispatchOffice
+    UnitDispatchOffice,
+    ChiefSOCO,
+    BombSquad
 }
 public class Phone : HandItem {
 
     [SerializeField] private GameObject prefabPhoneButtonContact;
     [SerializeField] private Transform containerContacts;
+    [SerializeField] private TypePhoneContact correctContact;
+    [SerializeField] private DialogueData dialogueData;
+    public DialogueData DialogueData => dialogueData;
 
     private List<PhoneButton> contacts = new List<PhoneButton>();
     private PhoneButton currentContact;
-
-    [SerializeField] private DialogueData dialogueData;
-    public DialogueData DialogueData => dialogueData;
 
     private bool isDoneConversing;
 
 
 
     private void Start() {
+        List<TypePhoneContact> bagContacts = new List<TypePhoneContact>();
+        for (int i = 1; i < System.Enum.GetValues(typeof(TypePhoneContact)).Length; i++) {
+            bagContacts.Add((TypePhoneContact)i);
+        }
+        bagContacts.Remove(correctContact);
+
+        // add correct contact
         PhoneButton contact;
-        for (int i = 1; i < 5; i++) {
+        contact = Instantiate(prefabPhoneButtonContact, containerContacts).GetComponent<PhoneButton>();
+        contact.Init(this, correctContact);
+        contact.SetSelected(false);
+        contacts.Add(contact);
+
+        // fill in other contacts
+        for (int i = 0; i < 3; i++) {
             contact = Instantiate(prefabPhoneButtonContact, containerContacts).GetComponent<PhoneButton>();
-            contact.Init(this, (TypePhoneContact)i);
+            contact.Init(this, bagContacts[Random.Range(0, bagContacts.Count - 1)]);
             contact.SetSelected(false);
             contacts.Add(contact);
+
+            bagContacts.Remove(contact.TypePhoneContact);
+        }
+
+        // randomize order
+        foreach (PhoneButton pb in contacts) {
+            pb.transform.SetSiblingIndex(Random.Range(0, contacts.Count - 1));
         }
     }
 
@@ -49,14 +71,14 @@ public class Phone : HandItem {
 
 
 
-        if (currentContact.TypePhoneContact == TypePhoneContact.TacticalOperationsCenter) {
+        if (currentContact.TypePhoneContact == correctContact) {
             if (isDoneConversing) {
-                ManagerGlobal.Instance.ShowThought("I've already talked to them...");
+                ManagerGlobal.Instance.ShowThought(currentContact.gameObject, "I've already talked to them...");
             } else {
                 ManagerGlobal.Instance.StartConversation(this);
             }
         } else {
-            ManagerGlobal.Instance.ShowThought("They might not be the right people to call right now...");
+            ManagerGlobal.Instance.ShowThought(currentContact.gameObject, "They might not be the right people to call right now...");
         }
     }
     public void DoneConversing() {

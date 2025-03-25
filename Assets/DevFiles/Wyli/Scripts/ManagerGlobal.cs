@@ -23,6 +23,9 @@ public enum TypeItem {
     
     // investigator-on-case part 1
     FirstResponderForm,
+
+    // soco team leader
+    CommandPostSetUp,
     
     // soco photographer
     Camera,
@@ -110,6 +113,9 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private GameObject prefabRole;
     [SerializeField] private Transform containerRoles;
 
+    [SerializeField] private GameObject prefabCommandPost;
+    private GameObject commandPost;
+
     // hand items
     private HandItem handItemLeft, handItemRight;
     private Notepad notepad;
@@ -120,6 +126,7 @@ public class ManagerGlobal : MonoBehaviour {
 
     private float thoughtTimer = 0;
     private Coroutine corThoughtTimer;
+    private GameObject thoughtSender;
 
     private DateTime timeOfArrival;
     private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
@@ -134,6 +141,7 @@ public class ManagerGlobal : MonoBehaviour {
     private int indexRole;
 
     private Vector3 playerStartPos;
+    private Quaternion playerStartRot;
     private Dictionary<TypeRole, Player> dictPlayers = new Dictionary<TypeRole, Player>();
 
 
@@ -165,6 +173,7 @@ public class ManagerGlobal : MonoBehaviour {
         // init player
         if (player != null) {
             playerStartPos = player.transform.position;
+            playerStartRot = player.transform.rotation;
             player.Init(player.TypeRole);
             dictPlayers.Add(player.TypeRole, player);
         }
@@ -272,13 +281,15 @@ public class ManagerGlobal : MonoBehaviour {
             player = dictPlayers[typeRole];
         } else { // else, spawn a new player and store to dictionary
             player = Instantiate(HolderData.GetPrefabPlayer(typeRole)).GetComponent<Player>();
+            player.transform.SetPositionAndRotation(playerStartPos, playerStartRot);
             player.Init(typeRole);
             dictPlayers.Add(typeRole, player);
         }
+        player.SetActive(true);
+
         Vector3 pos = player.transform.position;
         pos.y = playerStartPos.y;
-        xrInteractionSetup.SetPositionAndRotation(pos, player.transform.rotation);
-        player.SetActive(true);
+        xrInteractionSetup.SetPositionAndRotation(pos, playerStartRot);
 
         // re-enable interactors
         interactorLeft.allowSelect = true;
@@ -297,25 +308,6 @@ public class ManagerGlobal : MonoBehaviour {
         if (context.performed) { Pinch(TypeItemRight, TypeItemLeft); }
     }
     private void Pinch(TypeItem typeItem1, TypeItem typeItem2) {
-        // police tape
-        if (typeItem1 == TypeItem.PoliceTapeRoll) {
-            policeTapeRoll.TriggerTape();
-        }
-
-        // fingerprint tape
-        if (typeItem1 == TypeItem.FingerprintTapeRoll) {
-            if (fingerprintTapeRoll.FingerprintCurrent != null) {
-                LiftFingerprint(fingerprintTapeRoll.FingerprintCurrent);
-            }
-        }
-
-        // evidence pack
-        if (typeItem1 == TypeItem.EvidencePack) {
-            if (evidencePack.EvidenceCurrent != null) {
-                evidencePack.PackEvidence();
-            }
-        }
-
         // pen
         if (typeItem1 == TypeItem.Pen) {
             // pen on notepad
@@ -339,6 +331,36 @@ public class ManagerGlobal : MonoBehaviour {
                 if (evidencePack.EvidencePackSeal.IsTaped) {
                     evidencePack.EvidencePackSeal.SetMarked(true);
                 }
+            }
+        }
+
+        // police tape
+        if (typeItem1 == TypeItem.PoliceTapeRoll) {
+            policeTapeRoll.TriggerTape();
+        }
+
+        // command post set-up
+        if (typeItem1 == TypeItem.CommandPostSetUp) {
+            if (commandPost == null) {
+                commandPost = Instantiate(prefabCommandPost);
+            }
+
+            Vector3 pos = player.transform.position;
+            pos.y = 0.486f;
+            commandPost.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
+        }
+
+        // fingerprint tape
+        if (typeItem1 == TypeItem.FingerprintTapeRoll) {
+            if (fingerprintTapeRoll.FingerprintCurrent != null) {
+                LiftFingerprint(fingerprintTapeRoll.FingerprintCurrent);
+            }
+        }
+
+        // evidence pack
+        if (typeItem1 == TypeItem.EvidencePack) {
+            if (evidencePack.EvidenceCurrent != null) {
+                evidencePack.PackEvidence();
             }
         }
 
@@ -442,34 +464,49 @@ public class ManagerGlobal : MonoBehaviour {
         }
 
         // reset
+        ClearCurrentThought();
+    }
+    public void ShowThought(GameObject sender, string str) {
+        if (sender == thoughtSender) { return; }
+
+
+
+        thoughtSender = sender;
+
+        txtThought.text = str;
+        if (corThoughtTimer != null) { StopCoroutine(corThoughtTimer); }
+        corThoughtTimer = StartCoroutine(IE_ShowThought());
+    }
+    private void ClearCurrentThought() {
+        if (corThoughtTimer != null) {
+            StopCoroutine(corThoughtTimer);
+            corThoughtTimer = null;
+        }
+
         goThought.SetActive(false);
         txtThought.text = "Hmmm...";
-        corThoughtTimer = null;
-    }
-    public void ShowThought(string str) {
-        txtThought.text = str;
 
-        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
+        thoughtSender = null;
     }
 
     // wristwatch
-    public void CheckWristwatch() {
+    public void CheckWristwatch(GameObject sender) {
         if (!hasCheckedTimeOfArrival) {
             timeOfArrival = DateTime.Now;
             hasCheckedTimeOfArrival = true;
         }
         // todo: datetime.now is not good since each scene has a time setting
-        ShowThought($"It's {DateTime.Now:hh:mm tt}");
+        ShowThought(sender, $"It's {DateTime.Now:hh:mm tt}");
     }
 
     // pulse
-    public void CheckPulse() {
+    public void CheckPulse(GameObject sender) {
         hasCheckedPulse = true;
 
         if (pulse == 0) {
-            ShowThought("They have no more pulse...");
+            ShowThought(sender, "They have no more pulse...");
         } else {
-            ShowThought($"Their pulse is {pulse} BPM");
+            ShowThought(sender, $"Their pulse is {pulse} BPM");
         }
     }
 
@@ -499,6 +536,7 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
+        ClearCurrentThought();
         ClearCurrentConversation();
         currentWitness = witness;
         currentDialogue = witness.DialogueData;
@@ -510,6 +548,7 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
+        ClearCurrentThought();
         ClearCurrentConversation();
         currentPhone = phone;
         currentDialogue = phone.DialogueData;

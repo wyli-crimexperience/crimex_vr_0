@@ -19,10 +19,9 @@ public class Briefcase : MonoBehaviour {
 
 
 
-    private void Awake() {
-        transform.parent = transform.parent.root.parent;
-    }
     private IEnumerator Start() {
+        transform.parent = transform.parent.root.parent;
+
         foreach (XRSocketInteractorBriefcase socket in sockets) {
             socket.SetBriefcase(this);
             socket.socketActive = false;

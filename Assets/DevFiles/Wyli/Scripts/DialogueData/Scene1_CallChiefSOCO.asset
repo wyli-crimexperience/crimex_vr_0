@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ae887bafd241044863aa5add079678, type: 3}
+  m_Name: Scene1_CallChiefSOCO
+  m_EditorClassIdentifier: 
+  dialogue:
+  - speakerName: Chief SOCO
+    speakerText: Chief SOCO, Police Caption Z, how may I help you?
+  - speakerName: You
+    speakerText: This is Investigator Police Staff Sergeant Y, I am requesting for
+      the conduct of SOCO because of the severity of stabbing incident here at 132
+      Legarda Road, Baguio City. The victim is a middle-aged man that is stabbed
+      at his residence.
+  - speakerName: Chief SOCO
+    speakerText: We are on the way.

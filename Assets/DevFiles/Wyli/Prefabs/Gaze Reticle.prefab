@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 998316277177293924}
   - component: {fileID: 7303724278519815866}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2665037784261627685}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Gaze Reticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
