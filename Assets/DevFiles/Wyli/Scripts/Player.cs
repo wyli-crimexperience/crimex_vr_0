@@ -18,6 +18,8 @@ public class Player : MonoBehaviour {
     private List<MonoBehaviour> components = new List<MonoBehaviour>();
     private bool isDoneConversing;
 
+    [SerializeField] private GameObject[] hideFromSight;
+
 
 
     private void Awake() {
@@ -27,6 +29,9 @@ public class Player : MonoBehaviour {
 
 
             components.Add(component);
+        }
+        foreach (GameObject go in hideFromSight) {
+            go.layer = LayerMask.NameToLayer("TransparentFX");
         }
         if (coll != null) { coll.enabled = false; }
     }
@@ -43,6 +48,9 @@ public class Player : MonoBehaviour {
     public void SetActive(bool b) {
         foreach (MonoBehaviour component in components) {
             component.enabled = b;
+        }
+        foreach (GameObject go in hideFromSight) {
+            go.layer = b ? LayerMask.NameToLayer("TransparentFX") : LayerMask.NameToLayer("Default");
         }
         if (coll != null) { coll.enabled = !b; }
     }

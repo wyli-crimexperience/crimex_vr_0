@@ -8271,12 +8271,12 @@ PrefabInstance:
     - target: {fileID: 8383550645295993585, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: near clip plane
-      value: 0.21
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 8383550645295993585, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 4294967295
+      value: 2037
       objectReference: {fileID: 0}
     - target: {fileID: 8740875207417028923, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
