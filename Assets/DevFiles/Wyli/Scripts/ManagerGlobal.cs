@@ -31,7 +31,9 @@ public enum TypeItem {
     
     // soco photographer
     Camera,
-    Sketchpad,
+
+    // soco sketcher
+    FormSketcher,
 
     // soco searcher
     EvidenceMarker,
@@ -70,9 +72,9 @@ public enum TypeRole {
     InvestigatorOnCase,
     SOCOTeamLead,
     Photographer,
+    Sketcher,
     Searcher,
     Measurer,
-    Sketcher,
     FingerprintSpecialist,
     Collector,
     EvidenceCustodian,
@@ -125,8 +127,7 @@ public class ManagerGlobal : MonoBehaviour {
     private HandItem handItemLeft, handItemRight;
     private Notepad notepad;
     private PoliceTapeRoll policeTapeRoll;
-    private FormFirstResponder formFirstResponder;
-    private FormInvestigatorOnCase formInvestigatorOnCase;
+    private Form form;
     private FingerprintTapeRoll fingerprintTapeRoll;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
@@ -157,7 +158,7 @@ public class ManagerGlobal : MonoBehaviour {
     public DateTime DateTimeInvestigatorFilledUp => dateTimeInvestigatorFilledUp;
 
     // item flags
-    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
+    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse, canWriteForm;
 
     private int pulse;
     private Witness currentWitness;
@@ -191,6 +192,7 @@ public class ManagerGlobal : MonoBehaviour {
         hasCheckedPulse = false;
         hasWrittenTimeOfArrival = false;
         hasWrittenPulse = false;
+        canWriteForm = false;
         pulse = 0;
         // todo: this is only scene 1. make it adapt
         dateTimeIncident = StaticUtils.ConvertToEvening(DateTime.Now).AddHours(-0.5f);
@@ -360,6 +362,10 @@ public class ManagerGlobal : MonoBehaviour {
                     break;
                 }
             }
+            // pen on form
+            if (canWriteForm && IsForm(typeItem2)) {
+                form.WriteOnPage();
+            }
             // pen on evidence pack
             if (canWriteEvidencePackSeal && typeItem2 == TypeItem.EvidencePack) {
                 if (evidencePack.EvidencePackSeal.IsTaped) {
@@ -387,9 +393,9 @@ public class ManagerGlobal : MonoBehaviour {
             commandPost.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
         }
 
-        // first responder form
-        if (typeItem1 == TypeItem.FormFirstResponder) {
-            formFirstResponder.TogglePage();
+        // any form
+        if (IsForm(typeItem1)) {
+            form.TogglePage();
         }
 
         // fingerprint tape
@@ -413,6 +419,7 @@ public class ManagerGlobal : MonoBehaviour {
             }
         }
     }
+    private bool IsForm(TypeItem typeItem) => typeItem == TypeItem.FormFirstResponder || typeItem == TypeItem.FormInvestigatorOnCase || typeItem == TypeItem.FormSketcher;
     private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
     private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
     public void GrabItem(HandItem handItem) {
@@ -437,20 +444,15 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void AssignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad _notepad) { notepad = _notepad; }
-        else if (handItem is FormFirstResponder _formFirstResponder) {
-            formFirstResponder = _formFirstResponder;
-            formFirstResponder.Receive();
-        }
-        else if (handItem is FormInvestigatorOnCase _formInvestigatorOnCase) {
-            formInvestigatorOnCase = _formInvestigatorOnCase;
-            formInvestigatorOnCase.Receive();
+        else if (handItem is Form _form) {
+            form = _form;
+            form.Receive();
         }
         else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
     }
     private void UnassignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad) { notepad = null; }
-        else if (handItem is FormFirstResponder) { formFirstResponder = null; }
-        else if (handItem is FormInvestigatorOnCase) { formInvestigatorOnCase = null; }
+        else if (handItem is Form) { form = null; }
         else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
@@ -566,6 +568,10 @@ public class ManagerGlobal : MonoBehaviour {
     // notepad + pen
     public void SetCanWriteNotepad(bool b) {
         canWriteNotepad = b;
+    }
+    // page + pen
+    public void SetCanWriteForm(bool b) {
+        canWriteForm = b;
     }
 
     // first responder form

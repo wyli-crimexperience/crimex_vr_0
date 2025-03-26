@@ -10,7 +10,7 @@ public class FormInvestigatorOnCase : Form {
 
 
 
-    public void Receive() {
+    public override void Receive() {
         txtDateTimeFilledUp.text = $"{ManagerGlobal.Instance.DateTimeFirstResponderFilledUp:MMM dd, yyyy}";
     }
 
