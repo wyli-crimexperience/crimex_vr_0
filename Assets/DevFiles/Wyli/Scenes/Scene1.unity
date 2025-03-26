@@ -3481,6 +3481,8 @@ MonoBehaviour:
     type: 3}
   prefabFormFirstResponder: {fileID: 1037101634260539920, guid: 071318a3071fde04ea0aedd2a4c1c70d,
     type: 3}
+  prefabFormInvestigatorOnCase: {fileID: 1037101634260539920, guid: d4db1091222899849bf54476edb6fdbd,
+    type: 3}
 --- !u!4 &1169262851
 Transform:
   m_ObjectHideFlags: 0
