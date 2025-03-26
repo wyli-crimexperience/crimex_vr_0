@@ -26,6 +26,7 @@ public enum TypeItem {
     FormFirstResponder,
 
     // soco team leader
+    FormInvestigatorOnCase,
     CommandPostSetUp,
     
     // soco photographer
@@ -118,13 +119,14 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private GameObject prefabCommandPost;
     private GameObject commandPost;
 
-    [SerializeField] private GameObject prefabFormFirstResponder;
+    [SerializeField] private GameObject prefabFormFirstResponder, prefabFormInvestigatorOnCase;
 
     // hand items
     private HandItem handItemLeft, handItemRight;
     private Notepad notepad;
     private PoliceTapeRoll policeTapeRoll;
     private FormFirstResponder formFirstResponder;
+    private FormInvestigatorOnCase formInvestigatorOnCase;
     private FingerprintTapeRoll fingerprintTapeRoll;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
@@ -133,7 +135,10 @@ public class ManagerGlobal : MonoBehaviour {
     private Coroutine corThoughtTimer;
     private GameObject thoughtSender;
 
-    private DateTime dateTimeIncident, dateTimeReported, dateTimeFirstResponderArrived, dateTimeCordoned, dateTimeCalledTOC, dateTimeFilledUp, dateTimeInvestigatorArrived, dateTimeInvestigatorReceived;
+    // timings
+    private DateTime dateTimeIncident;
+    // timings for first responder
+    private DateTime dateTimeReported, dateTimeFirstResponderArrived, dateTimeCordoned, dateTimeCalledTOC, dateTimeFirstResponderFilledUp, dateTimeInvestigatorArrived, dateTimeInvestigatorReceived;
     public DateTime DateTimeReported => dateTimeReported;
     public DateTime DateTimeFirstResponderArrived => dateTimeFirstResponderArrived;
     public DateTime DateTimeCordoned => dateTimeCordoned;
@@ -141,15 +146,20 @@ public class ManagerGlobal : MonoBehaviour {
     public void SetDateTimeCalledTOC() {
         dateTimeCalledTOC = StaticUtils.ConvertToEvening(DateTime.Now);
     }
-    public DateTime DateTimeFilledUp => dateTimeFilledUp;
+    public DateTime DateTimeFirstResponderFilledUp => dateTimeFirstResponderFilledUp;
     public DateTime DateTimeInvestigatorArrived => dateTimeInvestigatorArrived;
     public DateTime DateTimeInvestigatorReceived => dateTimeInvestigatorReceived;
     public void SetDateTimeInvestigatorReceived() {
         dateTimeInvestigatorReceived = StaticUtils.ConvertToEvening(DateTime.Now);
     }
-    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
-    private int pulse;
+    // timings for investigator on case
+    private DateTime dateTimeInvestigatorFilledUp;
+    public DateTime DateTimeInvestigatorFilledUp => dateTimeInvestigatorFilledUp;
 
+    // item flags
+    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
+
+    private int pulse;
     private Witness currentWitness;
     private Phone currentPhone;
     private DialogueData currentDialogue;
@@ -431,11 +441,16 @@ public class ManagerGlobal : MonoBehaviour {
             formFirstResponder = _formFirstResponder;
             formFirstResponder.Receive();
         }
+        else if (handItem is FormInvestigatorOnCase _formInvestigatorOnCase) {
+            formInvestigatorOnCase = _formInvestigatorOnCase;
+            formInvestigatorOnCase.Receive();
+        }
         else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
     }
     private void UnassignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad) { notepad = null; }
         else if (handItem is FormFirstResponder) { formFirstResponder = null; }
+        else if (handItem is FormInvestigatorOnCase) { formInvestigatorOnCase = null; }
         else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
@@ -554,16 +569,30 @@ public class ManagerGlobal : MonoBehaviour {
     }
 
     // first responder form
-    public bool SpawnFirstResponderForm(Player firstResponder) {
+    public bool SpawnFormFirstResponder(Player firstResponder) {
         if (Vector3.Distance(firstResponder.transform.position, player.transform.position) > DIST_CONVERSE) { return false; }
 
 
 
-        dateTimeFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+        dateTimeFirstResponderFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
 
         HandItem form = Instantiate(prefabFormFirstResponder).GetComponent<HandItem>();
         form.SetPaused(true);
         form.transform.SetPositionAndRotation(firstResponder.HandLeft.position, firstResponder.HandLeft.rotation);
+
+        return true;
+    }
+    // investigator on case form
+    public bool SpawnFormInvestigatorOnCase(Player investigatorOnCase) {
+        if (Vector3.Distance(investigatorOnCase.transform.position, player.transform.position) > DIST_CONVERSE) { return false; }
+
+
+
+        dateTimeInvestigatorFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+
+        HandItem form = Instantiate(prefabFormInvestigatorOnCase).GetComponent<HandItem>();
+        form.SetPaused(true);
+        form.transform.SetPositionAndRotation(investigatorOnCase.HandLeft.position, investigatorOnCase.HandLeft.rotation);
 
         return true;
     }

@@ -1,7 +1,8 @@
+using System;
+
 using UnityEngine;
 
 using TMPro;
-using System;
 
 
 
@@ -20,7 +21,7 @@ public class FormFirstResponder : Form {
     }
 
     public void Receive() {
-        txtDateTimeFilledUp.text = $"{ManagerGlobal.Instance.DateTimeFilledUp:MMM dd, yyyy}";
+        txtDateTimeFilledUp.text = $"{ManagerGlobal.Instance.DateTimeFirstResponderFilledUp:MMM dd, yyyy}";
         txtDateTimeReported.text = $"{ManagerGlobal.Instance.DateTimeReported:HH}{ManagerGlobal.Instance.DateTimeReported:mm}H, {ManagerGlobal.Instance.DateTimeReported:MMM dd, yyyy}";
         txtDateTimeFirstResponderArrived.text = $"{ManagerGlobal.Instance.DateTimeFirstResponderArrived:HH}{ManagerGlobal.Instance.DateTimeFirstResponderArrived:mm}H, {ManagerGlobal.Instance.DateTimeFirstResponderArrived:MMM dd, yyyy}";
 

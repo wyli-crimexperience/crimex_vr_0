@@ -52,7 +52,12 @@ public class Player : MonoBehaviour {
             ManagerGlobal.Instance.ShowThought(gameObject, "I've already talked to them...");
         } else {
             if (ManagerGlobal.Instance.TypeRolePlayer == TypeRole.InvestigatorOnCase && typeRole == TypeRole.FirstResponder) {
-                if (ManagerGlobal.Instance.SpawnFirstResponderForm(this)) {
+                if (ManagerGlobal.Instance.SpawnFormFirstResponder(this)) {
+                    isDoneConversing = true;
+                }
+            } else
+            if (ManagerGlobal.Instance.TypeRolePlayer == TypeRole.SOCOTeamLead && typeRole == TypeRole.InvestigatorOnCase) {
+                if (ManagerGlobal.Instance.SpawnFormInvestigatorOnCase(this)) {
                     isDoneConversing = true;
                 }
             }
