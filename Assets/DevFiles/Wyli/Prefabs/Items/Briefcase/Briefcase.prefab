@@ -4914,11 +4914,11 @@ PrefabInstance:
         type: 3}
       propertyPath: socketBriefcase
       value: 
-      objectReference: {fileID: 2869266091015979565}
+      objectReference: {fileID: 8929065550167975783}
     - target: {fileID: 851464175827226658, guid: 05c16f00adccdae4886505e02e2a3c9e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.075
+      value: -0.15
       objectReference: {fileID: 0}
     - target: {fileID: 851464175827226658, guid: 05c16f00adccdae4886505e02e2a3c9e,
         type: 3}
@@ -4928,7 +4928,7 @@ PrefabInstance:
     - target: {fileID: 851464175827226658, guid: 05c16f00adccdae4886505e02e2a3c9e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.05625
+      value: 0.1125
       objectReference: {fileID: 0}
     - target: {fileID: 851464175827226658, guid: 05c16f00adccdae4886505e02e2a3c9e,
         type: 3}
