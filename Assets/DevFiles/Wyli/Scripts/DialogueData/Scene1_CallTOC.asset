@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ae887bafd241044863aa5add079678, type: 3}
+  m_Name: Scene1_CallTOC
+  m_EditorClassIdentifier: 
+  dialogue:
+  - speakerName: Tactical Operations Center
+    speakerText: Tactical Operations Center, how may I help you?
+  - speakerName: You
+    speakerText: This is Patrolman X, I am reporting a stabbing incident here at
+      #132 Legarda Road, Baguio City. The victim is a middle-aged male which is stabbed
+      in his residence. I am requesting an investigator to handle the case. Thank
+      you.
+  - speakerName: Tactical Operations Center
+    speakerText: "An Investigator named Police Staff Sargeant Y will handle the case.
+      He\u2019s on his way."

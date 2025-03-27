@@ -1,3 +1,40 @@
+=============
+=== TO-DO ===
+=============
+
+> role changing
+	- fix: position and rotation upon switch is slightly wrong
+	- before change, assign an "owner" variable to held items. on change, check if their owner is the same. if so, programmatically "grab" them
+
+> hand poses still missing
+
+
+
+> hide parts of player mesh that are too close to camera
+	- try: separate arms-hands into another object then cull everything else
+
+
+
+=== POLISHING ===
+> briefcase
+- items should not enter briefcase if it is closed
+- don't set rotation of item to its socket
+
+> make scene colliders more precise
+
+> witness body posing
+> add "next" button in dialogue
+
+> custom hand poses for each grabbable object
+
+> new roles (in change role list) will only show up if they are already valid (or not, to test player knowledge)
+
+
+
+==============
+=== DESIGN ===
+==============
+
 https://www.canva.com/design/DAGPDHLNEx8/vsjbciLyy0MWYlW93TjAIg/view?utm_content=DAGPDHLNEx8&utm_campaign=designshare&utm_medium=link&utm_source=editor#136
 
 - if an action is done out of sequence (ex: collector bags evidence before chalking it), cancel the action and subtract one point

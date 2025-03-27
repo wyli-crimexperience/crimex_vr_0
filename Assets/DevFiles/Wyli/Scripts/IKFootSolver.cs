@@ -29,9 +29,9 @@ public class IKFootSolver : MonoBehaviour {
     void Update() {
         transform.position = currentPosition;
         //transform.up = Vector3.up;
-        transform.localEulerAngles = new Vector3(-120, 180, 0);
+        //transform.localEulerAngles = new Vector3(-120, 180, 0);
 
-        ray.origin = body.position + (body.right * footSpacing);
+        ray.origin = body.position + Vector3.up + (body.right * footSpacing);
         ray.direction = Vector3.down;
 
         if (Physics.Raycast(ray, out RaycastHit info, 10, terrainLayer.value)) {

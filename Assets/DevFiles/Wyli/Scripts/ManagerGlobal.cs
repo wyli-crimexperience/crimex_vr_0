@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,12 +8,13 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 using TMPro;
-using System.Linq;
+using UnityEngine.UI;
 
 
 
 public enum TypeItem {
     None,
+    Briefcase,
 
     // first responder
     Notepad,
@@ -21,11 +23,17 @@ public enum TypeItem {
     Phone,
     
     // investigator-on-case part 1
-    FirstResponderForm,
+    FormFirstResponder,
+
+    // soco team leader
+    FormInvestigatorOnCase,
+    CommandPostSetUp,
     
     // soco photographer
     Camera,
-    Sketchpad,
+
+    // soco sketcher
+    FormSketcher,
 
     // soco searcher
     EvidenceMarker,
@@ -52,9 +60,26 @@ public enum TypeItem {
     // evidence custodian
     EvidenceChecklist,
 
-    // ioc part 3
+    // ioc part 3,
     ReleaseOfCrimeSceneForm
 
+}
+public enum TypeRole {
+    None,
+
+    // scene 1
+    FirstResponder,
+    InvestigatorOnCase,
+    SOCOTeamLead,
+    Photographer,
+    Sketcher,
+    Searcher,
+    Measurer,
+    FingerprintSpecialist,
+    Collector,
+    EvidenceCustodian,
+
+    // scene 2
 }
 
 
@@ -62,96 +87,255 @@ public enum TypeItem {
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
 
-    private const float THOUGHT_TIMER_MAX = 3f;
+    private const float THOUGHT_TIMER_MAX = 3f, DIST_CONVERSE = 1.5f;
 
     public HolderData HolderData;
 
-    [SerializeField] private InputActionReference primaryButtonLeft, secondaryButtonLeft, primaryButtonRight, secondaryButtonRight, pinchLeft, pinchRight;
     [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
-    [SerializeField] private Notepad notepad;
-    [SerializeField] private Transform policeTapeRoll;
-    [SerializeField] private FingerprintTapeRoll fingerprintTapeRoll;
-    [SerializeField] private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
-    [SerializeField] private EvidencePack evidencePack;
+    public NearFarInteractor InteractorLeft => interactorLeft;
+    public NearFarInteractor InteractorRight => interactorRight;
+    [SerializeField] private IXRFilter_HandToBriefcaseItem ixrFilter_handToBriefcaseItem;
+
+    [SerializeField] private Player player;
+    public TypeRole TypeRolePlayer => player == null ? TypeRole.None : player.TypeRole;
+
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
+    public Transform ContainerPoliceTape => containerPoliceTape;
     [SerializeField] private Transform handLeftTarget, handRightTarget;
-    [SerializeField] private GameObject prefabPoliceTape;
-    [SerializeField] private GameObject goDialogue;
-    [SerializeField] private TextMeshProUGUI txtDialogue;
+    public Transform HandLeftTarget => handLeftTarget;
+    public Transform HandRightTarget => handRightTarget;
+    [SerializeField] private Transform xrInteractionSetup;
+    [SerializeField] private Transform vrTargetLeftHand, vrTargetRightHand, vrTargetHead;
+    public Transform VRTargetLeftHand => vrTargetLeftHand;
+    public Transform VRTargetRightHand => vrTargetRightHand;
+    public Transform VRTargetHead => vrTargetHead;
 
+    [SerializeField] private ScrollRect srChangeRole;
+    [SerializeField] private GameObject goChangeRole, goThought, goDialogue;
+    [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
+
+    [SerializeField] private GameObject prefabRole;
+    [SerializeField] private Transform containerRoles;
+
+    [SerializeField] private GameObject prefabCommandPost;
+    private GameObject commandPost;
+
+    [SerializeField] private GameObject prefabFormFirstResponder, prefabFormInvestigatorOnCase;
+
+    // hand items
     private HandItem handItemLeft, handItemRight;
+    private Notepad notepad;
+    private PoliceTapeRoll policeTapeRoll;
+    private Form form;
+    private FingerprintTapeRoll fingerprintTapeRoll;
+    private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
+    private EvidencePack evidencePack;
 
     private float thoughtTimer = 0;
     private Coroutine corThoughtTimer;
+    private GameObject thoughtSender;
 
-    private DateTime timeOfArrival;
-    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse;
+    // timings
+    private DateTime dateTimeIncident;
+    // timings for first responder
+    private DateTime dateTimeReported, dateTimeFirstResponderArrived, dateTimeCordoned, dateTimeCalledTOC, dateTimeFirstResponderFilledUp, dateTimeInvestigatorArrived, dateTimeInvestigatorReceived;
+    public DateTime DateTimeReported => dateTimeReported;
+    public DateTime DateTimeFirstResponderArrived => dateTimeFirstResponderArrived;
+    public DateTime DateTimeCordoned => dateTimeCordoned;
+    public DateTime DateTimeCalledTOC => dateTimeCalledTOC;
+    public void SetDateTimeCalledTOC() {
+        dateTimeCalledTOC = StaticUtils.ConvertToEvening(DateTime.Now);
+    }
+    public DateTime DateTimeFirstResponderFilledUp => dateTimeFirstResponderFilledUp;
+    public DateTime DateTimeInvestigatorArrived => dateTimeInvestigatorArrived;
+    public DateTime DateTimeInvestigatorReceived => dateTimeInvestigatorReceived;
+    public void SetDateTimeInvestigatorReceived() {
+        dateTimeInvestigatorReceived = StaticUtils.ConvertToEvening(DateTime.Now);
+    }
+    // timings for investigator on case
+    private DateTime dateTimeInvestigatorFilledUp;
+    public DateTime DateTimeInvestigatorFilledUp => dateTimeInvestigatorFilledUp;
+
+    // item flags
+    private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse, canWriteForm;
+
     private int pulse;
-
-    private PoliceTape policeTapeCurrent;
-    private Vector3 posPoliceTapeStart, tapeBetween, tapeScale, tapeRot;
-    private float tapeDist;
-
+    private Witness currentWitness;
+    private Phone currentPhone;
     private DialogueData currentDialogue;
     private int dialogueIndex;
+
+    private List<ListItemRole> listItemRoles = new List<ListItemRole>();
+    private int indexRole;
+
+    private Vector3 playerStartPos;
+    private Quaternion playerStartRot;
+    private Dictionary<TypeRole, Player> dictPlayers = new Dictionary<TypeRole, Player>();
 
 
 
     private void Awake() {
         Instance = this;
 
-        primaryButtonLeft.action.performed += PrimaryButtonLeft;
-        secondaryButtonLeft.action.performed += SecondaryButtonLeft;
-        primaryButtonRight.action.performed += PrimaryButtonRight;
-        secondaryButtonRight.action.performed += SecondaryButtonRight;
-        pinchLeft.action.performed += PinchLeft;
-        pinchRight.action.performed += PinchRight;
+        HolderData.PrimaryButtonLeft.action.performed += PrimaryButtonLeft;
+        HolderData.SecondaryButtonLeft.action.performed += SecondaryButtonLeft;
+        HolderData.PinchLeft.action.performed += PinchLeft;
+        HolderData.ThumbstickLeft.action.started += ThumbstickLeftTap;
+        HolderData.PrimaryButtonRight.action.performed += PrimaryButtonRight;
+        HolderData.SecondaryButtonRight.action.performed += SecondaryButtonRight;
+        HolderData.PinchRight.action.performed += PinchRight;
+        HolderData.ThumbstickRight.action.started += ThumbstickRightTap;
 
-        timeOfArrival = DateTime.MinValue;
         canWriteNotepad = false;
         hasCheckedTimeOfArrival = false;
         hasCheckedPulse = false;
         hasWrittenTimeOfArrival = false;
         hasWrittenPulse = false;
-        //pulse = UnityEngine.Random.Range(60, 100);
+        canWriteForm = false;
         pulse = 0;
+        // todo: this is only scene 1. make it adapt
+        dateTimeIncident = StaticUtils.ConvertToEvening(DateTime.Now).AddHours(-0.5f);
+        dateTimeReported = dateTimeIncident.AddHours(0.25f);
+        dateTimeFirstResponderArrived = dateTimeReported.AddHours(0.25f);
 
-        containerPopupThought.SetActive(false);
+        goThought.SetActive(false);
+        goDialogue.SetActive(false);
+
+        // init player
+        if (player != null) {
+            playerStartPos = player.transform.position;
+            playerStartRot = player.transform.rotation;
+            player.Init(player.TypeRole);
+            dictPlayers.Add(player.TypeRole, player);
+        }
+
+        // roles ui
+        ListItemRole listItemRole;
+        foreach (TypeRole typeRole in Enum.GetValues(typeof(TypeRole))) {
+            if (typeRole == TypeRole.None) { continue; }
+
+            listItemRole = Instantiate(prefabRole, containerRoles).GetComponent<ListItemRole>();
+            listItemRole.Init(typeRole);
+            listItemRole.SetSelected(typeRole == player.TypeRole);
+            listItemRoles.Add(listItemRole);
+        }
+    }
+    private void OnEnable() {
+        interactorLeft.selectFilters.Add(ixrFilter_handToBriefcaseItem);
+        interactorLeft.hoverFilters.Add(ixrFilter_handToBriefcaseItem);
+
+        interactorRight.selectFilters.Add(ixrFilter_handToBriefcaseItem);
+        interactorRight.hoverFilters.Add(ixrFilter_handToBriefcaseItem);
+    }
+    private void OnDisable() {
+        interactorLeft.selectFilters.Remove(ixrFilter_handToBriefcaseItem);
+        interactorLeft.hoverFilters.Remove(ixrFilter_handToBriefcaseItem);
+
+        interactorRight.selectFilters.Remove(ixrFilter_handToBriefcaseItem);
+        interactorRight.hoverFilters.Remove(ixrFilter_handToBriefcaseItem);
     }
     private void OnDestroy() {
-        primaryButtonLeft.action.performed -= PrimaryButtonLeft;
-        secondaryButtonLeft.action.performed -= SecondaryButtonLeft;
-        primaryButtonRight.action.performed -= PrimaryButtonRight;
-        secondaryButtonRight.action.performed -= SecondaryButtonRight;
+        HolderData.PrimaryButtonLeft.action.performed -= PrimaryButtonLeft;
+        HolderData.SecondaryButtonLeft.action.performed -= SecondaryButtonLeft;
+        HolderData.PinchLeft.action.performed -= PinchLeft;
+        HolderData.ThumbstickLeft.action.started -= ThumbstickLeftTap;
+        HolderData.PrimaryButtonRight.action.performed -= PrimaryButtonRight;
+        HolderData.SecondaryButtonRight.action.performed -= SecondaryButtonRight;
+        HolderData.PinchRight.action.performed -= PinchRight;
+        HolderData.ThumbstickRight.action.started -= ThumbstickRightTap;
     }
     private void Update() {
-        if (policeTapeCurrent != null) {
-            tapeBetween = policeTapeRoll.position - posPoliceTapeStart;
-            policeTapeCurrent.transform.position = posPoliceTapeStart + (tapeBetween * 0.5f);
+        //ManagerGlobal.Instance.ShowThought($"{srChangeRole.verticalNormalizedPosition}");
 
-            tapeDist = tapeBetween.magnitude;
-            tapeScale = policeTapeCurrent.transform.localScale;
-            tapeScale.z = tapeDist * 0.1f;
-            policeTapeCurrent.transform.localScale = tapeScale;
-
-            tapeRot = Quaternion.LookRotation(tapeBetween.normalized).eulerAngles;
-            tapeRot.z = 90;
-            policeTapeCurrent.transform.eulerAngles = tapeRot;
+        if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.transform.position) > DIST_CONVERSE) {
+            StopDialogue();
+            currentWitness = null;
+        }
+        if (currentPhone != null && Vector3.Distance(currentPhone.transform.position, player.transform.position) > DIST_CONVERSE) {
+            StopDialogue();
+            currentPhone = null;
         }
     }
 
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
-        // todo: change role to next
-    }
-    private void SecondaryButtonLeft(InputAction.CallbackContext context) {
-        // todo: change role to previous
+        PrimaryButton();
     }
     private void PrimaryButtonRight(InputAction.CallbackContext context) {
-        // todo: change role to next
+        PrimaryButton();
+    }
+    private void PrimaryButton() {
+        if (currentDialogue == null) {
+            goThought.SetActive(false);
+            ToggleMenuChangeRole(!goChangeRole.activeSelf);
+        } else {
+            NextDialogue();
+        }
+    }
+    private void ToggleMenuChangeRole(bool b) {
+        goChangeRole.SetActive(b);
+        Time.timeScale = b ? 0 : 1;
+        if (b) {
+            // todo: pause whole game
+        } else {
+            StopCoroutine(IE_ChangeRole());
+            StartCoroutine(IE_ChangeRole());
+        }
+    }
+    private IEnumerator IE_ChangeRole() {
+        // retain held items
+        interactorLeft.allowSelect = false;
+        interactorRight.allowSelect = false;
+        HandItem handItemLeft = null, handItemRight = null;
+        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft) {
+            handItemLeft = interactableLeft.GetComponent<HandItem>();
+        }
+        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight) {
+            handItemRight = interactableRight.GetComponent<HandItem>();
+        }
+        if (handItemLeft != null || handItemRight != null) {
+            yield return new WaitForEndOfFrame();
+            if (handItemLeft != null) {
+                handItemLeft.SetPaused(true);
+            }
+            if (handItemRight != null) {
+                handItemRight.SetPaused(true);
+            }
+        }
+
+        // deactivate current player
+        player.SetActive(false);
+
+        // activate new player
+        // check if player already exists; if so, just switch to that
+        TypeRole typeRole = listItemRoles[indexRole].TypeRole;
+        if (dictPlayers.ContainsKey(typeRole)) {
+            player = dictPlayers[typeRole];
+        } else { // else, spawn a new player and store to dictionary
+            player = Instantiate(HolderData.GetPrefabPlayer(typeRole)).GetComponent<Player>();
+            player.transform.SetPositionAndRotation(playerStartPos, playerStartRot);
+            player.Init(typeRole);
+            dictPlayers.Add(typeRole, player);
+
+            if (player.TypeRole == TypeRole.InvestigatorOnCase) {
+                dateTimeInvestigatorArrived = StaticUtils.ConvertToEvening(DateTime.Now);
+            }
+        }
+        player.SetActive(true);
+
+        Vector3 pos = player.transform.position;
+        pos.y = playerStartPos.y;
+        xrInteractionSetup.SetPositionAndRotation(pos, playerStartRot);
+
+        // re-enable interactors
+        interactorLeft.allowSelect = true;
+        interactorRight.allowSelect = true;
+    }
+    private void SecondaryButtonLeft(InputAction.CallbackContext context) {
+        // todo: add a function here
     }
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
-        // todo: change role to previous
+        // todo: add a function here
     }
     private void PinchLeft(InputAction.CallbackContext context) {
         if (context.performed) { Pinch(TypeItemLeft, TypeItemRight); }
@@ -160,14 +344,58 @@ public class ManagerGlobal : MonoBehaviour {
         if (context.performed) { Pinch(TypeItemRight, TypeItemLeft); }
     }
     private void Pinch(TypeItem typeItem1, TypeItem typeItem2) {
+        // pen
+        if (typeItem1 == TypeItem.Pen) {
+            // pen on notepad
+            if (canWriteNotepad && typeItem2 == TypeItem.Notepad) {
+                while (true) {
+                    if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
+                        notepad.SetTextTime(dateTimeFirstResponderArrived.ToString("HH: mm"));
+                        hasWrittenTimeOfArrival = true;
+                        break;
+                    }
+                    if (!hasWrittenPulse && hasCheckedPulse) {
+                        notepad.SetTextPulse($"{pulse} BPM");
+                        hasWrittenPulse = true;
+                        break;
+                    }
+                    break;
+                }
+            }
+            // pen on form
+            if (canWriteForm && IsForm(typeItem2)) {
+                form.WriteOnPage();
+            }
+            // pen on evidence pack
+            if (canWriteEvidencePackSeal && typeItem2 == TypeItem.EvidencePack) {
+                if (evidencePack.EvidencePackSeal.IsTaped) {
+                    evidencePack.EvidencePackSeal.SetMarked(true);
+                }
+            }
+        }
+
         // police tape
         if (typeItem1 == TypeItem.PoliceTapeRoll) {
-            if (policeTapeCurrent == null) {
-                policeTapeCurrent = Instantiate(prefabPoliceTape, containerPoliceTape).GetComponent<PoliceTape>();
-                posPoliceTapeStart = policeTapeRoll.transform.position;
-            } else {
-                policeTapeCurrent = null;
+            policeTapeRoll.TriggerTape();
+
+            // todo: set time cordoned to after cordoning, not at the start
+            dateTimeCordoned = StaticUtils.ConvertToEvening(DateTime.Now);
+        }
+
+        // command post set-up
+        if (typeItem1 == TypeItem.CommandPostSetUp) {
+            if (commandPost == null) {
+                commandPost = Instantiate(prefabCommandPost);
             }
+
+            Vector3 pos = player.transform.position;
+            pos.y = 0.486f;
+            commandPost.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
+        }
+
+        // any form
+        if (IsForm(typeItem1)) {
+            form.TogglePage();
         }
 
         // fingerprint tape
@@ -184,32 +412,6 @@ public class ManagerGlobal : MonoBehaviour {
             }
         }
 
-        // pen
-        if (typeItem1 == TypeItem.Pen) {
-            // pen on notepad
-            if (canWriteNotepad && typeItem2 == TypeItem.Notepad) {
-                while (true) {
-                    if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
-                        notepad.SetTextTime(timeOfArrival.ToString("HH: mm"));
-                        hasWrittenTimeOfArrival = true;
-                        break;
-                    }
-                    if (!hasWrittenPulse && hasCheckedPulse) {
-                        notepad.SetTextPulse($"{pulse} BPM");
-                        hasWrittenPulse = true;
-                        break;
-                    }
-                    break;
-                }
-            }
-            // pen on evidence pack
-            if (canWriteEvidencePackSeal && typeItem2 == TypeItem.EvidencePack) {
-                if (evidencePack.EvidencePackSeal.IsTaped) {
-                    evidencePack.EvidencePackSeal.SetMarked(true);
-                }
-            }
-        }
-
         // evidence pack seal tape on evidence pack
         if (typeItem1 == TypeItem.EvidencePackSealTapeRoll && typeItem2 == TypeItem.EvidencePack) {
             if (evidencePackSealTapeRoll.EvidencePackSealCurrent != null) {
@@ -217,34 +419,94 @@ public class ManagerGlobal : MonoBehaviour {
             }
         }
     }
+    private bool IsForm(TypeItem typeItem) => typeItem == TypeItem.FormFirstResponder || typeItem == TypeItem.FormInvestigatorOnCase || typeItem == TypeItem.FormSketcher;
     private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
     private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
-    public void GrabInteractable(HandItem handItem) {
-        if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
+    public void GrabItem(HandItem handItem) {
+        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
             handItemLeft = handItem;
+            AssignGrabbedItem(handItem);
         }
-        if ((XRGrabInteractable)interactorRight.firstInteractableSelected == handItem.Interactable) {
+        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
             handItemRight = handItem;
+            AssignGrabbedItem(handItem);
         }
     }
-    public void ReleaseInteractable(HandItem handItem) {
-        if ((XRGrabInteractable)interactorLeft.firstInteractableSelected == handItem.Interactable) {
+    public void ReleaseItem(HandItem handItem) {
+        if (handItemLeft == handItem) {
             handItemLeft = null;
+            UnassignGrabbedItem(handItem);
         }
-        if ((XRGrabInteractable)interactorRight.firstInteractableSelected == handItem.Interactable) {
+        if (handItemRight == handItem) {
             handItemRight = null;
+            UnassignGrabbedItem(handItem);
+        }
+    }
+    private void AssignGrabbedItem(HandItem handItem) {
+        if (handItem is Notepad _notepad) { notepad = _notepad; }
+        else if (handItem is Form _form) {
+            form = _form;
+            form.Receive();
+        }
+        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
+    }
+    private void UnassignGrabbedItem(HandItem handItem) {
+        if (handItem is Notepad) { notepad = null; }
+        else if (handItem is Form) { form = null; }
+        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
+    }
+    private void ThumbstickLeftTap(InputAction.CallbackContext context) {
+        ThumbstickTap(context.ReadValue<Vector2>());
+    }
+    private void ThumbstickRightTap(InputAction.CallbackContext context) {
+        ThumbstickTap(context.ReadValue<Vector2>());
+    }
+    private void ThumbstickTap(Vector2 vector2) {
+        if (Mathf.Abs(vector2.x) > Mathf.Abs(vector2.y)) {
+            // horizontal input
+        } else if (Mathf.Abs(vector2.y) > Mathf.Abs(vector2.x)) {
+            // vertical input
+            // change roles
+            if (goChangeRole.activeInHierarchy) {
+                // scroll through roles
+                if (vector2.y < 0) {
+                    indexRole += 1;
+                    if (indexRole > listItemRoles.Count - 1) {
+                        indexRole = 0;
+                    }
+                } else if (vector2.y > 0) {
+                    indexRole -= 1;
+                    if (indexRole < 0) {
+                        indexRole = listItemRoles.Count - 1;
+                    }
+                }
+
+                for (int i = 0; i < listItemRoles.Count; i++) {
+                    listItemRoles[i].SetSelected(i == indexRole);
+                }
+                srChangeRole.verticalNormalizedPosition = Mathf.Clamp01(1 - (2f * indexRole / listItemRoles.Count));
+            }
         }
     }
 
 
 
-    // thoughts
-    [SerializeField] private GameObject containerPopupThought;
-    [SerializeField] private TextMeshProUGUI txtThought;
+    // thought
     private IEnumerator IE_ShowThought() {
-        containerPopupThought.SetActive(true);
-
+        goThought.SetActive(true);
         cgThought.alpha = 1;
+
+        // animate in
+        float duration = 0f;
+        while (duration < 0.5f) {
+            goThought.transform.localScale = Vector3.Lerp(Vector3.forward, new Vector3(0.01f, 0.01f, 1), duration / 0.5f);
+            goThought.transform.localPosition = Vector3.Lerp(Vector3.zero, new Vector3(0, 0.25f, 0.67f), duration / 0.5f);
+
+            duration += Time.deltaTime;
+            yield return null;
+        }
+
+        // fade out
         yield return new WaitForSeconds(THOUGHT_TIMER_MAX);
 
         thoughtTimer = THOUGHT_TIMER_MAX;
@@ -255,40 +517,90 @@ public class ManagerGlobal : MonoBehaviour {
             yield return null;
         }
 
-        containerPopupThought.SetActive(false);
-        corThoughtTimer = null;
-        txtThought.text = "Hmmm...";
+        // reset
+        ClearCurrentThought();
     }
-    private void ShowThought(string str) {
-        txtThought.text = str;
+    public void ShowThought(GameObject sender, string str) {
+        if (sender == thoughtSender) { return; }
 
-        corThoughtTimer ??= StartCoroutine(IE_ShowThought());
+
+
+        thoughtSender = sender;
+
+        txtThought.text = str;
+        if (corThoughtTimer != null) { StopCoroutine(corThoughtTimer); }
+        corThoughtTimer = StartCoroutine(IE_ShowThought());
+    }
+    private void ClearCurrentThought() {
+        if (corThoughtTimer != null) {
+            StopCoroutine(corThoughtTimer);
+            corThoughtTimer = null;
+        }
+
+        goThought.SetActive(false);
+        txtThought.text = "Hmmm...";
+
+        thoughtSender = null;
     }
 
     // wristwatch
-    public void CheckWristwatch() {
+    public void CheckWristwatch(GameObject sender) {
         if (!hasCheckedTimeOfArrival) {
-            timeOfArrival = DateTime.Now;
+            // todo: this is only scene 1. make it adapt
+            dateTimeFirstResponderArrived = StaticUtils.ConvertToEvening(DateTime.Now);
             hasCheckedTimeOfArrival = true;
         }
-        // todo: datetime.now is not good since each scene has a time setting
-        ShowThought($"It's {DateTime.Now:hh:mm tt}");
+        ShowThought(sender, $"It's {dateTimeFirstResponderArrived:hh:mm tt}");
     }
 
     // pulse
-    public void CheckPulse() {
+    public void CheckPulse(GameObject sender) {
         hasCheckedPulse = true;
 
+        // todo: pulse should be set in EvidenceBody, and assigned to their TouchAreaPulse/s instead of here
         if (pulse == 0) {
-            ShowThought("They have no more pulse...");
+            ShowThought(sender, "They have no more pulse...");
         } else {
-            ShowThought($"Their pulse is {pulse} BPM");
+            ShowThought(sender, $"Their pulse is {pulse} BPM");
         }
     }
 
     // notepad + pen
     public void SetCanWriteNotepad(bool b) {
         canWriteNotepad = b;
+    }
+    // page + pen
+    public void SetCanWriteForm(bool b) {
+        canWriteForm = b;
+    }
+
+    // first responder form
+    public bool SpawnFormFirstResponder(Player firstResponder) {
+        if (Vector3.Distance(firstResponder.transform.position, player.transform.position) > DIST_CONVERSE) { return false; }
+
+
+
+        dateTimeFirstResponderFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+
+        HandItem form = Instantiate(prefabFormFirstResponder).GetComponent<HandItem>();
+        form.SetPaused(true);
+        form.transform.SetPositionAndRotation(firstResponder.HandLeft.position, firstResponder.HandLeft.rotation);
+
+        return true;
+    }
+    // investigator on case form
+    public bool SpawnFormInvestigatorOnCase(Player investigatorOnCase) {
+        if (Vector3.Distance(investigatorOnCase.transform.position, player.transform.position) > DIST_CONVERSE) { return false; }
+
+
+
+        dateTimeInvestigatorFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+
+        HandItem form = Instantiate(prefabFormInvestigatorOnCase).GetComponent<HandItem>();
+        form.SetPaused(true);
+        form.transform.SetPositionAndRotation(investigatorOnCase.HandLeft.position, investigatorOnCase.HandLeft.rotation);
+
+        return true;
     }
 
     // evidence pack seal + pen
@@ -302,11 +614,38 @@ public class ManagerGlobal : MonoBehaviour {
         fingerprintSource.Lift();
     }
 
-    // witness
-    public void ConverseWitness(Witness witness) {
-        currentDialogue = witness.DialogueData;
-        dialogueIndex = -1;
+    // dialogue
+    private void ClearCurrentConversation() {
+        currentWitness = null;
+        currentPhone = null;
+    }
+    public void StartConversation(Witness witness) {
+        if (currentWitness != null || Vector3.Distance(witness.transform.position, player.transform.position) > DIST_CONVERSE) { return; }
 
+
+
+        ClearCurrentThought();
+        ClearCurrentConversation();
+        currentWitness = witness;
+        currentDialogue = witness.DialogueData;
+
+        StartConservation();
+    }
+    public void StartConversation(Phone phone) {
+        if (currentPhone != null || Vector3.Distance(phone.transform.position, player.transform.position) > DIST_CONVERSE) { return; }
+
+
+
+        ClearCurrentThought();
+        ClearCurrentConversation();
+        currentPhone = phone;
+        currentDialogue = phone.DialogueData;
+
+        StartConservation();
+    }
+    private void StartConservation() {
+        goDialogue.SetActive(true);
+        dialogueIndex = -1;
         NextDialogue();
     }
     private void NextDialogue() {
@@ -314,7 +653,37 @@ public class ManagerGlobal : MonoBehaviour {
         if (dialogueIndex < currentDialogue.Dialogue.Length) {
             txtDialogue.text = currentDialogue.Dialogue[dialogueIndex].speakerText;
         } else {
-            currentDialogue = null;
+            StopDialogue();
+
+            if (currentWitness != null) {
+                currentWitness.DoneConversing();
+                currentWitness = null;
+            }
+            if (currentPhone != null) {
+                currentPhone.DoneConversing();
+                currentPhone = null;
+            }
         }
+    }
+    private void StopDialogue() {
+        goDialogue.SetActive(false);
+        currentDialogue = null;
+    }
+
+    // string formatting
+    public string GetRoleName(TypeRole typeRole) {
+        return typeRole switch {
+            TypeRole.FirstResponder => "First Responder",
+            TypeRole.InvestigatorOnCase => "Investigator-On-Case",
+            TypeRole.SOCOTeamLead => "SOCO Team Lead",
+            TypeRole.Photographer => "Photographer",
+            TypeRole.Searcher => "Searcher",
+            TypeRole.Measurer => "Measurer",
+            TypeRole.Sketcher => "Sketcher",
+            TypeRole.FingerprintSpecialist => "Fingerprint Specialist",
+            TypeRole.Collector => "Collector",
+            TypeRole.EvidenceCustodian => "Evidence Custodian",
+            _ => "",
+        };
     }
 }
