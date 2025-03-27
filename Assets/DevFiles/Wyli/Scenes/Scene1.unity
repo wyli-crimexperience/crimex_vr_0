@@ -2685,6 +2685,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6280312657324641702, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280312657324641702, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280312657324641702, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280312657324641702, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8146060113286185579, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2882,6 +2902,37 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!1 &741855820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 741855821}
+  m_Layer: 0
+  m_Name: ContainerEvidenceMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &741855821
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741855820}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &756507743
 GameObject:
   m_ObjectHideFlags: 0
@@ -3550,15 +3601,8 @@ MonoBehaviour:
   goDialogue: {fileID: 358429841}
   txtThought: {fileID: 1431060498}
   txtDialogue: {fileID: 1864990848}
-  prefabRole: {fileID: 5732629654476196159, guid: 2334b4e1883704d48a29b1e1e1f7b969,
-    type: 3}
   containerRoles: {fileID: 756507744}
-  prefabCommandPost: {fileID: 4854690245580697971, guid: ad0f6d88897f7cb4b9314ec4a4ccad37,
-    type: 3}
-  prefabFormFirstResponder: {fileID: 1037101634260539920, guid: 071318a3071fde04ea0aedd2a4c1c70d,
-    type: 3}
-  prefabFormInvestigatorOnCase: {fileID: 1037101634260539920, guid: d4db1091222899849bf54476edb6fdbd,
-    type: 3}
+  containerEvidenceMarker: {fileID: 741855821}
 --- !u!4 &1169262851
 Transform:
   m_ObjectHideFlags: 0
@@ -4210,7 +4254,7 @@ Transform:
   m_GameObject: {fileID: 1314054479}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.038545277, y: 0.16151744, z: -13.25449}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7796,7 +7840,7 @@ PrefabInstance:
     - target: {fileID: 3245387219685669285, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_PhysicsLayerMask.m_Bits
-      value: 1537
+      value: 3585
       objectReference: {fileID: 0}
     - target: {fileID: 3342439012857835787, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -7986,7 +8030,7 @@ PrefabInstance:
     - target: {fileID: 5483536902699607866, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_PhysicsLayerMask.m_Bits
-      value: 1537
+      value: 3585
       objectReference: {fileID: 0}
     - target: {fileID: 5485567801699379225, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -8426,7 +8470,7 @@ PrefabInstance:
     - target: {fileID: 8383550645295993585, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 2037
+      value: 4085
       objectReference: {fileID: 0}
     - target: {fileID: 8740875207417028923, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -8743,6 +8787,7 @@ SceneRoots:
   - {fileID: 413415829}
   - {fileID: 1049368722}
   - {fileID: 1314054480}
+  - {fileID: 741855821}
   - {fileID: 647631524}
   - {fileID: 4607428429233221380}
   - {fileID: 1169262851}

@@ -27,7 +27,7 @@ public enum TypeItem {
 
     // soco team leader
     FormInvestigatorOnCase,
-    CommandPostSetUp,
+    CommandPost,
     
     // soco photographer
     Camera,
@@ -36,12 +36,13 @@ public enum TypeItem {
     FormSketcher,
 
     // soco searcher
-    EvidenceMarker,
+    EvidenceMarkerItem,
+    EvidenceMarkerBody,
+    CaseID,
 
     // soco measurer
     TapeMeasure,
     EvidenceRuler,
-    CaseID,
 
     // soco specialist
     FingerprintBrush,
@@ -115,19 +116,22 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private GameObject goChangeRole, goThought, goDialogue;
     [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
 
-    [SerializeField] private GameObject prefabRole;
     [SerializeField] private Transform containerRoles;
 
-    [SerializeField] private GameObject prefabCommandPost;
-    private GameObject commandPost;
+    private GameObject commandPostCopy;
 
-    [SerializeField] private GameObject prefabFormFirstResponder, prefabFormInvestigatorOnCase;
+    [SerializeField] private Transform containerEvidenceMarker;
+    private EvidenceMarkerCopy _evidenceMarkerCopy;
+    private int _evidenceMarkerIndex;
+    private List<EvidenceMarkerCopy> listEvidenceMarkerItemCopies = new List<EvidenceMarkerCopy>();
+    private List<EvidenceMarkerCopy> listEvidenceMarkerBodyCopies = new List<EvidenceMarkerCopy>();
 
     // hand items
     private HandItem handItemLeft, handItemRight;
     private Notepad notepad;
     private PoliceTapeRoll policeTapeRoll;
     private Form form;
+    private HandItem evidenceMarkerItem, evidenceMarkerBody;
     private FingerprintTapeRoll fingerprintTapeRoll;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
@@ -215,7 +219,7 @@ public class ManagerGlobal : MonoBehaviour {
         foreach (TypeRole typeRole in Enum.GetValues(typeof(TypeRole))) {
             if (typeRole == TypeRole.None) { continue; }
 
-            listItemRole = Instantiate(prefabRole, containerRoles).GetComponent<ListItemRole>();
+            listItemRole = Instantiate(HolderData.PrefabListItemRole, containerRoles).GetComponent<ListItemRole>();
             listItemRole.Init(typeRole);
             listItemRole.SetSelected(typeRole == player.TypeRole);
             listItemRoles.Add(listItemRole);
@@ -383,19 +387,56 @@ public class ManagerGlobal : MonoBehaviour {
         }
 
         // command post set-up
-        if (typeItem1 == TypeItem.CommandPostSetUp) {
-            if (commandPost == null) {
-                commandPost = Instantiate(prefabCommandPost);
+        if (typeItem1 == TypeItem.CommandPost) {
+            if (commandPostCopy == null) {
+                commandPostCopy = Instantiate(HolderData.PrefabCommandPostCopy);
             }
 
             Vector3 pos = player.transform.position;
             pos.y = 0.486f;
-            commandPost.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
+            commandPostCopy.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
         }
 
         // any form
         if (IsForm(typeItem1)) {
             form.TogglePage();
+        }
+
+        // evidence marker
+        if (typeItem1 == TypeItem.EvidenceMarkerItem) {
+            _evidenceMarkerIndex = listEvidenceMarkerItemCopies.Count;
+            for (int i = 0; i < listEvidenceMarkerItemCopies.Count; i++) {
+                if (listEvidenceMarkerItemCopies[i] == null) {
+                    _evidenceMarkerIndex = i;
+                    break;
+                }
+            }
+
+            _evidenceMarkerCopy = Instantiate(HolderData.PrefabEvidenceMarkerCopy, containerEvidenceMarker).GetComponent<EvidenceMarkerCopy>();
+            _evidenceMarkerCopy.Init(TypeEvidenceMarker.Item, _evidenceMarkerIndex, evidenceMarkerItem.transform);
+            if (_evidenceMarkerIndex == listEvidenceMarkerItemCopies.Count) {
+                listEvidenceMarkerItemCopies.Add(_evidenceMarkerCopy);
+            } else {
+                listEvidenceMarkerItemCopies[_evidenceMarkerIndex] = _evidenceMarkerCopy;
+            }
+        }
+
+        if (typeItem1 == TypeItem.EvidenceMarkerBody) {
+            _evidenceMarkerIndex = listEvidenceMarkerBodyCopies.Count;
+            for (int i = 0; i < listEvidenceMarkerBodyCopies.Count; i++) {
+                if (listEvidenceMarkerBodyCopies[i] == null) {
+                    _evidenceMarkerIndex = i;
+                    break;
+                }
+            }
+
+            _evidenceMarkerCopy = Instantiate(HolderData.PrefabEvidenceMarkerCopy, containerEvidenceMarker).GetComponent<EvidenceMarkerCopy>();
+            _evidenceMarkerCopy.Init(TypeEvidenceMarker.Body, _evidenceMarkerIndex, evidenceMarkerBody.transform);
+            if (_evidenceMarkerIndex == listEvidenceMarkerBodyCopies.Count) {
+                listEvidenceMarkerBodyCopies.Add(_evidenceMarkerCopy);
+            } else {
+                listEvidenceMarkerBodyCopies[_evidenceMarkerIndex] = _evidenceMarkerCopy;
+            }
         }
 
         // fingerprint tape
@@ -448,11 +489,15 @@ public class ManagerGlobal : MonoBehaviour {
             form = _form;
             form.Receive();
         }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = handItem; }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = handItem; }
         else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
     }
     private void UnassignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad) { notepad = null; }
         else if (handItem is Form) { form = null; }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = null; }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = null; }
         else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
     }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
@@ -582,7 +627,7 @@ public class ManagerGlobal : MonoBehaviour {
 
         dateTimeFirstResponderFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
 
-        HandItem form = Instantiate(prefabFormFirstResponder).GetComponent<HandItem>();
+        HandItem form = Instantiate(HolderData.PrefabFormFirstResponder).GetComponent<HandItem>();
         form.SetPaused(true);
         form.transform.SetPositionAndRotation(firstResponder.HandLeft.position, firstResponder.HandLeft.rotation);
 
@@ -596,11 +641,22 @@ public class ManagerGlobal : MonoBehaviour {
 
         dateTimeInvestigatorFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
 
-        HandItem form = Instantiate(prefabFormInvestigatorOnCase).GetComponent<HandItem>();
+        HandItem form = Instantiate(HolderData.PrefabFormInvestigatorOnCase).GetComponent<HandItem>();
         form.SetPaused(true);
         form.transform.SetPositionAndRotation(investigatorOnCase.HandLeft.position, investigatorOnCase.HandLeft.rotation);
 
         return true;
+    }
+
+    // evidence marker
+    public void RemoveEvidenceMarker(EvidenceMarkerCopy evidenceMarkerCopy) {
+        if (evidenceMarkerCopy.TypeEvidenceMarker == TypeEvidenceMarker.Item) {
+            listEvidenceMarkerItemCopies[evidenceMarkerCopy.Index] = null;
+        } else
+        if (evidenceMarkerCopy.TypeEvidenceMarker == TypeEvidenceMarker.Body) {
+            listEvidenceMarkerBodyCopies[evidenceMarkerCopy.Index] = null;
+        }
+        Destroy(evidenceMarkerCopy.gameObject);
     }
 
     // evidence pack seal + pen
