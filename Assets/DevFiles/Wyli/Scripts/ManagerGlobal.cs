@@ -41,8 +41,8 @@ public enum TypeItem {
     CaseID,
 
     // soco measurer
-    TapeMeasure,
     EvidenceRuler,
+    TapeMeasure,
 
     // soco specialist
     FingerprintBrush,

@@ -16,7 +16,8 @@ public class HolderData : ScriptableObject {
     public InputActionReference PinchRight => pinchRight;
     public InputActionReference ThumbstickRight => thumbstickRight;
 
-    [SerializeField] private GameObject prefabPlayerFirstResponder, prefabPlayerInvestigatorOnCase, prefabPlayerSOCOTeamLead, prefabPlayerPhotographer, prefabPlayerSketcher, prefabPlayerSearcher;
+    [SerializeField] private GameObject prefabPlayerFirstResponder, prefabPlayerInvestigatorOnCase, prefabPlayerSOCOTeamLead, prefabPlayerPhotographer, prefabPlayerSketcher, prefabPlayerSearcher,
+        prefabPlayerMeasurer;
     public GameObject GetPrefabPlayer(TypeRole typeRole) {
         return typeRole switch {
             TypeRole.FirstResponder => prefabPlayerFirstResponder,
@@ -25,6 +26,7 @@ public class HolderData : ScriptableObject {
             TypeRole.Photographer => prefabPlayerPhotographer,
             TypeRole.Sketcher => prefabPlayerSketcher,
             TypeRole.Searcher => prefabPlayerSearcher,
+            TypeRole.Measurer => prefabPlayerMeasurer,
 
             _ => null,
         };
