@@ -34,7 +34,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1287452390064540403}
-  - {fileID: 1916939640695076275}
+  - {fileID: 7204633644033230004}
   - {fileID: 8537934188241115413}
   - {fileID: 8989150390488310791}
   m_Father: {fileID: 0}
@@ -56,6 +56,7 @@ MonoBehaviour:
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 2012481340105076809}
   clippingPlane: {fileID: 8989150390488310791}
+  tape: {fileID: 7204633644033230004}
   mrTapeMeasureTape: {fileID: 4316697916098704978}
 --- !u!54 &6741757336560348518
 Rigidbody:
@@ -104,7 +105,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.04, y: 0.08, z: 0.08}
-  m_Center: {x: 0, y: 0.04, z: 0}
+  m_Center: {x: 0, y: 0.04, z: -0.037}
 --- !u!114 &4419574643122265972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,10 +195,34 @@ MonoBehaviour:
       m_Calls: []
   m_Activated:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 256281292866569860}
+        m_TargetAssemblyTypeName: TapeMeasure, Assembly-CSharp
+        m_MethodName: Activate
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_Deactivated:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 256281292866569860}
+        m_TargetAssemblyTypeName: TapeMeasure, Assembly-CSharp
+        m_MethodName: Deactivate
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
@@ -260,6 +285,38 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
+--- !u!1 &6443542758407879160
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7204633644033230004}
+  m_Layer: 10
+  m_Name: TapeMeasureTape
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7204633644033230004
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6443542758407879160}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1916939640695076275}
+  m_Father: {fileID: 851464175827226658}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8595445980821885499
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,7 +483,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 851464175827226658}
+    m_TransformParent: {fileID: 7204633644033230004}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 9a501c0e7c91bd8479fa2b773a3f787f,
         type: 3}
@@ -442,6 +499,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9a501c0e7c91bd8479fa2b773a3f787f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9a501c0e7c91bd8479fa2b773a3f787f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9a501c0e7c91bd8479fa2b773a3f787f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a501c0e7c91bd8479fa2b773a3f787f,
         type: 3}
