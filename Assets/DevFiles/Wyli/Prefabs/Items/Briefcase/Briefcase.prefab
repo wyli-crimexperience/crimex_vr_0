@@ -2764,6 +2764,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6370305552882282290}
+  - {fileID: 5915235613109280501}
   m_Father: {fileID: 984097551218082416}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8867548771125510989
@@ -4960,6 +4961,65 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 851464175827226658, guid: 05c16f00adccdae4886505e02e2a3c9e,
     type: 3}
   m_PrefabInstance: {fileID: 6032251804133637904}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6468894590315876055
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 449732634328053403}
+    m_Modifications:
+    - target: {fileID: 256281292866569860, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: socketBriefcase
+      value: 
+      objectReference: {fileID: 1995536499367469147}
+    - target: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.075
+      objectReference: {fileID: 0}
+    - target: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3414745205642168827, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+        type: 3}
+      propertyPath: m_Name
+      value: TapeMeasure
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 646b2d7dbdca77349bd63d1d18bd3aed, type: 3}
+--- !u!4 &5915235613109280501 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 851464175827226658, guid: 646b2d7dbdca77349bd63d1d18bd3aed,
+    type: 3}
+  m_PrefabInstance: {fileID: 6468894590315876055}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7492340935857495242
 PrefabInstance:
