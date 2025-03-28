@@ -18,18 +18,14 @@ public static class StaticUtils {
             current = Mathf.MoveTowardsAngle(current, midAngle, offset);
         return current;
     }
-
-    public static DateTime ConvertToMorning(DateTime date) {
-        if (date.Hour < 6 || date.Hour > 18) {
-            date.AddHours(12);
-        }
-        return date;
+    
+    public static DateTime DateTimeNowInMorning(DateTime dateTimeIncident) {
+        // check if incident happened in the morning. if so, return now. else, return +12
+        return (dateTimeIncident.Hour > 6 || dateTimeIncident.Hour < 18) ? DateTime.Now : DateTime.Now.AddHours(12);
     }
-    public static DateTime ConvertToEvening(DateTime date) {
-        if (date.Hour > 6 || date.Hour < 18) {
-            date.AddHours(12);
-        }
-        return date;
+    public static DateTime DateTimeNowInEvening(DateTime dateTimeIncident) {
+        // check if incident happened in the morning. if so, return +12. else, return now
+        return (dateTimeIncident.Hour > 6 || dateTimeIncident.Hour < 18) ? DateTime.Now.AddHours(12) : DateTime.Now;
     }
 
     public static string ConvertToLetter(int index) {

@@ -26,7 +26,7 @@ public class PageSketcher : Page {
 
         while (true) {
             if (!hasWrittenDateTimeFilledUp/* && hasCheckedTime*/) {
-                txtDateTimeFilledUp.text = $"{StaticUtils.ConvertToEvening(System.DateTime.Now):MMM dd, yyyy}";
+                txtDateTimeFilledUp.text = $"{StaticUtils.DateTimeNowInEvening(ManagerGlobal.Instance.DateTimeIncident):MMM dd, yyyy}";
                 hasWrittenDateTimeFilledUp = true;
                 break;
             }

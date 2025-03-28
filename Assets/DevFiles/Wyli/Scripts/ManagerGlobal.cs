@@ -142,6 +142,7 @@ public class ManagerGlobal : MonoBehaviour {
 
     // timings
     private DateTime dateTimeIncident;
+    public DateTime DateTimeIncident => dateTimeIncident;
     // timings for first responder
     private DateTime dateTimeReported, dateTimeFirstResponderArrived, dateTimeCordoned, dateTimeCalledTOC, dateTimeFirstResponderFilledUp, dateTimeInvestigatorArrived, dateTimeInvestigatorReceived;
     public DateTime DateTimeReported => dateTimeReported;
@@ -149,13 +150,13 @@ public class ManagerGlobal : MonoBehaviour {
     public DateTime DateTimeCordoned => dateTimeCordoned;
     public DateTime DateTimeCalledTOC => dateTimeCalledTOC;
     public void SetDateTimeCalledTOC() {
-        dateTimeCalledTOC = StaticUtils.ConvertToEvening(DateTime.Now);
+        dateTimeCalledTOC = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
     }
     public DateTime DateTimeFirstResponderFilledUp => dateTimeFirstResponderFilledUp;
     public DateTime DateTimeInvestigatorArrived => dateTimeInvestigatorArrived;
     public DateTime DateTimeInvestigatorReceived => dateTimeInvestigatorReceived;
     public void SetDateTimeInvestigatorReceived() {
-        dateTimeInvestigatorReceived = StaticUtils.ConvertToEvening(DateTime.Now);
+        dateTimeInvestigatorReceived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
     }
     // timings for investigator on case
     private DateTime dateTimeInvestigatorFilledUp;
@@ -199,7 +200,7 @@ public class ManagerGlobal : MonoBehaviour {
         canWriteForm = false;
         pulse = 0;
         // todo: this is only scene 1. make it adapt
-        dateTimeIncident = StaticUtils.ConvertToEvening(DateTime.Now).AddHours(-0.5f);
+        dateTimeIncident = DateTime.Now.AddHours(-0.5f);
         dateTimeReported = dateTimeIncident.AddHours(0.25f);
         dateTimeFirstResponderArrived = dateTimeReported.AddHours(0.25f);
 
@@ -322,7 +323,7 @@ public class ManagerGlobal : MonoBehaviour {
             dictPlayers.Add(typeRole, player);
 
             if (player.TypeRole == TypeRole.InvestigatorOnCase) {
-                dateTimeInvestigatorArrived = StaticUtils.ConvertToEvening(DateTime.Now);
+                dateTimeInvestigatorArrived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
             }
         }
         player.SetActive(true);
@@ -383,7 +384,7 @@ public class ManagerGlobal : MonoBehaviour {
             policeTapeRoll.TriggerTape();
 
             // todo: set time cordoned to after cordoning, not at the start
-            dateTimeCordoned = StaticUtils.ConvertToEvening(DateTime.Now);
+            dateTimeCordoned = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
         }
 
         // command post set-up
@@ -592,7 +593,7 @@ public class ManagerGlobal : MonoBehaviour {
     public void CheckWristwatch(GameObject sender) {
         if (!hasCheckedTimeOfArrival) {
             // todo: this is only scene 1. make it adapt
-            dateTimeFirstResponderArrived = StaticUtils.ConvertToEvening(DateTime.Now);
+            dateTimeFirstResponderArrived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
             hasCheckedTimeOfArrival = true;
         }
         ShowThought(sender, $"It's {dateTimeFirstResponderArrived:hh:mm tt}");
@@ -625,7 +626,7 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
-        dateTimeFirstResponderFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+        dateTimeFirstResponderFilledUp = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
 
         HandItem form = Instantiate(HolderData.PrefabFormFirstResponder).GetComponent<HandItem>();
         form.SetPaused(true);
@@ -639,7 +640,7 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
-        dateTimeInvestigatorFilledUp = StaticUtils.ConvertToEvening(DateTime.Now);
+        dateTimeInvestigatorFilledUp = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
 
         HandItem form = Instantiate(HolderData.PrefabFormInvestigatorOnCase).GetComponent<HandItem>();
         form.SetPaused(true);
