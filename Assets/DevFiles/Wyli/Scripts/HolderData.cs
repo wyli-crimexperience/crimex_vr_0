@@ -16,7 +16,8 @@ public class HolderData : ScriptableObject {
     public InputActionReference PinchRight => pinchRight;
     public InputActionReference ThumbstickRight => thumbstickRight;
 
-    [SerializeField] private GameObject prefabPlayerFirstResponder, prefabPlayerInvestigatorOnCase, prefabPlayerSOCOTeamLead, prefabPlayerPhotographer, prefabPlayerSketcher;
+    [SerializeField] private GameObject prefabPlayerFirstResponder, prefabPlayerInvestigatorOnCase, prefabPlayerSOCOTeamLead, prefabPlayerPhotographer, prefabPlayerSketcher, prefabPlayerSearcher,
+        prefabPlayerMeasurer;
     public GameObject GetPrefabPlayer(TypeRole typeRole) {
         return typeRole switch {
             TypeRole.FirstResponder => prefabPlayerFirstResponder,
@@ -24,15 +25,21 @@ public class HolderData : ScriptableObject {
             TypeRole.SOCOTeamLead => prefabPlayerSOCOTeamLead,
             TypeRole.Photographer => prefabPlayerPhotographer,
             TypeRole.Sketcher => prefabPlayerSketcher,
+            TypeRole.Searcher => prefabPlayerSearcher,
+            TypeRole.Measurer => prefabPlayerMeasurer,
 
             _ => null,
         };
     }
 
+    [SerializeField] private GameObject prefabListItemRole, prefabCommandPostCopy, prefabFormFirstResponder, prefabFormInvestigatorOnCase, prefabEvidenceMarkerCopy;
+    public GameObject PrefabListItemRole => prefabListItemRole;
+    public GameObject PrefabCommandPostCopy => prefabCommandPostCopy;
+    public GameObject PrefabFormFirstResponder => prefabFormFirstResponder;
+    public GameObject PrefabFormInvestigatorOnCase => prefabFormInvestigatorOnCase;
+    public GameObject PrefabEvidenceMarkerCopy => prefabEvidenceMarkerCopy;
+
     [SerializeField] private Color colBlack, colFluorescent, colGray, colWhite, colMagnetic;
-
-
-
     public Color GetColorOfFingerprintPowderType(TypeFingerprintPowder typeFingerprintPowder) {
         switch (typeFingerprintPowder) {
             case TypeFingerprintPowder.Black: { return colBlack; }

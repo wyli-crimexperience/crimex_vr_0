@@ -18,18 +18,46 @@ public static class StaticUtils {
             current = Mathf.MoveTowardsAngle(current, midAngle, offset);
         return current;
     }
-
-    public static DateTime ConvertToMorning(DateTime date) {
-        if (date.Hour < 6 || date.Hour > 18) {
-            date.AddHours(12);
-        }
-        return date;
+    
+    public static DateTime DateTimeNowInMorning(DateTime dateTimeIncident) {
+        // check if incident happened in the morning. if so, return now. else, return +12
+        return (dateTimeIncident.Hour > 6 || dateTimeIncident.Hour < 18) ? DateTime.Now : DateTime.Now.AddHours(12);
     }
-    public static DateTime ConvertToEvening(DateTime date) {
-        if (date.Hour > 6 || date.Hour < 18) {
-            date.AddHours(12);
+    public static DateTime DateTimeNowInEvening(DateTime dateTimeIncident) {
+        // check if incident happened in the morning. if so, return +12. else, return now
+        return (dateTimeIncident.Hour > 6 || dateTimeIncident.Hour < 18) ? DateTime.Now.AddHours(12) : DateTime.Now;
+    }
+
+    public static string ConvertToLetter(int index) {
+        switch (index) {
+            case 0: { return "A"; }
+            case 1: { return "B"; }
+            case 2: { return "C"; }
+            case 3: { return "D"; }
+            case 4: { return "E"; }
+            case 5: { return "F"; }
+            case 6: { return "G"; }
+            case 7: { return "H"; }
+            case 8: { return "I"; }
+            case 9: { return "J"; }
+            case 10: { return "K"; }
+            case 11: { return "L"; }
+            case 12: { return "M"; }
+            case 13: { return "N"; }
+            case 14: { return "O"; }
+            case 15: { return "P"; }
+            case 16: { return "Q"; }
+            case 17: { return "R"; }
+            case 18: { return "S"; }
+            case 19: { return "T"; }
+            case 20: { return "U"; }
+            case 21: { return "V"; }
+            case 22: { return "W"; }
+            case 23: { return "X"; }
+            case 24: { return "Y"; }
+            case 25: { return "Z"; }
+            default: { return ""; }
         }
-        return date;
     }
 
 }
