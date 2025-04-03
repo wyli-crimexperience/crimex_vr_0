@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: tape
+    second: {fileID: 2100000, guid: 073f769f79acb584498cdeffe7379c56, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: tape_measure
     second: {fileID: 2100000, guid: ad2c2a49e96397c479a60da7151822bc, type: 2}
   materials:
