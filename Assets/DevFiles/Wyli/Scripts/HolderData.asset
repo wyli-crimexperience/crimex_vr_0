@@ -42,6 +42,8 @@ MonoBehaviour:
     type: 3}
   prefabPlayerMeasurer: {fileID: 9021619070416489529, guid: 43a247c1c02e0224a816a5824da1b073,
     type: 3}
+  prefabPlayerFingerprintSpecialist: {fileID: 9021619070416489529, guid: 6667acd7d9933294b825e408b9b02145,
+    type: 3}
   prefabListItemRole: {fileID: 5732629654476196159, guid: 2334b4e1883704d48a29b1e1e1f7b969,
     type: 3}
   prefabCommandPostCopy: {fileID: 4854690245580697971, guid: ad0f6d88897f7cb4b9314ec4a4ccad37,

@@ -567,7 +567,7 @@ public class ManagerGlobal : MonoBehaviour {
         ClearCurrentThought();
     }
     public void ShowThought(GameObject sender, string str) {
-        if (sender == thoughtSender) { return; }
+        //if (sender == thoughtSender) { return; }
 
 
 
