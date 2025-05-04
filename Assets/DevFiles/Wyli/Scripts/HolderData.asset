@@ -28,6 +28,7 @@ MonoBehaviour:
     type: 3}
   thumbstickRight: {fileID: -8666952849799569744, guid: c348712bda248c246b8c49b3db54643f,
     type: 3}
+  drawShader: {fileID: 4800000, guid: 5d41ca38e989ff94996938d9c1450a4e, type: 3}
   prefabPlayerFirstResponder: {fileID: 4663270694625025214, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
     type: 3}
   prefabPlayerInvestigatorOnCase: {fileID: 9021619070416489529, guid: 22d243136f4d3c94c98125c10cb05817,

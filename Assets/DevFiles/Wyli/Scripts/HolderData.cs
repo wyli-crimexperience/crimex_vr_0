@@ -16,6 +16,9 @@ public class HolderData : ScriptableObject {
     public InputActionReference PinchRight => pinchRight;
     public InputActionReference ThumbstickRight => thumbstickRight;
 
+    [SerializeField] private Shader drawShader;
+    public Shader DrawShader => drawShader;
+
     [SerializeField] private GameObject prefabPlayerFirstResponder, prefabPlayerInvestigatorOnCase, prefabPlayerSOCOTeamLead, prefabPlayerPhotographer, prefabPlayerSketcher, prefabPlayerSearcher,
         prefabPlayerMeasurer, prefabPlayerFingerprintSpecialist;
     public GameObject GetPrefabPlayer(TypeRole typeRole) {

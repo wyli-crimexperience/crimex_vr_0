@@ -4,77 +4,38 @@ using UnityEngine;
 
 public class EvidenceOutline : MonoBehaviour {
 
-    private Texture2D texture;
-    private Color[] colors;
+    private RenderTexture splatMap, tempRT;
+    private Material currentMaterial, drawMaterial;
     private RaycastHit hit;
-    private SpriteRenderer spriteRenderer;
-    private float pixelsPerUnit;
-    private int w, h;
-    private Vector3 drawPos;
-    private Vector2Int p, start, end;
-    private Vector2 dir, pixel, linePos;
-    private float d;
-
-    public int erSize;
-    public Vector2Int lastPos;
+    private Vector2 hitPoint;
 
 
 
-    private void Awake() {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-    }
     private void Start() {
-        Texture2D tex = spriteRenderer.sprite.texture;
-        texture = new Texture2D(tex.width, tex.height, TextureFormat.ARGB32, false) {
-            filterMode = FilterMode.Bilinear,
-            wrapMode = TextureWrapMode.Clamp,
-        };
-        colors = texture.GetPixels();
-        //colors = tex.GetPixels();
-        texture.SetPixels(colors);
-        texture.Apply();
+        drawMaterial = new Material(ManagerGlobal.Instance.HolderData.DrawShader);
+        drawMaterial.SetVector("_Color", Color.red);
 
-        pixelsPerUnit = spriteRenderer.sprite.pixelsPerUnit;
-        spriteRenderer.sprite = Sprite.Create(texture, spriteRenderer.sprite.rect, Vector2.one * 0.5f, pixelsPerUnit);
+        currentMaterial = GetComponent<MeshRenderer>().material;
+
+        splatMap = new RenderTexture(currentMaterial.GetTexture("_MainTex").width, currentMaterial.GetTexture("_MainTex").height, 0, RenderTextureFormat.ARGBFloat);
+        currentMaterial.SetTexture("_SplatMap", splatMap);
     }
 
     private void OnTriggerStay(Collider other) {
         if (other.CompareTag("Chalk") && Physics.Raycast(transform.position, (other.transform.position - transform.position).normalized, out hit)) {
-            ManagerGlobal.Instance.ShowThought(gameObject, hit.point.ToString());
 
-            w = texture.width;
-            h = texture.height;
+            hitPoint = transform.InverseTransformPoint(hit.point);
+            hitPoint = (hitPoint + Vector2.one) * 0.5f;
 
-            drawPos = hit.point - hit.collider.bounds.min;
-            drawPos.x *= w / hit.collider.bounds.size.x;
-            drawPos.y *= h / hit.collider.bounds.size.y;
+            drawMaterial.SetVector("_Coordinate", new Vector4(1 - hitPoint.x, hitPoint.y, 0, 0));
+            drawMaterial.SetFloat("_Strength", 1);
+            drawMaterial.SetFloat("_Size", 1f / Mathf.Sqrt(transform.localScale.x * transform.localScale.y));
 
-            p = new Vector2Int((int)drawPos.x, (int)drawPos.y);
-            start = new Vector2Int(Mathf.Clamp(Mathf.Min(p.x, lastPos.x) - erSize, 0, w), Mathf.Clamp(Mathf.Min(p.y, lastPos.y) - erSize, 0, h));
-            end = new Vector2Int(Mathf.Clamp(Mathf.Max(p.x, lastPos.x) + erSize, 0, w), Mathf.Clamp(Mathf.Max(p.y, lastPos.y) + erSize, 0, h));
-            dir = p - lastPos;
+            tempRT = RenderTexture.GetTemporary(splatMap.width, splatMap.height, 0, RenderTextureFormat.ARGBFloat);
+            Graphics.Blit(splatMap, tempRT);
+            Graphics.Blit(tempRT, splatMap, drawMaterial);
+            RenderTexture.ReleaseTemporary(tempRT);
 
-            for (int x = start.x; x < end.x; x++) {
-                for (int y = start.y; y < end.y; y++) {
-
-                    pixel = new Vector2(x, y);
-                    linePos = p;
-
-                    d = Vector2.Dot(pixel - lastPos, dir) / dir.sqrMagnitude;
-                    d = Mathf.Clamp01(d);
-                    linePos = Vector2.Lerp(lastPos, p, d);
-
-                    if ((pixel - linePos).sqrMagnitude <= erSize * erSize) {
-                        colors[x + y * w] = Color.clear;
-                    }
-
-                }
-            }
-
-            lastPos = p;
-            texture.SetPixels(colors);
-            texture.Apply();
-            spriteRenderer.sprite = Sprite.Create(texture, spriteRenderer.sprite.rect, Vector2.one * 0.5f, pixelsPerUnit);
         }
     }
 
