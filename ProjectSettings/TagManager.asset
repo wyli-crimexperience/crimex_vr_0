@@ -12,6 +12,7 @@ TagManager:
   - PenTip
   - Fingertip
   - Chalk
+  - BrushTip
   layers:
   - Default
   - TransparentFX

@@ -44,13 +44,16 @@ public enum TypeItem {
     EvidenceRuler,
     TapeMeasure,
 
-    // soco specialist
-    FingerprintBrush,
+    // soco fingerprint specialist
+    Chalk,
+    FingerprintBrushFeather,
+    FingerprintBrushFiber,
+    FingerprintBrushFlatHead,
+    FingerprintBrushRound,
     FingerprintTapeRoll,
-    LiftedFingerprint,
+    FormLatentFingerprint,
 
     // soco collector
-    Chalk,
     SterileSwab,
     EvidencePack,
     EvidencePackSealTapeRoll,
@@ -63,7 +66,6 @@ public enum TypeItem {
 
     // ioc part 3,
     ReleaseOfCrimeSceneForm
-
 }
 public enum TypeRole {
     None,

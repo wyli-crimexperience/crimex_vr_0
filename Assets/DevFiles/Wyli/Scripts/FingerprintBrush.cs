@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 
 
-public class FingerprintBrush : HandItem {
+public class FingerprintBrush : HandItemBriefcase {
 
     [SerializeField] private MeshRenderer mrBrushTip;
 
