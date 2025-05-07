@@ -1,56 +1,39 @@
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Linq;
 
 public class PanelManager : MonoBehaviour
 {
-    [System.Serializable]
-    public class PanelData
+    public GameObject startPanel;
+    public GameObject settingsPanel;
+    public GameObject profilePanel;
+
+    public void OpenStartPanel()
     {
-        public string panelName;
-        public GameObject panelObject;
-        public Button backButton;
+        CloseAllPanels();
+        startPanel.SetActive(true);
     }
 
-    [SerializeField] private List<PanelData> panels = new List<PanelData>();
-    private Dictionary<string, PanelData> panelDict;
-    private string currentPanelName;
-
-    private void Awake()
+    public void OpenSettingsPanel()
     {
-        // Create dictionary for quick lookup
-        panelDict = panels.ToDictionary(p => p.panelName);
-
-        // Hide all panels except home
-        foreach (var panel in panels)
-        {
-            if (panel.panelName != "Home")
-                panel.panelObject.SetActive(false);
-            else
-            {
-                panel.panelObject.SetActive(true);
-                currentPanelName = panel.panelName;
-            }
-        }
+        CloseAllPanels();
+        settingsPanel.SetActive(true);
     }
 
-    public void SwitchToPanel(string targetPanelName)
+    public void OpenProfilePanel()
     {
-        if (currentPanelName == targetPanelName)
-            return;
+        CloseAllPanels();
+        profilePanel.SetActive(true);
+    }
 
-        // Get references to current and target panels
-        var currentPanel = panelDict[currentPanelName];
-        var targetPanel = panelDict[targetPanelName];
+    public void ExitApplication()
+    {
+        Application.Quit();
+        Debug.Log("Application has been closed.");
+    }
 
-        // Deactivate current panel
-        currentPanel.panelObject.SetActive(false);
-
-        // Activate target panel
-        targetPanel.panelObject.SetActive(true);
-
-        // Update current panel reference
-        currentPanelName = targetPanelName;
+    private void CloseAllPanels()
+    {
+        startPanel.SetActive(false);
+        settingsPanel.SetActive(false);
+        profilePanel.SetActive(false);
     }
 }

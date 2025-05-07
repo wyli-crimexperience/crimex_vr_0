@@ -5,15 +5,24 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/DevFiles/_Global/Scenes/VRMultiplayerTemplate/VRMultiplayerTemplate_SampleScene.unity
     guid: 13f6f87036926f94ab0417ca1b31725c
   - enabled: 0
     path: Assets/DevFiles/_Global/Scenes/VRMultiplayerTemplate/VRMultiplayerTemplate_BasicScene.unity
     guid: bc761d9a86b33554f85fd11bb1f87ba3
   - enabled: 1
+    path: Assets/DevFiles/Yohann/Scenes/LobbyArea.unity
+    guid: 635c80ca06f703341ba6986176d8cb65
+  - enabled: 1
+    path: Assets/DevFiles/Yohann/Scenes/LoadingScreen.unity
+    guid: e59f06eeb857a3a4db4951b4c55b4fe7
+  - enabled: 1
     path: Assets/DevFiles/Wyli/Scenes/Scene1.unity
     guid: 19ddff0e9d47d6c4e9343727e2012c7d
+  - enabled: 1
+    path: Assets/DevFiles/Adam/Scenes/Scene2.unity
+    guid: 433af75f5a6fa9747ae53764ba654790
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c2d780e878bef214d8b93ae0d8a4ceb7,
       type: 2}
