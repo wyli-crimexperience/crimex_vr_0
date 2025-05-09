@@ -13,6 +13,7 @@ TagManager:
   - Fingertip
   - Chalk
   - BrushTip
+  - PlayerPaused
   layers:
   - Default
   - TransparentFX

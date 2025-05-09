@@ -1,0 +1,51 @@
+{
+    "name": "ybutton",
+    "maps": [
+        {
+            "name": "y",
+            "id": "310aed00-4134-47ff-92c0-563261720370",
+            "actions": [
+                {
+                    "name": "ybuttom",
+                    "type": "Button",
+                    "id": "937399d3-1f70-4d6d-b9ec-98076b896934",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "98b66116-02db-44d9-8374-3d87a4c26182",
+                    "path": "<XRController>{LeftHand}/{SecondaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ybuttom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "63368279-d6d4-442e-a8ba-7f61217391a9",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ybuttom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "New Control Scheme",
+            "bindingGroup": "New Control Scheme",
+            "devices": []
+        }
+    ]
+}
