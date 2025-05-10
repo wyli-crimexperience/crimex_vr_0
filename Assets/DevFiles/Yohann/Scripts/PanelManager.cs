@@ -5,6 +5,7 @@ public class PanelManager : MonoBehaviour
     public GameObject startPanel;
     public GameObject settingsPanel;
     public GameObject profilePanel;
+    public GameObject profileLoginPanel;
 
     public void OpenStartPanel()
     {
@@ -23,6 +24,11 @@ public class PanelManager : MonoBehaviour
         CloseAllPanels();
         profilePanel.SetActive(true);
     }
+    public void OpenProfileLoginPanel()
+    {
+        CloseAllPanels();
+        profileLoginPanel.SetActive(true);
+    }
 
     public void ExitApplication()
     {
@@ -35,5 +41,6 @@ public class PanelManager : MonoBehaviour
         startPanel.SetActive(false);
         settingsPanel.SetActive(false);
         profilePanel.SetActive(false);
+        profileLoginPanel.SetActive(false);
     }
 }

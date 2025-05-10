@@ -12,23 +12,20 @@ public class PauseMenuManager : MonoBehaviour
     public Button quitToMainMenuButton;
     public Button exitToDesktopButton;
     public GameObject playerCamera;
-    public InputActionReference primaryButtonLeft; // Assign this in the Inspector
+    public InputActionReference primaryButtonLeft;
 
     private bool isPaused = false;
 
     void Start()
     {
-        // Add listeners to the buttons
         resumeButton.onClick.AddListener(ResumeGame);
         statisticsButton.onClick.AddListener(ShowStatistics);
         restartButton.onClick.AddListener(RestartGame);
         quitToMainMenuButton.onClick.AddListener(QuitToMainMenu);
         exitToDesktopButton.onClick.AddListener(ExitToDesktop);
 
-        // Initially hide the pause menu
         pauseMenuCanvas.gameObject.SetActive(false);
 
-        // Enable and bind the input action
         if (primaryButtonLeft != null)
         {
             primaryButtonLeft.action.Enable();
@@ -61,19 +58,11 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (isPaused)
-        {
-            pauseMenuCanvas.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 2f;
-            pauseMenuCanvas.transform.rotation = Quaternion.LookRotation(playerCamera.transform.forward);
-        }
-    }
-
     void PauseGame()
     {
         isPaused = true;
         Time.timeScale = 0f;
+        PositionPauseMenu();
         pauseMenuCanvas.gameObject.SetActive(true);
     }
 
@@ -82,6 +71,16 @@ public class PauseMenuManager : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuCanvas.gameObject.SetActive(false);
+    }
+
+    void PositionPauseMenu()
+    {
+        Vector3 forward = playerCamera.transform.forward;
+        forward.y = 0; // Optional: keep the menu level
+        forward.Normalize();
+
+        pauseMenuCanvas.transform.position = playerCamera.transform.position + forward * 2f;
+        pauseMenuCanvas.transform.rotation = Quaternion.LookRotation(forward);
     }
 
     void ShowStatistics()
@@ -98,7 +97,7 @@ public class PauseMenuManager : MonoBehaviour
     void QuitToMainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("LobbyArea");
     }
 
     void ExitToDesktop()
