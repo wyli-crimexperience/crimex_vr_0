@@ -12,6 +12,8 @@ public class PauseMenuManager : MonoBehaviour
     public Button quitToMainMenuButton;
     public Button exitToDesktopButton;
     public GameObject playerCamera;
+    public GameObject leftRay;
+    public GameObject rightRay;
     public InputActionReference primaryButtonLeft;
 
     private bool isPaused = false;
@@ -64,6 +66,8 @@ public class PauseMenuManager : MonoBehaviour
         Time.timeScale = 0f;
         PositionPauseMenu();
         pauseMenuCanvas.gameObject.SetActive(true);
+        leftRay.gameObject.SetActive(true);
+        rightRay.gameObject.SetActive(true);
     }
 
     void ResumeGame()
@@ -71,6 +75,8 @@ public class PauseMenuManager : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuCanvas.gameObject.SetActive(false);
+        leftRay.gameObject.SetActive(false);
+        rightRay.gameObject.SetActive(false);
     }
 
     void PositionPauseMenu()
@@ -79,7 +85,7 @@ public class PauseMenuManager : MonoBehaviour
         forward.y = 0; // Optional: keep the menu level
         forward.Normalize();
 
-        pauseMenuCanvas.transform.position = playerCamera.transform.position + forward * 2f;
+        pauseMenuCanvas.transform.position = playerCamera.transform.position + forward * 0.7f;
         pauseMenuCanvas.transform.rotation = Quaternion.LookRotation(forward);
     }
 
