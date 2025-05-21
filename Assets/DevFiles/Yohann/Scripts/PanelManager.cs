@@ -19,17 +19,6 @@ public class PanelManager : MonoBehaviour
         settingsPanel.SetActive(true);
     }
 
-    public void OpenProfilePanel()
-    {
-        CloseAllPanels();
-        profilePanel.SetActive(true);
-    }
-    public void OpenProfileLoginPanel()
-    {
-        CloseAllPanels();
-        profileLoginPanel.SetActive(true);
-    }
-
     public void ExitApplication()
     {
         Application.Quit();
