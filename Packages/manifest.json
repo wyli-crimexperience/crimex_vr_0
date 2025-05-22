@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.meta.xr.sdk.core": "76.0.1",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.animation.rigging": "1.3.0",
     "com.unity.burst": "1.8.18",

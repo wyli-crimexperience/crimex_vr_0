@@ -71,3 +71,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 .github/copilot-instructions.md
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_9_0.bundle
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_9_0.dll
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_9_0.so

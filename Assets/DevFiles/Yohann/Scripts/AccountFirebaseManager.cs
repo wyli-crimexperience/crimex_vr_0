@@ -148,18 +148,37 @@ public class AccountFirebaseManager : MonoBehaviour
         ShowNotification("Unable to initialize Firebase. Please check your internet connection or reinstall the app.", NotificationType.Error);
         DeactivateAllScreens();
     }
+    private System.Collections.IEnumerator ShowLoadingAndReturnToSignup(string errorMessage)
+    {
+        DeactivateAllScreens();
+        loadingScreen.SetActive(true);
+        yield return new WaitForSeconds(1.5f); // Show loading for 1.5 seconds
+
+        loadingScreen.SetActive(false);
+        signupUi.SetActive(true);
+        ShowNotification(errorMessage, NotificationType.Error);
+    }
+    private string GetErrorMessage(AuthError error) => error switch
+    {
+        AuthError.WeakPassword => "Password is too weak",
+        AuthError.InvalidEmail => "Invalid email address",
+        AuthError.EmailAlreadyInUse => "This email is already in use",
+        _ => "Wrong pass code or an unknown error occurred"
+    };
 
     public async void SignUp()
     {
+        // Input Validation - Weak Password
         if (!ValidatePassword(SignupPassword.text))
         {
-            ShowNotification(string.Format(PASSWORD_ERROR_MESSAGE, MIN_PASSWORD_LENGTH), NotificationType.Error);
+            StartCoroutine(ShowLoadingAndReturnToSignup(string.Format(PASSWORD_ERROR_MESSAGE, MIN_PASSWORD_LENGTH)));
             return;
         }
 
+        // Input Validation - Password Mismatch
         if (SignupPassword.text != SignupPasswordConfirm.text)
         {
-            ShowNotification("Passwords do not match", NotificationType.Error);
+            StartCoroutine(ShowLoadingAndReturnToSignup("Passwords do not match"));
             return;
         }
 
@@ -193,35 +212,27 @@ public class AccountFirebaseManager : MonoBehaviour
             DocumentReference docRef = db.Collection("Students").Document(result.User.UserId);
 
             Dictionary<string, object> userData = new Dictionary<string, object>
-            {
-                { "displayName", string.IsNullOrWhiteSpace(fullName) ? "Guest" : fullName },
-                { "email", result.User.Email },
-                { "userType", selectedUserType },
-                { "profileImageUrl", result.User.PhotoUrl?.ToString() ?? "" },
-                { "createdAt", Timestamp.GetCurrentTimestamp() }
-            };
+        {
+            { "displayName", string.IsNullOrWhiteSpace(fullName) ? "Guest" : fullName },
+            { "email", result.User.Email },
+            { "userType", selectedUserType },
+            { "profileImageUrl", result.User.PhotoUrl?.ToString() ?? "" },
+            { "createdAt", Timestamp.GetCurrentTimestamp() }
+        };
 
             await docRef.SetAsync(userData, SetOptions.MergeAll);
         }
         catch (FirebaseException ex)
         {
             var error = (AuthError)ex.ErrorCode;
-            ShowNotification(GetErrorMessage(error), NotificationType.Error);
+            string errorMsg = GetErrorMessage(error);
+            StartCoroutine(ShowLoadingAndReturnToSignup(errorMsg));
         }
         finally
         {
-            loadingScreen.SetActive(false);
+            loadingScreen.SetActive(false); // Ensure it's deactivated in case success or early exit missed it
         }
     }
-
-    private string GetErrorMessage(AuthError error) => error switch
-    {
-        AuthError.WeakPassword => "Password is too weak",
-        AuthError.InvalidEmail => "Invalid email address",
-        AuthError.EmailAlreadyInUse => "This email is already in use",
-        _ => "Wrong pass code or an unknown error occurred"
-    };
-
     public async void Login()
     {
         DeactivateAllScreens();
@@ -296,8 +307,22 @@ public class AccountFirebaseManager : MonoBehaviour
         DisplayGuestProfile();
         PlayerPrefs.SetInt("AutoLogin", 0);
         PlayerPrefs.Save();
+
+        // Clear login inputs
+        LoginEmail.text = "";
+        loginPassword.text = "";
+
+        // Clear signup inputs (optional but helpful)
+        SignupEmail.text = "";
+        SignupPassword.text = "";
+        SignupPasswordConfirm.text = "";
+        SignupFirstName.text = "";
+        SignupLastName.text = "";
+        classCodeInput.text = "";
+
         ShowLoginUI();
     }
+
 
     private void ShowLoginUI()
     {
@@ -409,6 +434,16 @@ public class AccountFirebaseManager : MonoBehaviour
     {
         CloseAllPanels();
         startPanel.SetActive(true);
+    }
+    public void OpenSignUpPanel()
+    {
+        CloseAllPanels();
+        signupUi.SetActive(true);
+    }
+    public void OpenLogInPanel()
+    {
+        DeactivateAllScreens();
+        loginUi.SetActive(true);
     }
 
     public void OpenSettingsPanel()
