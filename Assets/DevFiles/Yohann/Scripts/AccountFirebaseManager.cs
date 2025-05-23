@@ -51,6 +51,11 @@ public class AccountFirebaseManager : MonoBehaviour
     public GameObject logoutButton;
     public TextMeshProUGUI logoutText;
 
+    [Header("Logout Confirmation Elements")]
+    public GameObject logoutConfirmationPanel;
+    public Button confirmLogoutButton;  // "Yes" button
+    public Button cancelLogoutButton;   // "No" button
+
     [Header("Profile UI")]
     public TextMeshProUGUI usernameText;
     public RawImage profileImage;
@@ -89,6 +94,11 @@ public class AccountFirebaseManager : MonoBehaviour
         {
             fadeText = GetComponent<FadeTextScript>();
         }
+        if (confirmLogoutButton != null)
+            confirmLogoutButton.onClick.AddListener(ConfirmLogout);
+
+        if (cancelLogoutButton != null)
+            cancelLogoutButton.onClick.AddListener(CancelLogout);
 
         DeactivateAllScreens();
         loadingScreen.SetActive(true);
@@ -203,6 +213,8 @@ public class AccountFirebaseManager : MonoBehaviour
             {
                 ShowNotification("A verification email has been sent to activate your account", NotificationType.Warning);
                 await result.User.SendEmailVerificationAsync();
+                DeactivateAllScreens();
+                loginUi.SetActive(true);
             }
 
             string[] userTypes = { "Student", "Teacher", "Faculty Staff" };
@@ -301,18 +313,21 @@ public class AccountFirebaseManager : MonoBehaviour
     public void OnLogoutButtonPressed()
     {
         if (auth.CurrentUser != null)
-            Debug.Log($"Logging out user: {auth.CurrentUser.Email}");
-
+        {
+            Debug.Log($"[AccountFirebaseManager] Logout button pressed. Asking for confirmation for user: {auth.CurrentUser.Email}");
+            logoutConfirmationPanel.SetActive(true);
+        }
+    }
+    public void ConfirmLogout()
+    {
+        Debug.Log("[AccountFirebaseManager] Confirming logout.");
         auth.SignOut();
         DisplayGuestProfile();
         PlayerPrefs.SetInt("AutoLogin", 0);
         PlayerPrefs.Save();
 
-        // Clear login inputs
         LoginEmail.text = "";
         loginPassword.text = "";
-
-        // Clear signup inputs (optional but helpful)
         SignupEmail.text = "";
         SignupPassword.text = "";
         SignupPasswordConfirm.text = "";
@@ -320,9 +335,14 @@ public class AccountFirebaseManager : MonoBehaviour
         SignupLastName.text = "";
         classCodeInput.text = "";
 
+        logoutConfirmationPanel.SetActive(false);
         ShowLoginUI();
     }
-
+    public void CancelLogout()
+    {
+        Debug.Log("[AccountFirebaseManager] Logout canceled.");
+        logoutConfirmationPanel.SetActive(false);
+    }
 
     private void ShowLoginUI()
     {
