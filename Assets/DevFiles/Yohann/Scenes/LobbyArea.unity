@@ -4854,7 +4854,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1703555527}
   m_Direction: 0
   m_Value: -0.0000005623288
-  m_Size: 0.4828637
+  m_Size: 0.48289666
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17431,6 +17431,7 @@ MonoBehaviour:
   historyContentParent: {fileID: 333208483}
   historyEntryPrefab: {fileID: 7709336985568480116, guid: 9546818bf53a47d46a0e62c42ad8d367,
     type: 3}
+  noUserPanel: {fileID: 0}
 --- !u!1 &1637414744
 GameObject:
   m_ObjectHideFlags: 0

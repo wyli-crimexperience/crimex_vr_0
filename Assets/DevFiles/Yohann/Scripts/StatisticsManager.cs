@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Firebase.Auth;
 using Firebase.Firestore;
 using Firebase.Extensions;
+using System.Threading.Tasks;
 
 public class StatisticsManager : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class StatisticsManager : MonoBehaviour
     public Transform historyContentParent; // Assign ScrollView/Viewport/Content here
     public GameObject historyEntryPrefab;  // Assign a prefab with TMP_Text child
 
+    [Header("No User UI (Optional)")]
+    public GameObject noUserPanel; // Panel to show when no user is logged in
+
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
 
@@ -30,11 +34,56 @@ public class StatisticsManager : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         firestore = FirebaseFirestore.DefaultInstance;
 
-        LoadUserInfo();
-        LoadUserLogs();
+        // Subscribe to auth state changes
+        auth.StateChanged += OnAuthStateChanged;
+
+        // Check current user status
+        CheckUserLoginStatus();
     }
 
-    private void LoadUserInfo()
+    private void OnDestroy()
+    {
+        // Unsubscribe from auth state changes to prevent memory leaks
+        if (auth != null)
+        {
+            auth.StateChanged -= OnAuthStateChanged;
+        }
+    }
+
+    private void OnAuthStateChanged(object sender, System.EventArgs eventArgs)
+    {
+        CheckUserLoginStatus();
+    }
+
+    private void CheckUserLoginStatus()
+    {
+        FirebaseUser user = auth.CurrentUser;
+
+        if (user != null)
+        {
+            Debug.Log($"User is logged in: {user.Email}");
+
+            // Hide no user panel if it exists
+            if (noUserPanel != null)
+                noUserPanel.SetActive(false);
+
+            // Load user data
+            LoadUserInfo();
+            LoadUserLogs();
+        }
+        else
+        {
+            Debug.Log("No user is logged in");
+
+            // Show no user panel if it exists
+            if (noUserPanel != null)
+                noUserPanel.SetActive(true);
+
+            ClearUserData();
+        }
+    }
+
+    public void LoadUserInfo()
     {
         FirebaseUser user = auth.CurrentUser;
         if (user == null)
@@ -46,7 +95,7 @@ public class StatisticsManager : MonoBehaviour
         DocumentReference userDocRef = firestore.Collection("Students").Document(user.UserId);
         userDocRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted && task.Result.Exists)
+            if (task.IsCompletedSuccessfully && task.Result.Exists)
             {
                 Dictionary<string, object> userData = task.Result.ToDictionary();
 
@@ -62,15 +111,17 @@ public class StatisticsManager : MonoBehaviour
                     string imageUrl = userData["profileImageUrl"].ToString();
                     StartCoroutine(LoadProfileImage(imageUrl));
                 }
+
+                Debug.Log("User info loaded successfully");
             }
             else
             {
-                Debug.LogWarning("Failed to retrieve user info.");
+                Debug.LogWarning("Failed to retrieve user info or document doesn't exist.");
             }
         });
     }
 
-    private void LoadUserLogs()
+    public void LoadUserLogs()
     {
         FirebaseUser user = auth.CurrentUser;
         if (user == null)
@@ -88,12 +139,22 @@ public class StatisticsManager : MonoBehaviour
                 return;
             }
 
+            if (!task.IsCompletedSuccessfully)
+            {
+                Debug.LogError("Task did not complete successfully.");
+                return;
+            }
+
+            // Clear existing history entries
             foreach (Transform child in historyContentParent)
             {
                 Destroy(child.gameObject);
             }
 
-            foreach (DocumentSnapshot logDoc in task.Result.Documents)
+            QuerySnapshot snapshot = task.Result;
+            int logCount = 0;
+
+            foreach (DocumentSnapshot logDoc in snapshot.Documents)
             {
                 Dictionary<string, object> logData = logDoc.ToDictionary();
 
@@ -127,6 +188,17 @@ public class StatisticsManager : MonoBehaviour
                         }
                         break;
 
+                    case "Crime Scene Opened":
+                        if (logData.TryGetValue("sceneName", out scene))
+                        {
+                            contextInfo = ": " + logData["sceneName"].ToString();
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Missing 'sceneName' in log {logDoc.Id}. Keys: {string.Join(", ", logData.Keys)}");
+                        }
+                        break;
+
                     case "ButtonClick":
                         if (logData.TryGetValue("buttonName", out var button))
                         {
@@ -139,7 +211,29 @@ public class StatisticsManager : MonoBehaviour
                         break;
 
                     case "AppQuit":
+                    case "App Quit":
                         // No additional context needed
+                        break;
+
+                    case "App Started":
+                        if (logData.TryGetValue("platform", out var platform))
+                        {
+                            contextInfo = $": {platform}";
+                        }
+                        break;
+
+                    case "Tool Used":
+                        if (logData.TryGetValue("tool", out var tool))
+                        {
+                            contextInfo = ": " + tool.ToString();
+                        }
+                        break;
+
+                    case "Model Selected":
+                        if (logData.TryGetValue("model", out var model))
+                        {
+                            contextInfo = ": " + model.ToString();
+                        }
                         break;
 
                     default:
@@ -155,8 +249,39 @@ public class StatisticsManager : MonoBehaviour
                 TMP_Text entryText = entryGO.GetComponentInChildren<TMP_Text>();
                 if (entryText != null)
                     entryText.text = $"{eventType}{contextInfo} - {timestamp}";
+
+                logCount++;
             }
+
+            Debug.Log($"Loaded {logCount} log entries");
         });
+    }
+
+    private void ClearUserData()
+    {
+        // Clear all UI elements when no user is logged in
+        if (classCodeText != null) classCodeText.text = "";
+        if (createdAtText != null) createdAtText.text = "";
+        if (displayNameText != null) displayNameText.text = "";
+        if (emailText != null) emailText.text = "";
+        if (lastLoginText != null) lastLoginText.text = "";
+        if (userTypeText != null) userTypeText.text = "";
+        if (profileImage != null) profileImage.texture = null;
+
+        // Clear history entries
+        if (historyContentParent != null)
+        {
+            foreach (Transform child in historyContentParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+    }
+
+    // Public method to manually refresh data (useful for account managers)
+    public void RefreshUserData()
+    {
+        CheckUserLoginStatus();
     }
 
     private string ConvertTimestamp(object ts)
