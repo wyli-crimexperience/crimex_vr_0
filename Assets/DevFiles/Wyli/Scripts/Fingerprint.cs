@@ -6,6 +6,8 @@ public class Fingerprint : MonoBehaviour {
 
     [SerializeField] private GameObject objFingerprint;
     [SerializeField] private MeshRenderer mrFingerprint;
+    [SerializeField] private bool isDisplayOnly;
+    public bool IsDisplayOnly => isDisplayOnly;
 
     private Material matFingerprint;
 
@@ -16,7 +18,6 @@ public class Fingerprint : MonoBehaviour {
         IsLifted = true;
         SetTypeFingerprintPowder(TypeFingerprintPowder.None);
     }
-    public bool IsDisplayOnly;
     public TypeFingerprintPowder TypeFingerprintPowder;
 
 
@@ -26,7 +27,6 @@ public class Fingerprint : MonoBehaviour {
     }
     private void Start() {
         IsLifted = false;
-        IsDisplayOnly = false;
 
         UpdateVisual();
     }

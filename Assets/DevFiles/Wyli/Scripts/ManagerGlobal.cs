@@ -46,11 +46,11 @@ public enum TypeItem {
 
     // soco fingerprint specialist
     Chalk,
-    FingerprintBrushFeather,
-    FingerprintBrushFiber,
-    FingerprintBrushFlatHead,
-    FingerprintBrushRound,
+    Bowl,
+    FingerprintPowderBottle,
+    FingerprintBrush,
     FingerprintTapeRoll,
+    FingerprintTapeLifted,
     FormLatentFingerprint,
 
     // soco collector
@@ -66,6 +66,20 @@ public enum TypeItem {
 
     // ioc part 3,
     ReleaseOfCrimeSceneForm
+}
+public enum TypeFingerprintBrush {
+    Feather,
+    Fiber,
+    FlatHead,
+    Round
+}
+public enum TypeFingerprintPowder {
+    None,
+    Black,
+    Fluorescent,
+    Gray,
+    White,
+    Magnetic
 }
 public enum TypeRole {
     None,

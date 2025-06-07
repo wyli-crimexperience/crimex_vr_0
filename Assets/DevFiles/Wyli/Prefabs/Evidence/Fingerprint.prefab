@@ -48,6 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objFingerprint: {fileID: 3906641703161182767}
   mrFingerprint: {fileID: 3258303333890890746}
+  IsDisplayOnly: 0
+  TypeFingerprintPowder: 0
 --- !u!65 &2690312679568036847
 BoxCollider:
   m_ObjectHideFlags: 0
