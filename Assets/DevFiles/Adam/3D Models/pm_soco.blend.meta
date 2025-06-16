@@ -8,37 +8,37 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Human.eyebrow009
-    second: {fileID: 2100000, guid: 5770365dbec50d94ea61867cb498569b, type: 2}
+    second: {fileID: 2100000, guid: 61a19b2ae36d16e42a740b6cc90b3829, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Human.eyelashes01
-    second: {fileID: 2100000, guid: 222e06c3998481c4b996c251be76d71e, type: 2}
+    second: {fileID: 2100000, guid: f28505352fedba54989063af2dc99c57, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Human.low-poly
-    second: {fileID: 2100000, guid: 4b192b77127bf054db071a284b300531, type: 2}
+    second: {fileID: 2100000, guid: d73cb37da8a338a469b994849f3440df, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: belt
-    second: {fileID: 2100000, guid: 9cd0f72cb85218d4dab39f9a001c1a21, type: 2}
+    second: {fileID: 2100000, guid: 98e2660b4aa17e648a110ae47a6d7bdb, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: fr_cap
-    second: {fileID: 2100000, guid: 2ed10391e4aafa647826931745875cbe, type: 2}
+    second: {fileID: 2100000, guid: c629782a82be06a49aaaecda64fb2202, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: fr_human
-    second: {fileID: 2100000, guid: 13e705fdf95bdb74e94be031b6ce2268, type: 2}
+    second: {fileID: 2100000, guid: c9dc9635fb928ad4186052e5d94189e2, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: gloves
-    second: {fileID: 2100000, guid: ce4e5ceb1448b0348bf61e1a4f9ce8af, type: 2}
+    second: {fileID: 2100000, guid: cd61424699f1b2c41a08eedcc9c73053, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -58,7 +58,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: wristwatch
-    second: {fileID: 2100000, guid: 96e836855dc620a41bde8a6a16b80d6a, type: 2}
+    second: {fileID: 2100000, guid: 26cc1bd44c15c674395fb3d603a2053c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

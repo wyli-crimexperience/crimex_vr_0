@@ -1234,6 +1234,7 @@ MonoBehaviour:
   - {fileID: 5811055751261976240}
   - {fileID: 6956711479356073420}
   - {fileID: 9142064655421927983}
+  - {fileID: 1683306247011062846}
 --- !u!1 &9035685617163808571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1822,7 +1823,7 @@ PrefabInstance:
     - target: {fileID: -1696839793853188754, guid: ed253c8f7ed07e641a5aafadf4246d5f,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -914791385015265781, guid: ed253c8f7ed07e641a5aafadf4246d5f,
         type: 3}
@@ -2005,6 +2006,12 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.004
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1683306247011062846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -5101077906354184236, guid: ed253c8f7ed07e641a5aafadf4246d5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3344233572811672554}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1954453773466269608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3852415984715496514, guid: ed253c8f7ed07e641a5aafadf4246d5f,

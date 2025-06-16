@@ -494,6 +494,7 @@ MonoBehaviour:
   - {fileID: 1078730876961045922}
   - {fileID: 8121718424745075138}
   - {fileID: 2342517428843723069}
+  - {fileID: 5260528111941689132}
 --- !u!114 &1646045468493639039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2299,6 +2300,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Fingertip
       objectReference: {fileID: 0}
+    - target: {fileID: -1696839793853188754, guid: b8d89332412dad94285c312e00c933bc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -741248378906193022, guid: b8d89332412dad94285c312e00c933bc,
         type: 3}
       propertyPath: m_Layer
@@ -3047,6 +3053,12 @@ Transform:
 --- !u!4 &5201241359117550328 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4042815936012632576, guid: b8d89332412dad94285c312e00c933bc,
+    type: 3}
+  m_PrefabInstance: {fileID: 8085213511650099448}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5260528111941689132 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -5101077906354184236, guid: b8d89332412dad94285c312e00c933bc,
     type: 3}
   m_PrefabInstance: {fileID: 8085213511650099448}
   m_PrefabAsset: {fileID: 0}
