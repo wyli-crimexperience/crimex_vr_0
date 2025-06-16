@@ -1,5 +1,4 @@
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Firebase.Extensions;
@@ -10,6 +9,9 @@ using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 public class AccountFirebaseManager : MonoBehaviour
 {
@@ -32,6 +34,7 @@ public class AccountFirebaseManager : MonoBehaviour
     public TMP_InputField SignupPasswordConfirm;
     public TMP_InputField SignupFirstName;
     public TMP_InputField SignupLastName;
+    public TMP_InputField SignupCompany; // NEW: Company input field
     public TMP_Dropdown userTypeDropdown;
     public TMP_InputField classCodeInput;
     public TextMeshProUGUI logTxt;
@@ -63,11 +66,23 @@ public class AccountFirebaseManager : MonoBehaviour
     public TextMeshProUGUI classroomCodeText;
     public Texture2D defaultProfileImage;
 
+    [Header("Company Settings")]
+    [SerializeField] private bool requireCompanyInput = true; // NEW: Option to make company field required
+    [SerializeField] private string defaultCompany = "University of the Cordilleras"; // NEW: Default company if not provided
+
+    [Header("Validation Settings")]
+    [SerializeField] private int minPasswordLength = 6;
+    [SerializeField] private bool enableDebugLogging = false;
+
     private const int MIN_PASSWORD_LENGTH = 6;
     private const string PASSWORD_ERROR_MESSAGE = "Password must be at least {0} characters long";
     private const int MaxRetryAttempts = 3;
+    private const string EMAIL_REGEX = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+    private const string COLLECTION_USERS = "users";
+    private const string COLLECTION_CLASSES = "classes";
 
     private FirebaseAuth auth;
+    private FirebaseFirestore db; // NEW: Added Firestore reference
 
     private enum NotificationType { Error, Success, Warning }
 
@@ -85,6 +100,55 @@ public class AccountFirebaseManager : MonoBehaviour
     }
 
     private bool ValidatePassword(string password) => password.Length >= MIN_PASSWORD_LENGTH;
+
+    // NEW: Enhanced email validation
+    private bool ValidateEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ShowNotification("Email address is required", NotificationType.Error);
+            return false;
+        }
+
+        if (!Regex.IsMatch(email, EMAIL_REGEX))
+        {
+            ShowNotification("Please enter a valid email address", NotificationType.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    // NEW: Company validation method
+    private bool ValidateCompany(string company)
+    {
+        if (requireCompanyInput && string.IsNullOrWhiteSpace(company))
+        {
+            ShowNotification("Company name is required", NotificationType.Error);
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(company) && company.Trim().Length < 2)
+        {
+            ShowNotification("Company name must be at least 2 characters long", NotificationType.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    // NEW: Helper method to get company value with fallback
+    private string GetCompanyValue()
+    {
+        string companyInput = SignupCompany?.text?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(companyInput))
+        {
+            return companyInput;
+        }
+
+        return !string.IsNullOrWhiteSpace(defaultCompany) ? defaultCompany : "University of the Cordilleras";
+    }
 
     private void Start()
     {
@@ -130,18 +194,27 @@ public class AccountFirebaseManager : MonoBehaviour
 
             if (dependencyTask.Result == DependencyStatus.Available)
             {
+                auth = FirebaseAuth.DefaultInstance;
+                db = FirebaseFirestore.DefaultInstance; // NEW: Initialize Firestore
+
                 var user = auth.CurrentUser;
 
                 if (user != null && user.IsEmailVerified)
                 {
-                    Debug.Log("User logged in and verified. Showing statistics screen...");
+                    if (enableDebugLogging)
+                    {
+                        Debug.Log("User logged in and verified. Showing statistics screen...");
+                    }
                     DeactivateAllScreens();
                     LoadUserProfile(user.UserId);
                     statisticsScreen.SetActive(true);
                 }
                 else
                 {
-                    Debug.Log("No user logged in or email not verified. Showing login UI...");
+                    if (enableDebugLogging)
+                    {
+                        Debug.Log("No user logged in or email not verified. Showing login UI...");
+                    }
                     DeactivateAllScreens();
                     loginUi.SetActive(true);
                 }
@@ -158,6 +231,7 @@ public class AccountFirebaseManager : MonoBehaviour
         ShowNotification("Unable to initialize Firebase. Please check your internet connection or reinstall the app.", NotificationType.Error);
         DeactivateAllScreens();
     }
+
     private System.Collections.IEnumerator ShowLoadingAndReturnToSignup(string errorMessage)
     {
         DeactivateAllScreens();
@@ -168,71 +242,79 @@ public class AccountFirebaseManager : MonoBehaviour
         signupUi.SetActive(true);
         ShowNotification(errorMessage, NotificationType.Error);
     }
+
     private string GetErrorMessage(AuthError error) => error switch
     {
-        AuthError.WeakPassword => "Password is too weak",
-        AuthError.InvalidEmail => "Invalid email address",
-        AuthError.EmailAlreadyInUse => "This email is already in use",
-        _ => "Wrong pass code or an unknown error occurred"
+        AuthError.WeakPassword => "Password is too weak. Please use a stronger password.",
+        AuthError.InvalidEmail => "Please enter a valid email address.",
+        AuthError.EmailAlreadyInUse => "This email address is already registered.",
+        AuthError.UserNotFound => "No account found with this email address.",
+        AuthError.WrongPassword => "Incorrect password. Please try again.",
+        AuthError.TooManyRequests => "Too many failed attempts. Please try again later.",
+        AuthError.UserDisabled => "This account has been disabled. Please contact support.",
+        AuthError.NetworkRequestFailed => "Network error. Please check your internet connection.",
+        _ => "Authentication failed. Please try again or contact support if the problem persists."
     };
+
+    // NEW: Enhanced validation for signup inputs
+    private bool ValidateSignupInputs()
+    {
+        if (string.IsNullOrWhiteSpace(SignupFirstName?.text))
+        {
+            ShowNotification("First name is required", NotificationType.Error);
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(SignupLastName?.text))
+        {
+            ShowNotification("Last name is required", NotificationType.Error);
+            return false;
+        }
+
+        if (SignupPassword.text != SignupPasswordConfirm.text)
+        {
+            ShowNotification("Passwords do not match", NotificationType.Error);
+            return false;
+        }
+
+        return ValidateEmail(SignupEmail.text) &&
+               ValidatePassword(SignupPassword.text) &&
+               ValidateCompany(SignupCompany?.text); // NEW: Added company validation
+    }
 
     public async void SignUp()
     {
-        // Input Validation - Weak Password
-        if (!ValidatePassword(SignupPassword.text))
-        {
-            StartCoroutine(ShowLoadingAndReturnToSignup(string.Format(PASSWORD_ERROR_MESSAGE, MIN_PASSWORD_LENGTH)));
-            return;
-        }
-
-        // Input Validation - Password Mismatch
-        if (SignupPassword.text != SignupPasswordConfirm.text)
-        {
-            StartCoroutine(ShowLoadingAndReturnToSignup("Passwords do not match"));
-            return;
-        }
+        if (!ValidateSignupInputs()) return;
 
         DeactivateAllScreens();
         loadingScreen.SetActive(true);
 
         try
         {
-            var result = await auth.CreateUserWithEmailAndPasswordAsync(SignupEmail.text.Trim(), SignupPassword.text.Trim());
+            string email = SignupEmail.text.Trim();
+            string password = SignupPassword.text.Trim();
+            string firstName = SignupFirstName.text.Trim();
+            string lastName = SignupLastName.text.Trim();
+            string company = GetCompanyValue(); // NEW: Get company value
 
-            string fullName = $"{SignupFirstName.text.Trim()} {SignupLastName.text.Trim()}".Trim();
+            var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password);
+
+            string fullName = $"{firstName} {lastName}".Trim();
             await result.User.UpdateUserProfileAsync(new UserProfile { DisplayName = fullName });
 
-            SignupEmail.text = SignupPassword.text = SignupPasswordConfirm.text = "";
-            SignupFirstName.text = SignupLastName.text = "";
+            // Send verification email
+            await result.User.SendEmailVerificationAsync();
 
-            if (result.User.IsEmailVerified)
-            {
-                ShowNotification("Sign up Successful", NotificationType.Success);
-            }
-            else
-            {
-                ShowNotification("A verification email has been sent to activate your account", NotificationType.Warning);
-                await result.User.SendEmailVerificationAsync();
-                DeactivateAllScreens();
-                loginUi.SetActive(true);
-            }
+            // NEW: Create user document with new schema
+            await CreateUserDocument(result.User, firstName, lastName, company);
 
-            string[] userTypes = { "Student", "Teacher", "Faculty Staff" };
-            string selectedUserType = userTypes[Mathf.Clamp(userTypeDropdown.value, 0, userTypes.Length - 1)];
+            // Clear form
+            ClearSignupFields();
 
-            FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
-            DocumentReference docRef = db.Collection("Students").Document(result.User.UserId);
+            ShowNotification("Account created successfully! Please check your email for verification.", NotificationType.Success);
 
-            Dictionary<string, object> userData = new Dictionary<string, object>
-        {
-            { "displayName", string.IsNullOrWhiteSpace(fullName) ? "Guest" : fullName },
-            { "email", result.User.Email },
-            { "userType", selectedUserType },
-            { "profileImageUrl", result.User.PhotoUrl?.ToString() ?? "" },
-            { "createdAt", Timestamp.GetCurrentTimestamp() }
-        };
-
-            await docRef.SetAsync(userData, SetOptions.MergeAll);
+            DeactivateAllScreens();
+            loginUi.SetActive(true);
         }
         catch (FirebaseException ex)
         {
@@ -242,40 +324,170 @@ public class AccountFirebaseManager : MonoBehaviour
         }
         finally
         {
-            loadingScreen.SetActive(false); // Ensure it's deactivated in case success or early exit missed it
+            loadingScreen.SetActive(false);
         }
     }
+
+    // NEW: Create user document with new schema
+    private async Task CreateUserDocument(FirebaseUser user, string firstName, string lastName, string company)
+    {
+        string[] userTypes = { "Student", "Teacher", "Faculty Staff" };
+        string selectedUserType = userTypes[Mathf.Clamp(userTypeDropdown.value, 0, userTypes.Length - 1)];
+
+        var userData = new Dictionary<string, object>
+        {
+            { "company", company }, // NEW: Use the provided company value
+            { "createdAt", Timestamp.GetCurrentTimestamp() },
+            { "email", user.Email },
+            { "enrolledClasses", new List<string>() }, // Empty array initially
+            { "firstName", firstName },
+            { "lastName", lastName },
+            { "role", selectedUserType },
+            { "uid", user.UserId }
+        };
+
+        DocumentReference docRef = db.Collection(COLLECTION_USERS).Document(user.UserId);
+        await docRef.SetAsync(userData, SetOptions.MergeAll);
+
+        if (enableDebugLogging)
+        {
+            Debug.Log($"User document created for {firstName} {lastName} at {company} with role {selectedUserType}");
+        }
+    }
+
+    // NEW: Enhanced class code validation
+    private async Task<bool> ValidateClassCode()
+    {
+        // If no class code input field or empty input, treat as optional
+        if (classCodeInput == null || string.IsNullOrWhiteSpace(classCodeInput.text))
+        {
+            if (enableDebugLogging)
+            {
+                Debug.Log("No class code provided - proceeding without class validation");
+            }
+            return true; // Allow login without class code
+        }
+
+        if (db == null)
+        {
+            ShowNotification("Database not initialized. Please try again.", NotificationType.Error);
+            return false;
+        }
+
+        try
+        {
+            string classCode = classCodeInput.text.Trim();
+            string email = LoginEmail.text.Trim();
+
+            if (enableDebugLogging)
+            {
+                Debug.Log($"Validating class code: {classCode} for user: {email}");
+            }
+
+            // STEP 1: Find the class by code
+            Query classQuery = db.Collection(COLLECTION_CLASSES)
+                .WhereEqualTo("code", classCode)
+                .Limit(1);
+
+            QuerySnapshot classQuerySnapshot = await classQuery.GetSnapshotAsync();
+
+            if (classQuerySnapshot.Count == 0)
+            {
+                ShowNotification("Invalid class code. Please check and try again.", NotificationType.Error);
+                return false;
+            }
+
+            DocumentSnapshot classSnapshot = classQuerySnapshot.Documents.First();
+            string classDocumentId = classSnapshot.Id;
+
+            // STEP 2: Check if user exists and is enrolled in this class
+            Query userQuery = db.Collection(COLLECTION_USERS)
+                .WhereEqualTo("email", email)
+                .Limit(1);
+
+            QuerySnapshot userQuerySnapshot = await userQuery.GetSnapshotAsync();
+
+            if (userQuerySnapshot.Count == 0)
+            {
+                ShowNotification("User not found. Please check your email.", NotificationType.Error);
+                return false;
+            }
+
+            DocumentSnapshot userSnapshot = userQuerySnapshot.Documents.First();
+
+            if (!userSnapshot.ContainsField("enrolledClasses"))
+            {
+                ShowNotification("You are not enrolled in any classes.", NotificationType.Warning);
+                return false;
+            }
+
+            var enrolledClassesArray = userSnapshot.GetValue<object[]>("enrolledClasses");
+            List<string> enrolledClassIds = enrolledClassesArray?.Select(obj => obj.ToString()).ToList() ?? new List<string>();
+
+            if (!enrolledClassIds.Contains(classDocumentId))
+            {
+                ShowNotification("You are not enrolled in this class.", NotificationType.Warning);
+                return false;
+            }
+
+            // Additional class validation (active status, due date, etc.)
+            if (classSnapshot.ContainsField("isActive"))
+            {
+                bool isActive = classSnapshot.GetValue<bool>("isActive");
+                if (!isActive)
+                {
+                    ShowNotification("This class is currently inactive.", NotificationType.Warning);
+                    return false;
+                }
+            }
+
+            if (classSnapshot.ContainsField("dueDate"))
+            {
+                var dueDate = classSnapshot.GetValue<Timestamp>("dueDate");
+                if (dueDate.ToDateTime() < DateTime.UtcNow)
+                {
+                    ShowNotification("This class has expired and is no longer accepting new students.", NotificationType.Warning);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ShowNotification("Error validating class code. Please try again.", NotificationType.Error);
+            if (enableDebugLogging)
+            {
+                Debug.LogError($"Class code validation error: {ex.Message}");
+            }
+            return false;
+        }
+    }
+
     public async void Login()
     {
+        if (!ValidateEmail(LoginEmail.text) || string.IsNullOrWhiteSpace(loginPassword.text))
+            return;
+
+        // ✅ VALIDATE CLASS CODE FIRST (before authentication)
+        if (!await ValidateClassCode())
+        {
+            // Class code validation failed - don't proceed with authentication
+            return;
+        }
+
         DeactivateAllScreens();
         loadingScreen.SetActive(true);
+
         try
         {
             var result = await auth.SignInWithEmailAndPasswordAsync(LoginEmail.text.Trim(), loginPassword.text.Trim());
 
             if (result.User.IsEmailVerified)
             {
-                string enteredClassCode = classCodeInput.text.Trim();
-                FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
-                DocumentReference classDocRef = db.Collection("Classes").Document(enteredClassCode);
-                DocumentSnapshot classSnapshot = await classDocRef.GetSnapshotAsync();
-
-                if (!classSnapshot.Exists)
-                {
-                    ShowNotification("Invalid class code. Please try again.", NotificationType.Error);
-                    DeactivateAllScreens();
-                    loginUi.SetActive(true);
-                    return;
-                }
-
                 ShowNotification("Log in Successful", NotificationType.Success);
-                successDescriptionText.text = "Id: " + result.User.UserId;
+                successDescriptionText.text = "Welcome back!\nUser ID: " + result.User.UserId;
                 LoadUserProfile(result.User.UserId);
-                DocumentReference userDocRef = db.Collection("Students").Document(result.User.UserId);
-                await userDocRef.SetAsync(new Dictionary<string, object>
-                {
-                    { "classCode", enteredClassCode }
-                }, SetOptions.MergeAll);
 
                 DeactivateAllScreens();
                 statisticsScreen.SetActive(true);
@@ -283,6 +495,7 @@ public class AccountFirebaseManager : MonoBehaviour
             else
             {
                 ShowNotification("Please verify your email!", NotificationType.Warning);
+                await result.User.SendEmailVerificationAsync();
                 DeactivateAllScreens();
                 loginUi.SetActive(true);
             }
@@ -293,6 +506,10 @@ public class AccountFirebaseManager : MonoBehaviour
             ShowNotification(GetErrorMessage(error), NotificationType.Error);
             DeactivateAllScreens();
             loginUi.SetActive(true);
+        }
+        finally
+        {
+            loadingScreen.SetActive(false);
         }
     }
 
@@ -314,33 +531,38 @@ public class AccountFirebaseManager : MonoBehaviour
     {
         if (auth.CurrentUser != null)
         {
-            Debug.Log($"[AccountFirebaseManager] Logout button pressed. Asking for confirmation for user: {auth.CurrentUser.Email}");
+            if (enableDebugLogging)
+            {
+                Debug.Log($"[AccountFirebaseManager] Logout button pressed. Asking for confirmation for user: {auth.CurrentUser.Email}");
+            }
             logoutConfirmationPanel.SetActive(true);
         }
     }
+
     public void ConfirmLogout()
     {
-        Debug.Log("[AccountFirebaseManager] Confirming logout.");
+        if (enableDebugLogging)
+        {
+            Debug.Log("[AccountFirebaseManager] Confirming logout.");
+        }
         auth.SignOut();
         DisplayGuestProfile();
         PlayerPrefs.SetInt("AutoLogin", 0);
         PlayerPrefs.Save();
 
-        LoginEmail.text = "";
-        loginPassword.text = "";
-        SignupEmail.text = "";
-        SignupPassword.text = "";
-        SignupPasswordConfirm.text = "";
-        SignupFirstName.text = "";
-        SignupLastName.text = "";
-        classCodeInput.text = "";
+        // Clear all input fields
+        ClearAllInputFields();
 
         logoutConfirmationPanel.SetActive(false);
         ShowLoginUI();
     }
+
     public void CancelLogout()
     {
-        Debug.Log("[AccountFirebaseManager] Logout canceled.");
+        if (enableDebugLogging)
+        {
+            Debug.Log("[AccountFirebaseManager] Logout canceled.");
+        }
         logoutConfirmationPanel.SetActive(false);
     }
 
@@ -369,54 +591,69 @@ public class AccountFirebaseManager : MonoBehaviour
             logoutText.color = showButton ? new Color32(255, 255, 255, 255) : new Color32(128, 128, 128, 255);
             logoutText.text = showButton ? "Logout" : "";
             logoutText.ForceMeshUpdate();
-            Debug.Log($"Logout text color set to: {logoutText.color}");
+            if (enableDebugLogging)
+            {
+                Debug.Log($"Logout text color set to: {logoutText.color}");
+            }
         }
     }
 
     private void DisplayGuestProfile()
     {
-        Debug.Log("Displaying guest profile.");
+        if (enableDebugLogging)
+        {
+            Debug.Log("Displaying guest profile.");
+        }
         usernameText.text = "Guest";
         userType.text = "Guest Account";
         classroomCodeText.text = "No class assigned";
         profileImage.texture = defaultProfileImage;
     }
 
-
+    // NEW: Updated LoadUserProfile to work with new schema
     private void LoadUserProfile(string userId)
     {
-        FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
-        DocumentReference docRef = db.Collection("Students").Document(userId);
+        DocumentReference docRef = db.Collection(COLLECTION_USERS).Document(userId);
 
         docRef.GetSnapshotAsync().ContinueWithOnMainThread(async task =>
         {
             if (task.IsCompletedSuccessfully && task.Result.Exists)
             {
                 var snapshot = task.Result;
-                string name = snapshot.TryGetValue("displayName", out string n) ? n : "Guest";
-                string type = snapshot.TryGetValue("userType", out string t) ? t : "Registered Account";
-                string imageUrl = snapshot.TryGetValue("profileImageUrl", out string url) ? url : "";
-                string classCode = snapshot.TryGetValue("classCode", out string cc) ? cc : "";
 
-                usernameText.text = name;
-                userType.text = type;
+                // NEW: Use new schema fields
+                string firstName = snapshot.TryGetValue("firstName", out string fn) ? fn : "";
+                string lastName = snapshot.TryGetValue("lastName", out string ln) ? ln : "";
+                string fullName = $"{firstName} {lastName}".Trim();
+                if (string.IsNullOrEmpty(fullName)) fullName = "Guest";
 
-                if (!string.IsNullOrEmpty(imageUrl))
+                string role = snapshot.TryGetValue("role", out string r) ? r : "Registered Account";
+                string company = snapshot.TryGetValue("company", out string c) ? c : "";
+
+                usernameText.text = fullName;
+                userType.text = role;
+
+                // Handle profile image (if you still use this feature)
+                profileImage.texture = defaultProfileImage;
+
+                // NEW: Display company or enrolled classes info
+                if (!string.IsNullOrEmpty(company))
                 {
-                    Debug.Log("Loading profile image from: " + imageUrl);
-                    StartCoroutine(LoadProfilePicture(imageUrl));
+                    classroomCodeText.text = company;
                 }
-                else
+                else if (snapshot.ContainsField("enrolledClasses"))
                 {
-                    profileImage.texture = defaultProfileImage;
-                }
+                    var enrolledClassesArray = snapshot.GetValue<object[]>("enrolledClasses");
+                    List<string> enrolledClassIds = enrolledClassesArray?.Select(obj => obj.ToString()).ToList() ?? new List<string>();
 
-                if (!string.IsNullOrEmpty(classCode))
-                {
-                    var classDoc = await db.Collection("Classes").Document(classCode).GetSnapshotAsync();
-                    classroomCodeText.text = classDoc.Exists && classDoc.ContainsField("className")
-                        ? classDoc.GetValue<string>("className")
-                        : "Class not found";
+                    if (enrolledClassIds.Count > 0)
+                    {
+                        classroomCodeText.text = $"Enrolled in {enrolledClassIds.Count} class(es)";
+                    }
+                    else
+                    {
+                        classroomCodeText.text = "No classes enrolled";
+                    }
                 }
                 else
                 {
@@ -430,8 +667,6 @@ public class AccountFirebaseManager : MonoBehaviour
         });
     }
 
-
-
     private System.Collections.IEnumerator LoadProfilePicture(string url)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
@@ -441,7 +676,10 @@ public class AccountFirebaseManager : MonoBehaviour
         {
             Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
             profileImage.texture = texture;
-            Debug.Log("Profile picture successfully loaded.");
+            if (enableDebugLogging)
+            {
+                Debug.Log("Profile picture successfully loaded.");
+            }
         }
         else
         {
@@ -450,16 +688,42 @@ public class AccountFirebaseManager : MonoBehaviour
         }
     }
 
+    // NEW: Clear all input fields method
+    private void ClearAllInputFields()
+    {
+        ClearLoginFields();
+        ClearSignupFields();
+    }
+
+    private void ClearLoginFields()
+    {
+        if (LoginEmail != null) LoginEmail.text = "";
+        if (loginPassword != null) loginPassword.text = "";
+        if (classCodeInput != null) classCodeInput.text = "";
+    }
+
+    private void ClearSignupFields()
+    {
+        if (SignupEmail != null) SignupEmail.text = "";
+        if (SignupPassword != null) SignupPassword.text = "";
+        if (SignupPasswordConfirm != null) SignupPasswordConfirm.text = "";
+        if (SignupFirstName != null) SignupFirstName.text = "";
+        if (SignupLastName != null) SignupLastName.text = "";
+        if (SignupCompany != null) SignupCompany.text = ""; // NEW: Clear company field
+    }
+
     public void OpenStartPanel()
     {
         CloseAllPanels();
         startPanel.SetActive(true);
     }
+
     public void OpenSignUpPanel()
     {
         CloseAllPanels();
         signupUi.SetActive(true);
     }
+
     public void OpenLogInPanel()
     {
         DeactivateAllScreens();
@@ -475,7 +739,10 @@ public class AccountFirebaseManager : MonoBehaviour
     public void ExitApplication()
     {
         Application.Quit();
-        Debug.Log("Application has been closed.");
+        if (enableDebugLogging)
+        {
+            Debug.Log("Application has been closed.");
+        }
     }
 
     private void CloseAllPanels()
@@ -485,4 +752,77 @@ public class AccountFirebaseManager : MonoBehaviour
         profilePanel.SetActive(false);
         profileLoginPanel.SetActive(false);
     }
+
+    // NEW: Additional utility methods from the AR script
+
+    // NEW: Method to set default company
+    public void SetDefaultCompany()
+    {
+        if (SignupCompany != null && string.IsNullOrWhiteSpace(SignupCompany.text))
+        {
+            SignupCompany.text = defaultCompany;
+        }
+    }
+
+    // NEW: Method to get user's enrolled classes
+    public async Task<List<string>> GetEnrolledClasses()
+    {
+        if (auth.CurrentUser == null) return new List<string>();
+
+        try
+        {
+            DocumentReference userDocRef = db.Collection(COLLECTION_USERS).Document(auth.CurrentUser.UserId);
+            DocumentSnapshot userSnapshot = await userDocRef.GetSnapshotAsync();
+
+            if (userSnapshot.Exists && userSnapshot.ContainsField("enrolledClasses"))
+            {
+                var enrolledClassesArray = userSnapshot.GetValue<object[]>("enrolledClasses");
+                return enrolledClassesArray?.Select(obj => obj.ToString()).ToList() ?? new List<string>();
+            }
+        }
+        catch (Exception ex)
+        {
+            if (enableDebugLogging)
+            {
+                Debug.LogError($"Error getting enrolled classes: {ex.Message}");
+            }
+        }
+
+        return new List<string>();
+    }
+
+    #region Data Classes
+
+    [System.Serializable]
+    public class UserData
+    {
+        public string company;
+        public string email;
+        public List<string> enrolledClasses;
+        public string firstName;
+        public string lastName;
+        public string role;
+        public string uid;
+    }
+
+    [System.Serializable]
+    public class ClassData
+    {
+        public string code;
+        public string documentId;
+        public string name;
+        public string description;
+        public string instructorId;
+        public string assignmentType;
+        public string type;
+        public string title;
+        public string linkedCrimeSceneId;
+        public string linkedCrimeSceneName;
+        public Timestamp? dueDate;
+        public bool autoAssessOnLogin;
+        public Timestamp? createdAt;
+        public List<string> students;
+    }
+
+    #endregion
 }
