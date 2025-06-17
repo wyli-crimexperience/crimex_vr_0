@@ -318,7 +318,7 @@ public class LoggerManager : MonoBehaviour
         var firestoreData = logEntry.ToFirestoreData();
 
         // Changed collection name from "users" to "Students" for VR
-        db.Collection("Students")
+        db.Collection("users")
           .Document(logEntry.userId)
           .Collection("LogsVR") // Changed from "LogsAR" to "LogsVR"
           .Document(logEntry.documentId)
@@ -422,7 +422,7 @@ public class LoggerManager : MonoBehaviour
             try
             {
                 // Changed collection name from "users" to "Students" and "LogsAR" to "LogsVR"
-                var docRef = db.Collection("Students")
+                var docRef = db.Collection("users")
                              .Document(logEntry.userId)
                              .Collection("LogsVR")
                              .Document(logEntry.documentId);

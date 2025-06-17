@@ -56,12 +56,13 @@ public class CrimeSceneUnlockerManager : MonoBehaviour
     private float lastCheckTime = 0f;
     private Dictionary<string, List<string>> classUnlockData = new Dictionary<string, List<string>>();
     private bool hasCheckedInitially = false;
-
+    private bool authListenerInitialized = false;
     // Events
     public System.Action<string> OnCrimeSceneUnlocked;
     public System.Action<string> OnCrimeSceneLocked;
     public System.Action<List<string>> OnUnlockDataLoaded;
     public System.Action OnAllCrimeScenesLocked;
+    public System.Action OnUserLogout;
 
     // Properties
     public bool IsChecking => isChecking;
@@ -72,19 +73,71 @@ public class CrimeSceneUnlockerManager : MonoBehaviour
     {
         ValidateReferences();
         InitializeButtons();
+        SetupAuthStateListener(); 
 
         // Show initial status
         UpdateStatusText("Initializing...");
 
         if (autoCheckOnStart)
         {
-            // Start checking process
             StartCoroutine(WaitForProfileThenCheck());
         }
         else
         {
             UpdateStatusText("Ready - use RefreshUnlockStatus() to check");
         }
+    }
+    private void SetupAuthStateListener()
+    {
+        if (!authListenerInitialized)
+        {
+            FirebaseAuth.DefaultInstance.StateChanged += OnAuthStateChanged;
+            authListenerInitialized = true;
+            LogDebug("Firebase Auth state listener initialized.");
+        }
+    }
+    private void OnAuthStateChanged(object sender, System.EventArgs eventArgs)
+    {
+        FirebaseAuth auth = sender as FirebaseAuth;
+        FirebaseUser user = auth.CurrentUser;
+
+        if (user != currentUser)
+        {
+            bool wasLoggedIn = currentUser != null;
+            currentUser = user;
+
+            if (user != null)
+            {
+                LogDebug($"User logged in: {user.Email}");
+                UpdateStatusText("User logged in - checking access...");
+
+                // User logged in, check their crime scene access
+                CheckUnlockedCrimeScenesAsync();
+            }
+            else if (wasLoggedIn)
+            {
+                LogDebug("User logged out.");
+                OnUserLoggedOut();
+            }
+        }
+    }
+    private void OnUserLoggedOut()
+    {
+        UpdateStatusText("User logged out");
+
+        // Clear all unlock data
+        classUnlockData.Clear();
+
+        // Lock all crime scenes
+        LockAllCrimeScenes();
+
+        // Reset flags
+        hasCheckedInitially = false;
+
+        // Invoke logout event if you want other systems to respond
+        OnUserLogout?.Invoke();
+
+        LogDebug("All crime scenes locked due to user logout.");
     }
 
     private void ValidateReferences()
@@ -635,5 +688,13 @@ public class CrimeSceneUnlockerManager : MonoBehaviour
         LogDebug($"User Profile Display: {(userProfileDisplay != null ? "Found" : "Missing")}");
         LogDebug($"Unlock Data Count: {classUnlockData.Count}");
         LogDebug($"Unlocked Crime Scenes: {string.Join(", ", GetAllUnlockedCrimeScenes())}");
+    }
+    private void OnDestroy()
+    {
+        if (authListenerInitialized && FirebaseAuth.DefaultInstance != null)
+        {
+            FirebaseAuth.DefaultInstance.StateChanged -= OnAuthStateChanged;
+            LogDebug("Firebase Auth state listener cleaned up.");
+        }
     }
 }

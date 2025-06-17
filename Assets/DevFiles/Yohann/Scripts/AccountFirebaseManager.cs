@@ -610,18 +610,16 @@ public class AccountFirebaseManager : MonoBehaviour
         profileImage.texture = defaultProfileImage;
     }
 
-    // NEW: Updated LoadUserProfile to work with new schema
-    private void LoadUserProfile(string userId)
+    private async void LoadUserProfile(string userId)
     {
-        DocumentReference docRef = db.Collection(COLLECTION_USERS).Document(userId);
-
-        docRef.GetSnapshotAsync().ContinueWithOnMainThread(async task =>
+        try
         {
-            if (task.IsCompletedSuccessfully && task.Result.Exists)
-            {
-                var snapshot = task.Result;
+            DocumentReference docRef = db.Collection(COLLECTION_USERS).Document(userId);
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
-                // NEW: Use new schema fields
+            if (snapshot.Exists)
+            {
+                // Get basic user info
                 string firstName = snapshot.TryGetValue("firstName", out string fn) ? fn : "";
                 string lastName = snapshot.TryGetValue("lastName", out string ln) ? ln : "";
                 string fullName = $"{firstName} {lastName}".Trim();
@@ -630,43 +628,73 @@ public class AccountFirebaseManager : MonoBehaviour
                 string role = snapshot.TryGetValue("role", out string r) ? r : "Registered Account";
                 string company = snapshot.TryGetValue("company", out string c) ? c : "";
 
+                // Update basic profile info
                 usernameText.text = fullName;
                 userType.text = role;
-
-                // Handle profile image (if you still use this feature)
                 profileImage.texture = defaultProfileImage;
 
-                // NEW: Display company or enrolled classes info
-                if (!string.IsNullOrEmpty(company))
-                {
-                    classroomCodeText.text = company;
-                }
-                else if (snapshot.ContainsField("enrolledClasses"))
+                // FIXED: Always prioritize showing class names over company
+                if (snapshot.ContainsField("enrolledClasses"))
                 {
                     var enrolledClassesArray = snapshot.GetValue<object[]>("enrolledClasses");
                     List<string> enrolledClassIds = enrolledClassesArray?.Select(obj => obj.ToString()).ToList() ?? new List<string>();
 
                     if (enrolledClassIds.Count > 0)
                     {
-                        classroomCodeText.text = $"Enrolled in {enrolledClassIds.Count} class(es)";
+                        // Show loading state while fetching class names
+                        classroomCodeText.text = "Loading classes...";
+
+                        // Fetch actual class names
+                        List<string> classNames = await GetClassNamesByIds(enrolledClassIds);
+
+                        if (classNames.Count > 0)
+                        {
+                            // Display class names (limit to prevent UI overflow)
+                            if (classNames.Count <= 3)
+                            {
+                                classroomCodeText.text = string.Join(", ", classNames);
+                            }
+                            else
+                            {
+                                classroomCodeText.text = $"{string.Join(", ", classNames.Take(2))}, +{classNames.Count - 2} more";
+                            }
+                        }
+                        else
+                        {
+                            classroomCodeText.text = $"Enrolled in {enrolledClassIds.Count} class(es) (names unavailable)";
+                        }
+
+                        if (enableDebugLogging)
+                        {
+                            Debug.Log($"User enrolled in classes: {string.Join(", ", classNames)}");
+                        }
                     }
                     else
                     {
-                        classroomCodeText.text = "No classes enrolled";
+                        // Fallback to company if no classes are enrolled
+                        classroomCodeText.text = !string.IsNullOrEmpty(company) ? company : "No classes enrolled";
                     }
                 }
                 else
                 {
-                    classroomCodeText.text = "No class assigned";
+                    // Fallback to company if no enrolledClasses field exists
+                    classroomCodeText.text = !string.IsNullOrEmpty(company) ? company : "No class assigned";
                 }
             }
             else
             {
                 DisplayGuestProfile();
             }
-        });
+        }
+        catch (Exception ex)
+        {
+            if (enableDebugLogging)
+            {
+                Debug.LogError($"Error loading user profile: {ex.Message}");
+            }
+            DisplayGuestProfile();
+        }
     }
-
     private System.Collections.IEnumerator LoadProfilePicture(string url)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
@@ -789,6 +817,51 @@ public class AccountFirebaseManager : MonoBehaviour
         }
 
         return new List<string>();
+    }
+    private async Task<List<string>> GetClassNamesByIds(List<string> classIds)
+    {
+        List<string> classNames = new List<string>();
+
+        try
+        {
+            // Create tasks for all class document fetches
+            List<Task<DocumentSnapshot>> tasks = new List<Task<DocumentSnapshot>>();
+
+            foreach (string classId in classIds)
+            {
+                DocumentReference classDocRef = db.Collection(COLLECTION_CLASSES).Document(classId);
+                tasks.Add(classDocRef.GetSnapshotAsync());
+            }
+
+            // Wait for all requests to complete
+            DocumentSnapshot[] snapshots = await Task.WhenAll(tasks);
+
+            // Extract class names from snapshots
+            foreach (DocumentSnapshot snapshot in snapshots)
+            {
+                if (snapshot.Exists && snapshot.ContainsField("name"))
+                {
+                    string className = snapshot.GetValue<string>("name");
+                    if (!string.IsNullOrEmpty(className))
+                    {
+                        classNames.Add(className);
+                    }
+                }
+                else if (enableDebugLogging)
+                {
+                    Debug.LogWarning($"Class document {snapshot.Id} not found or missing 'name' field");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (enableDebugLogging)
+            {
+                Debug.LogError($"Error fetching class names: {ex.Message}");
+            }
+        }
+
+        return classNames;
     }
 
     #region Data Classes
