@@ -3,7 +3,92 @@ guid: bd3160a81f162504a872de3ecb237d25
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: blinds
+    second: {fileID: 2100000, guid: c2464b39abc4be04b87c960d433bcaff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bulletin board
+    second: {fileID: 2100000, guid: 99b48bfa9c124704ba0b7cb7575be1f0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ceiling.001
+    second: {fileID: 2100000, guid: 9b270ac968e260940b94482ff5dbe940, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: chair
+    second: {fileID: 2100000, guid: 59ffdb3df05cf6246a9bc9271ab7aa3a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: desk
+    second: {fileID: 2100000, guid: ac8b85adc8757bf48bbea85168fa9d1f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door
+    second: {fileID: 2100000, guid: 2e6957383869983498a7213449a5f921, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door blinds
+    second: {fileID: 2100000, guid: 573b28b0b8be5a1419d70a457242661d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door frame
+    second: {fileID: 2100000, guid: 750ac3eb5c90f034c9bbb57ba5a69fef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: emissive light
+    second: {fileID: 2100000, guid: 5dd22606c75c1d54591c8371d3d6140b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: file cabinet
+    second: {fileID: 2100000, guid: 4a2f4ec8ee7d00049ba412588627cbee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass
+    second: {fileID: 2100000, guid: b0ce156ea5a2db147a35b43838bbca99, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal
+    second: {fileID: 2100000, guid: 51c6a6e529795df47bc9dc9116ae1016, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: paint blue
+    second: {fileID: 2100000, guid: 6ba287a2afcbc434187048fddbce9ff6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plaster
+    second: {fileID: 2100000, guid: d8fead0f32ea7ef44b0a6496331befba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plastic
+    second: {fileID: 2100000, guid: c4135ddcccf5a234cb265857812ad32b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tiles
+    second: {fileID: 2100000, guid: 04bb09519a5b1f342b544b0871f72239, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: window
+    second: {fileID: 2100000, guid: c46bf980ff400364aabc13c50d683eb5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

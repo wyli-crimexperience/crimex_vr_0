@@ -3,7 +3,17 @@ guid: 9580c958af2e77446bf67b2613421543
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Human.body
+    second: {fileID: 2100000, guid: d810189b56412e24e89f0615f71c9157, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Human.toigo_gloves_short
+    second: {fileID: 2100000, guid: 599339738c3805e4ebc461f18522239e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
