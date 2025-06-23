@@ -82,6 +82,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: glass
+    second: {fileID: 2100000, guid: d41408709fc82f74fa7f0f13764bb260, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: lpg
     second: {fileID: 2100000, guid: 42e992c7c8454e8409f6708619f65563, type: 2}
   - first:
@@ -89,6 +94,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: mattress
     second: {fileID: 2100000, guid: 0479e1a856194d2478bf3addc75197cb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mirror
+    second: {fileID: 2100000, guid: bf404c6b8927f344c953a486f0d98f21, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

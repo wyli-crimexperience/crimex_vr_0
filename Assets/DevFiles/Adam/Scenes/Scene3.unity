@@ -912,7 +912,7 @@ Transform:
   m_GameObject: {fileID: 158950608}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -931,10 +931,10 @@ ReflectionProbe:
   m_Mode: 2
   m_RefreshMode: 0
   m_TimeSlicingMode: 0
-  m_Resolution: 128
+  m_Resolution: 512
   m_UpdateFrequency: 0
   m_BoxSize: {x: 4.25, y: 3.25, z: 5.25}
-  m_BoxOffset: {x: 0, y: 1.5, z: 0}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
   m_NearClip: 0.3
   m_FarClip: 1000
   m_ShadowDistance: 100
@@ -943,14 +943,14 @@ ReflectionProbe:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IntensityMultiplier: 0.5
+  m_IntensityMultiplier: 1
   m_BlendDistance: 1
   m_HDR: 1
   m_BoxProjection: 1
-  m_RenderDynamicObjects: 0
+  m_RenderDynamicObjects: 1
   m_UseOcclusionCulling: 1
   m_Importance: 1
-  m_CustomBakedTexture: {fileID: 8900000, guid: ffc301ea93b830642a91659882fb5f97,
+  m_CustomBakedTexture: {fileID: 8900000, guid: c50b6121562bed040b6e38099540197d,
     type: 3}
 --- !u!1 &176525487
 GameObject:
@@ -4069,8 +4069,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4974984522306558807, guid: 6bf581005aedd574d9eae8bfe64348d7,
         type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4974984522306558807, guid: 6bf581005aedd574d9eae8bfe64348d7,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 5050422055867433376, guid: 6bf581005aedd574d9eae8bfe64348d7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5050422055867433376, guid: 6bf581005aedd574d9eae8bfe64348d7,
         type: 3}
@@ -12173,7 +12183,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2067600898
 MonoBehaviour:
   m_ObjectHideFlags: 0
