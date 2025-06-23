@@ -15,6 +15,7 @@ TagManager:
   - BrushTip
   - PlayerPaused
   - FingerprintPowder
+  - FingerprintInkRollerTip
   layers:
   - Default
   - TransparentFX

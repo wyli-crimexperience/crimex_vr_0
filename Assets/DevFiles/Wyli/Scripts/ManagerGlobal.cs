@@ -53,6 +53,13 @@ public enum TypeItem {
     FingerprintTapeLifted,
     FormLatentFingerprint,
 
+    Wipes,
+    FingerprintInkingSlab,
+    FingerprintInk,
+    FingerprintInkRoller,
+    FingerprintSpoon,
+    FingerprintRecordStrip,
+
     // soco collector
     SterileSwab,
     EvidencePack,
