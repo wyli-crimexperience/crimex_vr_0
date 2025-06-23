@@ -212,6 +212,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: mirror
+    second: {fileID: 2100000, guid: 41b119ecfaa01e34b9ec55ea20f4b7de, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: non slip rubber
     second: {fileID: 2100000, guid: e5bcd879534eb1941b259527bfaf7901, type: 2}
   - first:
