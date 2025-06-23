@@ -458,8 +458,16 @@ public class ManagerGlobal : MonoBehaviour {
 
         // fingerprint tape
         if (typeItem1 == TypeItem.FingerprintTapeRoll) {
-            if (fingerprintTapeRoll.FingerprintCurrent != null) {
-                LiftFingerprint(fingerprintTapeRoll.FingerprintCurrent);
+            if (fingerprintTapeRoll.FingerprintTapeLifted == null) {
+                fingerprintTapeRoll.ExtendTape();
+            } else {
+                if (fingerprintTapeRoll.FingerprintCurrent != null) {
+                    fingerprintTapeRoll.LiftFingerprint();
+                } else {
+                    if (fingerprintTapeRoll.FormCurrent != null) {
+                        fingerprintTapeRoll.AttachToForm();
+                    }
+                }
             }
         }
 
@@ -679,12 +687,6 @@ public class ManagerGlobal : MonoBehaviour {
     // evidence pack seal + pen
     public void SetCanWriteEvidencePackSeal(bool b) {
         canWriteEvidencePackSeal = b;
-    }
-
-    // fingerprint lifting
-    private void LiftFingerprint(Fingerprint fingerprintSource) {
-        fingerprintTapeRoll.LiftFingerprint(fingerprintSource);
-        fingerprintSource.Lift();
     }
 
     // dialogue

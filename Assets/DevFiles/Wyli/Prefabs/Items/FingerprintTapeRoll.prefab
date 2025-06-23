@@ -35,7 +35,6 @@ Transform:
   m_Children:
   - {fileID: 6327783481699716167}
   - {fileID: 8537934188241115413}
-  - {fileID: 2396313936081748766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &256281292866569860
@@ -54,7 +53,7 @@ MonoBehaviour:
   TypeItem: 20
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 2012481340105076809}
-  fingerprintTapeLifted: {fileID: 8459720301019046680}
+  fingerprintTapeLifted: {fileID: 0}
 --- !u!54 &6741757336560348518
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -258,97 +257,6 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
---- !u!1001 &4242320230092204392
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 851464175827226658}
-    m_Modifications:
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.071
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4007828399450096088, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_Name
-      value: FingerprintTapeLifted
-      objectReference: {fileID: 0}
-    - target: {fileID: 4007828399450096088, guid: 46807c22a82e37c479d18875117ea4cd,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 46807c22a82e37c479d18875117ea4cd, type: 3}
---- !u!4 &2396313936081748766 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1990262358100011638, guid: 46807c22a82e37c479d18875117ea4cd,
-    type: 3}
-  m_PrefabInstance: {fileID: 4242320230092204392}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8459720301019046680 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5744703128788257392, guid: 46807c22a82e37c479d18875117ea4cd,
-    type: 3}
-  m_PrefabInstance: {fileID: 4242320230092204392}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8363332543949d4f847902eb04ea7a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5790068851739110316
 PrefabInstance:
   m_ObjectHideFlags: 0

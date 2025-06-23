@@ -2617,7 +2617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1670592219414351791
 Transform:
   m_ObjectHideFlags: 0
@@ -4103,7 +4103,7 @@ PrefabInstance:
     - target: {fileID: 1037101634260539920, guid: c3a9892d0ec5b084986642440b3bad6e,
         type: 3}
       propertyPath: m_Name
-      value: FormLatentFingerprint
+      value: FormFingerprintSpecialist
       objectReference: {fileID: 0}
     - target: {fileID: 5031541437689068538, guid: c3a9892d0ec5b084986642440b3bad6e,
         type: 3}
@@ -4791,7 +4791,7 @@ PrefabInstance:
     - target: {fileID: 4027228791024609348, guid: a51684372e9a12843aabfb45e2e40b92,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6028489816102454359, guid: a51684372e9a12843aabfb45e2e40b92,
         type: 3}
