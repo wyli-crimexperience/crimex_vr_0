@@ -17,6 +17,11 @@ public class AudioManager : MonoBehaviour
     [Header("Debug Settings")]
     [SerializeField] private bool enableDebugLogs = true;
 
+    [Header("Volume Settings")]
+    [SerializeField] private float masterVolume = 1.0f;
+    [SerializeField] private float sfxVolumeMultiplier = 1.0f;
+    [SerializeField] private float footstepVolumeMultiplier = 2.0f; // Boost footsteps specifically
+
     private Queue<AudioSource> audioSourcePool;
 
     void Awake()
@@ -63,22 +68,26 @@ public class AudioManager : MonoBehaviour
     }
 
     // General sound play method
+    // Updated PlaySound method
     public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f)
     {
+        float finalVolume = volume * sfxVolumeMultiplier * masterVolume;
         if (enableDebugLogs)
-            Debug.Log($"[AudioManager] PlaySound called - Clip: {(clip ? clip.name : "NULL")}, Position: {position}");
+            Debug.Log($"[AudioManager] PlaySound - Original: {volume}, Final: {finalVolume}");
 
-        PlaySoundWithMixer(clip, position, volume, pitch, sfxMixerGroup);
+        PlaySoundWithMixer(clip, position, finalVolume, pitch, sfxMixerGroup);
     }
 
-    // Specific footstep method
+    // Updated PlayFootstep method  
     public void PlayFootstep(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f)
     {
+        float finalVolume = volume * footstepVolumeMultiplier * masterVolume;
         if (enableDebugLogs)
-            Debug.Log($"[AudioManager] PlayFootstep called - Clip: {(clip ? clip.name : "NULL")}, Position: {position}, Volume: {volume}, Pitch: {pitch}");
+            Debug.Log($"[AudioManager] PlayFootstep - Original: {volume}, Multiplier: {footstepVolumeMultiplier}, Final: {finalVolume}");
 
-        PlaySoundWithMixer(clip, position, volume, pitch, footstepMixerGroup);
+        PlaySoundWithMixer(clip, position, finalVolume, pitch, footstepMixerGroup);
     }
+
 
     // Main method that handles mixer assignment
     public void PlaySoundWithMixer(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, AudioMixerGroup mixerGroup = null)

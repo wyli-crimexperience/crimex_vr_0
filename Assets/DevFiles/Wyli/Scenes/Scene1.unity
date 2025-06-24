@@ -1516,6 +1516,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Device Simulator
       objectReference: {fileID: 0}
+    - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6707,13 +6712,14 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 14ae706fef2303e4cb71112dbd5d250b, type: 3}
   - {fileID: 8300000, guid: b995bc1775ea83b4b8f861763e9a1424, type: 3}
   - {fileID: 8300000, guid: d15f7338d693f0343843a6b9096d27f6, type: 3}
-  stepInterval: 0.5
-  minSpeed: 0.0001
-  volumeRange: 100
+  stepInterval: 0.3
+  minSpeed: 0.002
+  baseVolume: 6.07
+  volumeRange: 9.64
   pitchRange: 0.1
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
   raycastDistance: 3
   raycastOffset: 0.1
   useMultipleRaycasts: 1
@@ -11807,16 +11813,36 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
         type: 3}
+      propertyPath: masterVolume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
+        type: 3}
       propertyPath: sfxMixerGroup
       value: 
       objectReference: {fileID: 7721132474655496399, guid: dad2ec26caf93f243aae7f693dc73145,
         type: 2}
     - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
         type: 3}
+      propertyPath: enableDebugLogs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
+        type: 3}
       propertyPath: footstepMixerGroup
       value: 
       objectReference: {fileID: 7721132474655496399, guid: dad2ec26caf93f243aae7f693dc73145,
         type: 2}
+    - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
+        type: 3}
+      propertyPath: sfxVolumeMultiplier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
+        type: 3}
+      propertyPath: footstepVolumeMultiplier
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3837844797624730952, guid: 8b675d4cb6d5623468384502b9ffebb3,
         type: 3}
       propertyPath: m_Name

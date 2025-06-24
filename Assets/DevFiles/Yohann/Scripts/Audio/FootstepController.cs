@@ -6,6 +6,7 @@ public class FootstepController : MonoBehaviour
     [SerializeField] private AudioClip[] footstepClips;
     [SerializeField] private float stepInterval = 0.5f;
     [SerializeField] private float minSpeed = 0.1f;
+    [SerializeField] private float baseVolume = 2.0f; // ADD THIS - Base volume multiplier
     [SerializeField] private float volumeRange = 0.2f;
     [SerializeField] private float pitchRange = 0.1f;
 
@@ -200,7 +201,8 @@ public class FootstepController : MonoBehaviour
             return;
         }
 
-        float randomVolume = 1f + Random.Range(-volumeRange, volumeRange);
+        // Apply base volume multiplier
+        float randomVolume = baseVolume + Random.Range(-volumeRange, volumeRange);
         float randomPitch = 1f + Random.Range(-pitchRange, pitchRange);
 
         Vector3 footstepPosition = transform.position;
@@ -208,7 +210,7 @@ public class FootstepController : MonoBehaviour
 
         if (enableDebugLogs)
         {
-            Debug.Log($"[FootstepController] Playing footstep: {clipToPlay.name}");
+            Debug.Log($"[FootstepController] Playing footstep: {clipToPlay.name}, Final Volume: {randomVolume:F2}");
         }
 
         AudioManager.Instance.PlayFootstep(clipToPlay, footstepPosition, randomVolume, randomPitch);
