@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 4932062066479030352}
-  TypeItem: 10
+  TypeItem: 2
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 9223121233953856502}
   pages:

@@ -50,10 +50,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 28877825068472322}
-  TypeItem: 17
+  TypeItem: 15
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 5878391177679706079}
-  typeFingerprintPowder: 0
   mrPowder: {fileID: 5800824240559295964}
 --- !u!54 &1614791100207867644
 Rigidbody:

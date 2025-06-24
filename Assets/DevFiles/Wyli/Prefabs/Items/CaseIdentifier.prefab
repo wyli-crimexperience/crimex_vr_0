@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 243291800349402104}
-  TypeItem: 13
+  TypeItem: 11
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 4496726434976538541}
   txtLabel: {fileID: 3695850450595525240}

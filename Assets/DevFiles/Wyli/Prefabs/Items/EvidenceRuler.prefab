@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 4419574643122265972}
-  TypeItem: 14
+  TypeItem: 12
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 2012481340105076809}
 --- !u!54 &6741757336560348518

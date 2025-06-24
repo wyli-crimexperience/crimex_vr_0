@@ -46,11 +46,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8648104301525211770}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa298e90b4fa8b143be4c8832fcf1f6f, type: 3}
+  m_Script: {fileID: 11500000, guid: f1a6e9d19d827eb40bb220009aafb0fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 28877825068472322}
-  TypeItem: 25
+  TypeItem: 22
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 5878391177679706079}
 --- !u!54 &1614791100207867644

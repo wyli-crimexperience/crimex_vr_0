@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 4419574643122265972}
-  TypeItem: 15
+  TypeItem: 13
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 2012481340105076809}
   clippingPlane: {fileID: 8989150390488310791}

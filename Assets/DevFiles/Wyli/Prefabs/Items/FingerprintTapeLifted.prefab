@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 5763498672337028000}
-  TypeItem: 21
+  TypeItem: 19
   fingerprint: {fileID: 1280398007027618681}
 --- !u!54 &6481370667254562142
 Rigidbody:

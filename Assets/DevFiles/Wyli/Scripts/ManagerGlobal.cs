@@ -16,24 +16,19 @@ public enum TypeItem {
     None,
     Briefcase,
 
+    Form,
+
     // first responder
     Notepad,
     Pen,
     PoliceTapeRoll,
     Phone,
-    
-    // investigator-on-case part 1
-    FormFirstResponder,
 
     // soco team leader
-    FormInvestigatorOnCase,
     CommandPost,
     
     // soco photographer
     Camera,
-
-    // soco sketcher
-    FormSketcher,
 
     // soco searcher
     EvidenceMarkerItem,
@@ -51,7 +46,6 @@ public enum TypeItem {
     FingerprintBrush,
     FingerprintTapeRoll,
     FingerprintTapeLifted,
-    FormLatentFingerprint,
 
     Wipes,
     FingerprintInkingSlab,
@@ -69,9 +63,13 @@ public enum TypeItem {
     ItemOfIdentification,
 
     // evidence custodian
-    EvidenceChecklist,
-
-    // ioc part 3,
+    EvidenceChecklist
+}
+public enum TypeItemForm {
+    FirstResponder,
+    InvestigatorOnCase,
+    Sketcher,
+    LatentFingerprint,
     ReleaseOfCrimeSceneForm
 }
 public enum TypeFingerprintBrush {
@@ -149,13 +147,15 @@ public class ManagerGlobal : MonoBehaviour {
     private List<EvidenceMarkerCopy> listEvidenceMarkerItemCopies = new List<EvidenceMarkerCopy>();
     private List<EvidenceMarkerCopy> listEvidenceMarkerBodyCopies = new List<EvidenceMarkerCopy>();
 
-    // hand items
+    // hand items (when adding a new one, update the AssignGrabbedItem and UnassignGrabbedItem methods
     private HandItem handItemLeft, handItemRight;
     private Notepad notepad;
     private PoliceTapeRoll policeTapeRoll;
     private Form form;
     private HandItem evidenceMarkerItem, evidenceMarkerBody;
     private FingerprintTapeRoll fingerprintTapeRoll;
+    private FingerprintInk fingerprintInk;
+    private FingerprintInkRoller fingerprintInkRoller;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
 
@@ -391,7 +391,7 @@ public class ManagerGlobal : MonoBehaviour {
                 }
             }
             // pen on form
-            if (canWriteForm && IsForm(typeItem2)) {
+            if (canWriteForm && typeItem2 == TypeItem.Form) {
                 form.WriteOnPage();
             }
             // pen on evidence pack
@@ -422,7 +422,7 @@ public class ManagerGlobal : MonoBehaviour {
         }
 
         // any form
-        if (IsForm(typeItem1)) {
+        if (typeItem1 == TypeItem.Form) {
             form.TogglePage();
         }
 
@@ -478,6 +478,16 @@ public class ManagerGlobal : MonoBehaviour {
             }
         }
 
+        // fingerprint ink
+        if (typeItem1 == TypeItem.FingerprintInk) {
+            fingerprintInk.ApplyInk();
+        }
+
+        // fingerprint ink roller
+        if (typeItem1 == TypeItem.FingerprintInkRoller) {
+            fingerprintInkRoller.SpreadInk();
+        }
+
         // evidence pack
         if (typeItem1 == TypeItem.EvidencePack) {
             if (evidencePack.EvidenceCurrent != null) {
@@ -492,7 +502,6 @@ public class ManagerGlobal : MonoBehaviour {
             }
         }
     }
-    private bool IsForm(TypeItem typeItem) => typeItem == TypeItem.FormFirstResponder || typeItem == TypeItem.FormInvestigatorOnCase || typeItem == TypeItem.FormSketcher;
     private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
     private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
     public void GrabItem(HandItem handItem) {
@@ -517,20 +526,26 @@ public class ManagerGlobal : MonoBehaviour {
     }
     private void AssignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad _notepad) { notepad = _notepad; }
+        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
         else if (handItem is Form _form) {
             form = _form;
             form.Receive();
         }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = handItem; }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = handItem; }
-        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
+        else if (handItem is FingerprintTapeRoll _fingerprintTapeRoll) { fingerprintTapeRoll = _fingerprintTapeRoll; }
+        else if (handItem is FingerprintInk _fingerprintInk) { fingerprintInk = _fingerprintInk; }
+        else if (handItem is FingerprintInkRoller _fingerprintInkRoller) { fingerprintInkRoller = _fingerprintInkRoller; }
     }
     private void UnassignGrabbedItem(HandItem handItem) {
         if (handItem is Notepad) { notepad = null; }
+        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
         else if (handItem is Form) { form = null; }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = null; }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = null; }
-        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
+        else if (handItem is FingerprintTapeRoll) { fingerprintTapeRoll = null; }
+        else if (handItem is FingerprintInk) { fingerprintInk = null; }
+        else if (handItem is FingerprintInkRoller) { fingerprintInkRoller = null; }
     }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
         ThumbstickTap(context.ReadValue<Vector2>());

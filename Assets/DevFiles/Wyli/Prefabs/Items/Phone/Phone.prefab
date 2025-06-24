@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: {fileID: 4932062066479030352}
-  TypeItem: 5
+  TypeItem: 6
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 9223121233953856502}
   prefabPhoneButtonContact: {fileID: 7070547236247212215, guid: c7f81833a033f8342958ed2024ac557d,
