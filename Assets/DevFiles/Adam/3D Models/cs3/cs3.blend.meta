@@ -304,6 +304,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: window glass
     second: {fileID: 2100000, guid: 92b476c9fd3e89c4497f9c5d32025dbf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: witness_room
+    second: {fileID: 2100000, guid: 2587bce10edc4a149b426b80c5034417, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
