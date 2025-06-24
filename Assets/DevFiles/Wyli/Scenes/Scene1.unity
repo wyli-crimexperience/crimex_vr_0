@@ -1501,7 +1501,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &283148953
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5263,26 +5263,57 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
+      propertyPath: masterMixerGroup
+      value: 
+      objectReference: {fileID: 2575891234949910345, guid: dad2ec26caf93f243aae7f693dc73145,
+        type: 2}
+    - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
+        type: 3}
       propertyPath: ambientMixerGroup
       value: 
-      objectReference: {fileID: 24300002, guid: dad2ec26caf93f243aae7f693dc73145,
+      objectReference: {fileID: 2013283422958109100, guid: dad2ec26caf93f243aae7f693dc73145,
         type: 2}
     - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: positionalMixerGroup
       value: 
-      objectReference: {fileID: 24300002, guid: dad2ec26caf93f243aae7f693dc73145,
+      objectReference: {fileID: 2013283422958109100, guid: dad2ec26caf93f243aae7f693dc73145,
         type: 2}
     - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: ambientZones.Array.data[0].volume
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: ambientZones.Array.data[1].volume
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
+        type: 3}
+      propertyPath: ambientZones.Array.data[0].fadeInTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
+        type: 3}
+      propertyPath: ambientZones.Array.data[1].fadeInTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
+        type: 3}
+      propertyPath: ambientZones.Array.data[0].fadeOutTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
+        type: 3}
+      propertyPath: ambientZones.Array.data[1].fadeOutTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446468672561023297, guid: 4890163ec11f644488750b2952c62f5b,
+        type: 3}
+      propertyPath: 'ambientZones.Array.data[0].ambientClips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 72425f876bb477a44bc7b659c342a1d6, type: 3}
     - target: {fileID: 6951754092522841475, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: m_Size.x
@@ -5321,17 +5352,17 @@ PrefabInstance:
     - target: {fileID: 8882329637413480491, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: m_Size.z
-      value: 12.288597
+      value: 14.575811
       objectReference: {fileID: 0}
     - target: {fileID: 8882329637413480491, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: m_Center.x
-      value: 7.6552296
+      value: 7.655245
       objectReference: {fileID: 0}
     - target: {fileID: 8882329637413480491, guid: 4890163ec11f644488750b2952c62f5b,
         type: 3}
       propertyPath: m_Center.z
-      value: -3.2273939
+      value: -2.0837872
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10089,7 +10120,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2067600898
 MonoBehaviour:
   m_ObjectHideFlags: 0
