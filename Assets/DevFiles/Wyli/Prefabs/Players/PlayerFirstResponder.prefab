@@ -495,6 +495,8 @@ MonoBehaviour:
   - {fileID: 8121718424745075138}
   - {fileID: 2342517428843723069}
   - {fileID: 5260528111941689132}
+  - {fileID: 1863792642819522846}
+  - {fileID: 8921326942516045817}
 --- !u!114 &1646045468493639039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1886,6 +1888,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7080348808723112939, guid: 05bf7e5a60d630f4b9d53396fb9f06cd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7204690354286055157, guid: 05bf7e5a60d630f4b9d53396fb9f06cd,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2789,6 +2796,12 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.004
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1863792642819522846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7631902972249194982, guid: b8d89332412dad94285c312e00c933bc,
+    type: 3}
+  m_PrefabInstance: {fileID: 8085213511650099448}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1978233605781259545 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1495078380880345631, guid: b8d89332412dad94285c312e00c933bc,
@@ -3366,6 +3379,12 @@ GameObject:
 --- !u!1 &8914892077154691614 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8391193718175552794, guid: b8d89332412dad94285c312e00c933bc,
+    type: 3}
+  m_PrefabInstance: {fileID: 8085213511650099448}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8921326942516045817 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 863170846311425793, guid: b8d89332412dad94285c312e00c933bc,
     type: 3}
   m_PrefabInstance: {fileID: 8085213511650099448}
   m_PrefabAsset: {fileID: 0}

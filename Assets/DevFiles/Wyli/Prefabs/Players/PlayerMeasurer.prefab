@@ -1235,6 +1235,8 @@ MonoBehaviour:
   - {fileID: 6956711479356073420}
   - {fileID: 9142064655421927983}
   - {fileID: 1683306247011062846}
+  - {fileID: 5152379546284673548}
+  - {fileID: 2707652906244222187}
 --- !u!1 &9035685617163808571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1656,6 +1658,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7080348808723112939, guid: 05bf7e5a60d630f4b9d53396fb9f06cd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7204690354286055157, guid: 05bf7e5a60d630f4b9d53396fb9f06cd,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2066,6 +2073,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3344233572811672554}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2707652906244222187 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 863170846311425793, guid: ed253c8f7ed07e641a5aafadf4246d5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3344233572811672554}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2730702492081332492 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8391193718175552794, guid: ed253c8f7ed07e641a5aafadf4246d5f,
@@ -2159,6 +2172,12 @@ SphereCollider:
 --- !u!4 &3742192764706094996 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2127927499512345726, guid: ed253c8f7ed07e641a5aafadf4246d5f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3344233572811672554}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5152379546284673548 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7631902972249194982, guid: ed253c8f7ed07e641a5aafadf4246d5f,
     type: 3}
   m_PrefabInstance: {fileID: 3344233572811672554}
   m_PrefabAsset: {fileID: 0}
