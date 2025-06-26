@@ -156,9 +156,61 @@ public class ManagerGlobal : MonoBehaviour {
     private FingerprintTapeRoll fingerprintTapeRoll;
     private FingerprintInk fingerprintInk;
     private FingerprintInkRoller fingerprintInkRoller;
+    private FingerprintRecordStrip fingerprintRecordStrip;
+    private FingerprintSpoon fingerprintSpoon;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
+    private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
+    private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
+    public void GrabItem(HandItem handItem) {
+        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
+            handItemLeft = handItem;
+            AssignGrabbedItem(handItem);
+        }
+        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
+            handItemRight = handItem;
+            AssignGrabbedItem(handItem);
+        }
+    }
+    public void ReleaseItem(HandItem handItem) {
+        if (handItemLeft == handItem) {
+            handItemLeft = null;
+            UnassignGrabbedItem(handItem);
+        }
+        if (handItemRight == handItem) {
+            handItemRight = null;
+            UnassignGrabbedItem(handItem);
+        }
+    }
+    private void AssignGrabbedItem(HandItem handItem) {
+        if (handItem is Notepad _notepad) { notepad = _notepad; }
+        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
+        else if (handItem is Form _form) {
+            form = _form;
+            form.Receive();
+        }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = handItem; }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = handItem; }
+        else if (handItem is FingerprintTapeRoll _fingerprintTapeRoll) { fingerprintTapeRoll = _fingerprintTapeRoll; }
+        else if (handItem is FingerprintInk _fingerprintInk) { fingerprintInk = _fingerprintInk; }
+        else if (handItem is FingerprintInkRoller _fingerprintInkRoller) { fingerprintInkRoller = _fingerprintInkRoller; }
+        else if (handItem is FingerprintRecordStrip _fingerprintRecordStrip) { fingerprintRecordStrip = _fingerprintRecordStrip; }
+        else if (handItem is FingerprintSpoon _fingerprintSpoon) { fingerprintSpoon = _fingerprintSpoon; }
+    }
+    private void UnassignGrabbedItem(HandItem handItem) {
+        if (handItem is Notepad) { notepad = null; }
+        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
+        else if (handItem is Form) { form = null; }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = null; }
+        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = null; }
+        else if (handItem is FingerprintTapeRoll) { fingerprintTapeRoll = null; }
+        else if (handItem is FingerprintInk) { fingerprintInk = null; }
+        else if (handItem is FingerprintInkRoller) { fingerprintInkRoller = null; }
+        else if (handItem is FingerprintRecordStrip) { fingerprintRecordStrip = null; }
+        else if (handItem is FingerprintSpoon) { fingerprintSpoon = null; }
+    }
 
+    //
     private float thoughtTimer = 0;
     private Coroutine corThoughtTimer;
     private GameObject thoughtSender;
@@ -488,6 +540,16 @@ public class ManagerGlobal : MonoBehaviour {
             fingerprintInkRoller.SpreadInk();
         }
 
+        // fingerprint record strip
+        if (typeItem1 == TypeItem.FingerprintRecordStrip) {
+            fingerprintRecordStrip.ToggleSpoon();
+        }
+
+        // fingerprint record strip
+        if (typeItem1 == TypeItem.FingerprintSpoon) {
+            fingerprintSpoon.MoveStrip();
+        }
+
         // evidence pack
         if (typeItem1 == TypeItem.EvidencePack) {
             if (evidencePack.EvidenceCurrent != null) {
@@ -501,51 +563,6 @@ public class ManagerGlobal : MonoBehaviour {
                 evidencePackSealTapeRoll.EvidencePackSealCurrent.SetTaped(true);
             }
         }
-    }
-    private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
-    private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
-    public void GrabItem(HandItem handItem) {
-        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
-            handItemLeft = handItem;
-            AssignGrabbedItem(handItem);
-        }
-        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
-            handItemRight = handItem;
-            AssignGrabbedItem(handItem);
-        }
-    }
-    public void ReleaseItem(HandItem handItem) {
-        if (handItemLeft == handItem) {
-            handItemLeft = null;
-            UnassignGrabbedItem(handItem);
-        }
-        if (handItemRight == handItem) {
-            handItemRight = null;
-            UnassignGrabbedItem(handItem);
-        }
-    }
-    private void AssignGrabbedItem(HandItem handItem) {
-        if (handItem is Notepad _notepad) { notepad = _notepad; }
-        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
-        else if (handItem is Form _form) {
-            form = _form;
-            form.Receive();
-        }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = handItem; }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = handItem; }
-        else if (handItem is FingerprintTapeRoll _fingerprintTapeRoll) { fingerprintTapeRoll = _fingerprintTapeRoll; }
-        else if (handItem is FingerprintInk _fingerprintInk) { fingerprintInk = _fingerprintInk; }
-        else if (handItem is FingerprintInkRoller _fingerprintInkRoller) { fingerprintInkRoller = _fingerprintInkRoller; }
-    }
-    private void UnassignGrabbedItem(HandItem handItem) {
-        if (handItem is Notepad) { notepad = null; }
-        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
-        else if (handItem is Form) { form = null; }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = null; }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = null; }
-        else if (handItem is FingerprintTapeRoll) { fingerprintTapeRoll = null; }
-        else if (handItem is FingerprintInk) { fingerprintInk = null; }
-        else if (handItem is FingerprintInkRoller) { fingerprintInkRoller = null; }
     }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
         ThumbstickTap(context.ReadValue<Vector2>());
