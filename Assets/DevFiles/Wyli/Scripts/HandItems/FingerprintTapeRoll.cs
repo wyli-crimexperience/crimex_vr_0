@@ -18,7 +18,7 @@ public class FingerprintTapeRoll : HandItemBriefcase {
         if (fingerprintTapeLifted != null) {
             // enter fingerprint
             Fingerprint fingerprint = other.GetComponent<Fingerprint>();
-            if (fingerprint != null && !fingerprint.IsLifted && !fingerprint.IsDisplayOnly && fingerprint.TypeFingerprintPowder != TypeFingerprintPowder.None) {
+            if (fingerprint != null && fingerprint.IsShowing && !fingerprint.IsDisplayOnly && fingerprint.TypeFingerprintPowder != TypeFingerprintPowder.None) {
                 FingerprintCurrent = fingerprint;
             }
         } else {

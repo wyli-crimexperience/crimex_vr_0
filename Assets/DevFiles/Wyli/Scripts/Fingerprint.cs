@@ -6,19 +6,22 @@ public class Fingerprint : MonoBehaviour {
 
     [SerializeField] private GameObject objFingerprint;
     [SerializeField] private MeshRenderer mrFingerprint;
+
     [SerializeField] private bool isDisplayOnly;
     public bool IsDisplayOnly => isDisplayOnly;
 
+    public TypeFingerprintPowder TypeFingerprintPowder;
+    public bool IsShowing => TypeFingerprintPowder != TypeFingerprintPowder.None;
+    public void Lift() {
+        TypeFingerprintPowder = TypeFingerprintPowder.None;
+    }
+
     private Material matFingerprint;
 
-
-
-    public bool IsLifted { get; private set; }
-    public void Lift() {
-        IsLifted = true;
-        SetTypeFingerprintPowder(TypeFingerprintPowder.None);
+    private bool isFingertip;
+    public void SetFingertip() {
+        isFingertip = true;
     }
-    public TypeFingerprintPowder TypeFingerprintPowder;
 
 
 
@@ -26,17 +29,31 @@ public class Fingerprint : MonoBehaviour {
         matFingerprint = mrFingerprint.material;
     }
     private void Start() {
-        IsLifted = false;
-
-        UpdateVisual();
+        SetTypeFingerprintPowder(TypeFingerprintPowder.None);
     }
     private void OnTriggerEnter(Collider other) {
-        if (!IsLifted && !IsDisplayOnly) {
-            FingerprintBrush fingerprintBrush = other.GetComponent<FingerprintBrush>();
-            if (fingerprintBrush != null && fingerprintBrush.TypeFingerprintPowder != TypeFingerprintPowder.None) {
-                objFingerprint.SetActive(true);
+        if (IsDisplayOnly) { return; }
 
-                SetTypeFingerprintPowder(fingerprintBrush.TypeFingerprintPowder);
+        if (isFingertip) {
+            if (objFingerprint.activeSelf) {
+                FingerprintRecordStrip fingerprintRecordStrip = other.GetComponent<FingerprintRecordStrip>();
+                if (fingerprintRecordStrip != null) {
+                    if (fingerprintRecordStrip.LiftFingerprint()) {
+                        Lift();
+                    }
+                }
+            } else {
+                FingerprintInkingSlab fingerprintInkingSlab = other.GetComponent<FingerprintInkingSlab>();
+                if (fingerprintInkingSlab != null && fingerprintInkingSlab.IsInked) {
+                    SetTypeFingerprintPowder(TypeFingerprintPowder.Ink);
+                }
+            }
+        } else {
+            if (TypeFingerprintPowder != TypeFingerprintPowder.None) {
+                FingerprintBrush fingerprintBrush = other.GetComponent<FingerprintBrush>();
+                if (fingerprintBrush != null && fingerprintBrush.TypeFingerprintPowder != TypeFingerprintPowder.None) {
+                    SetTypeFingerprintPowder(fingerprintBrush.TypeFingerprintPowder);
+                }
             }
         }
     }

@@ -84,7 +84,8 @@ public enum TypeFingerprintPowder {
     Fluorescent,
     Gray,
     White,
-    Magnetic
+    Magnetic,
+    Ink
 }
 public enum TypeRole {
     None,

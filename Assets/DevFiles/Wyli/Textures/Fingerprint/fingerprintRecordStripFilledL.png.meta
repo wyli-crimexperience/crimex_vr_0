@@ -43,9 +43,9 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -108,7 +108,117 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: fingerprintRecordStripFilledL_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 190
+        height: 176
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c01fd55a33633ef4fa4e99d8a7018d52
+      internalID: -2022908890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fingerprintRecordStripFilledL_1
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 0
+        width: 193
+        height: 176
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86fd4eced3a9eca4ab00bb2bab0abab3
+      internalID: 1920313717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fingerprintRecordStripFilledL_2
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 0
+        width: 195
+        height: 176
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 421e4343c8751eb4ab7bd6dad9324458
+      internalID: 953243463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fingerprintRecordStripFilledL_3
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 0
+        width: 193
+        height: 176
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7f74ec470c89c5468597bf4faa99391
+      internalID: 1605660772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fingerprintRecordStripFilledL_4
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 0
+        width: 185
+        height: 176
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc7aa40e0b6974648ad0f1aea6842b1b
+      internalID: 823172057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -122,7 +232,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      fingerprintRecordStripFilledL_0: -2022908890
+      fingerprintRecordStripFilledL_1: 1920313717
+      fingerprintRecordStripFilledL_2: 953243463
+      fingerprintRecordStripFilledL_3: 1605660772
+      fingerprintRecordStripFilledL_4: 823172057
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

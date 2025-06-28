@@ -51,9 +51,22 @@ public class HolderData : ScriptableObject {
             case TypeFingerprintPowder.Gray: { return colGray; }
             case TypeFingerprintPowder.White: { return colWhite; }
             case TypeFingerprintPowder.Magnetic: { return colMagnetic; }
+            case TypeFingerprintPowder.Ink: { return colBlack; }
 
-            default: { return Color.white; }
+            default: { return Color.green; }
         }
+    }
+
+    [SerializeField] private Sprite[] sprsFingerprintRecordStripL, sprsFingerprintRecordStripFilledL, sprsFingerprintRecordStripR, sprsFingerprintRecordStripFilledR;
+    public Sprite GetSpriteFingerprintRecordStrip(int leftOrRight, bool isFilled, int index) {
+        if (leftOrRight == 0) {
+            return isFilled ? sprsFingerprintRecordStripFilledL[index] : sprsFingerprintRecordStripL[index];
+        }
+        else if (leftOrRight == 1) {
+            return isFilled ? sprsFingerprintRecordStripFilledR[index] : sprsFingerprintRecordStripR[index];
+        }
+
+        return null;
     }
 
 }

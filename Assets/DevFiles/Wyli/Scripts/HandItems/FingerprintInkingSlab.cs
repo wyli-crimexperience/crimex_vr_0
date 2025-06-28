@@ -7,6 +7,7 @@ public class FingerprintInkingSlab : HandItemBriefcase {
     [SerializeField] private GameObject[] slabStates;
 
     private int slabState;
+    public bool IsInked => slabState == 2;
 
 
 

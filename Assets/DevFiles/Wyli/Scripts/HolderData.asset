@@ -60,3 +60,27 @@ MonoBehaviour:
   colGray: {r: 0.48627454, g: 0.49411768, b: 0.4901961, a: 1}
   colWhite: {r: 0.9294118, g: 0.9333334, b: 0.9333334, a: 1}
   colMagnetic: {r: 0.30980393, g: 0.29803923, b: 0.31764707, a: 1}
+  sprsFingerprintRecordStripL:
+  - {fileID: -721960863, guid: cf8301b0b6c62674b90482401e38900f, type: 3}
+  - {fileID: -322610262, guid: cf8301b0b6c62674b90482401e38900f, type: 3}
+  - {fileID: 794297233, guid: cf8301b0b6c62674b90482401e38900f, type: 3}
+  - {fileID: -661037927, guid: cf8301b0b6c62674b90482401e38900f, type: 3}
+  - {fileID: 507894308, guid: cf8301b0b6c62674b90482401e38900f, type: 3}
+  sprsFingerprintRecordStripFilledL:
+  - {fileID: -2022908890, guid: 10757fe13be1dc344b3ed047b1ddeaa5, type: 3}
+  - {fileID: 1920313717, guid: 10757fe13be1dc344b3ed047b1ddeaa5, type: 3}
+  - {fileID: 953243463, guid: 10757fe13be1dc344b3ed047b1ddeaa5, type: 3}
+  - {fileID: 1605660772, guid: 10757fe13be1dc344b3ed047b1ddeaa5, type: 3}
+  - {fileID: 823172057, guid: 10757fe13be1dc344b3ed047b1ddeaa5, type: 3}
+  sprsFingerprintRecordStripR:
+  - {fileID: -323354921, guid: 928d46f69ef66a4439b79d02ee9b5cbb, type: 3}
+  - {fileID: -1458356959, guid: 928d46f69ef66a4439b79d02ee9b5cbb, type: 3}
+  - {fileID: -1348021385, guid: 928d46f69ef66a4439b79d02ee9b5cbb, type: 3}
+  - {fileID: -1888857122, guid: 928d46f69ef66a4439b79d02ee9b5cbb, type: 3}
+  - {fileID: 705050133, guid: 928d46f69ef66a4439b79d02ee9b5cbb, type: 3}
+  sprsFingerprintRecordStripFilledR:
+  - {fileID: -1920234337, guid: 4ca7083f0475cd246bd6f821136eaea9, type: 3}
+  - {fileID: 816909918, guid: 4ca7083f0475cd246bd6f821136eaea9, type: 3}
+  - {fileID: -1309613644, guid: 4ca7083f0475cd246bd6f821136eaea9, type: 3}
+  - {fileID: 1558643414, guid: 4ca7083f0475cd246bd6f821136eaea9, type: 3}
+  - {fileID: -619889411, guid: 4ca7083f0475cd246bd6f821136eaea9, type: 3}
