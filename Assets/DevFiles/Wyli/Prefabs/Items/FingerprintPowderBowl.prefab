@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 28877825068472322}
   m_Layer: 10
   m_Name: FingerprintPowderBowl
-  m_TagString: Chalk
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -294,6 +294,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: bowl
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f7e2c3510f79c1147af44319eb9b02d2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

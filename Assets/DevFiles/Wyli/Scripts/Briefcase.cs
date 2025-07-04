@@ -1,9 +1,11 @@
 using System.Collections;
+
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-public class Briefcase : MonoBehaviour
-{
+
+
+public class Briefcase : MonoBehaviour {
     [Header("Briefcase References")]
     [SerializeField] private Transform briefcaseObject;
     [SerializeField] private XRSimpleInteractable lid;
@@ -21,20 +23,19 @@ public class Briefcase : MonoBehaviour
 
     public bool IsOpen => Mathf.Abs(lidAngle) > openThresholdAngle;
 
-    private void Awake()
-    {
+
+
+    private void Awake() {
         rb = GetComponent<Rigidbody>();
     }
 
-    private IEnumerator Start()
-    {
+    private IEnumerator Start() {
         // Detach to appropriate hierarchy level if necessary
         if (transform.parent != null && transform.parent.root != null)
             transform.parent = transform.parent.root.parent;
 
         // Initialize sockets
-        foreach (var socket in sockets)
-        {
+        foreach (XRSocketInteractorBriefcase socket in sockets) {
             socket.SetBriefcase(this);
             socket.socketActive = false;
         }
@@ -42,10 +43,8 @@ public class Briefcase : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         // Snap items to their assigned sockets
-        foreach (var item in items)
-        {
-            if (item.SocketBriefcase != null)
-            {
+        foreach (HandItemBriefcase item in items) {
+            if (item.SocketBriefcase != null) {
                 item.SocketBriefcase.socketActive = true;
                 item.transform.position = item.SocketBriefcase.transform.position;
             }
@@ -54,22 +53,19 @@ public class Briefcase : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         // Activate all sockets
-        foreach (var socket in sockets)
-        {
+        foreach (XRSocketInteractorBriefcase socket in sockets) {
             socket.socketActive = true;
         }
 
         yield return new WaitForEndOfFrame();
 
         // Finalize initialization for each item
-        foreach (var item in items)
-        {
+        foreach (HandItemBriefcase item in items) {
             item.InitBriefcase();
         }
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!isGrabbingLid || handGrabbingLid == null) return;
 
         Vector3 handOffset = handGrabbingLid.position - lid.transform.position;
@@ -82,32 +78,27 @@ public class Briefcase : MonoBehaviour
         lid.transform.localRotation = Quaternion.AngleAxis(lidAngle, Vector3.right);
     }
 
-    public void GrabLid()
-    {
+    public void GrabLid() {
         isGrabbingLid = true;
 
         var interactorLeft = ManagerGlobal.Instance.InteractorLeft;
         var interactorRight = ManagerGlobal.Instance.InteractorRight;
 
-        if (interactorLeft.firstInteractableSelected as XRSimpleInteractable == lid)
-        {
+        if (interactorLeft.firstInteractableSelected as XRSimpleInteractable == lid) {
             handGrabbingLid = ManagerGlobal.Instance.HandLeftTarget;
-        }
-        else if (interactorRight.firstInteractableSelected as XRSimpleInteractable == lid)
-        {
+        } else if (interactorRight.firstInteractableSelected as XRSimpleInteractable == lid) {
             handGrabbingLid = ManagerGlobal.Instance.HandRightTarget;
         }
     }
 
-    public void ReleaseLid()
-    {
+    public void ReleaseLid() {
         isGrabbingLid = false;
         handGrabbingLid = null;
     }
 
-    public void SetPaused(bool paused)
-    {
+    public void SetPaused(bool paused) {
         if (rb != null)
             rb.isKinematic = paused;
     }
+
 }

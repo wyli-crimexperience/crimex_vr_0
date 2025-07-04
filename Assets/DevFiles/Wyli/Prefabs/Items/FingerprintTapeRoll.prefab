@@ -53,7 +53,8 @@ MonoBehaviour:
   TypeItem: 18
   socketBriefcase: {fileID: 0}
   briefcaseItemCenter: {fileID: 2012481340105076809}
-  prefabFingerprintTapeLifted: {fileID: 0}
+  prefabFingerprintTapeLifted: {fileID: 4007828399450096088, guid: 46807c22a82e37c479d18875117ea4cd,
+    type: 3}
 --- !u!54 &6741757336560348518
 Rigidbody:
   m_ObjectHideFlags: 0

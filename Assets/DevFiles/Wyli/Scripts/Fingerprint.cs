@@ -31,6 +31,7 @@ public class Fingerprint : MonoBehaviour {
     private void Start() {
         SetTypeFingerprintPowder(TypeFingerprintPowder.None);
     }
+
     private void OnTriggerEnter(Collider other) {
         if (IsDisplayOnly) { return; }
 
@@ -49,10 +50,12 @@ public class Fingerprint : MonoBehaviour {
                 }
             }
         } else {
-            if (TypeFingerprintPowder != TypeFingerprintPowder.None) {
-                FingerprintBrush fingerprintBrush = other.GetComponent<FingerprintBrush>();
-                if (fingerprintBrush != null && fingerprintBrush.TypeFingerprintPowder != TypeFingerprintPowder.None) {
-                    SetTypeFingerprintPowder(fingerprintBrush.TypeFingerprintPowder);
+            if (TypeFingerprintPowder == TypeFingerprintPowder.None) {
+                if (other.CompareTag("BrushTip")) {
+                    FingerprintBrush fingerprintBrush = other.GetComponentInParent<FingerprintBrush>();
+                    if (fingerprintBrush != null && fingerprintBrush.TypeFingerprintPowder != TypeFingerprintPowder.None) {
+                        SetTypeFingerprintPowder(fingerprintBrush.TypeFingerprintPowder);
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5763498672337028000}
   m_Layer: 10
   m_Name: FingerprintTapeLifted
-  m_TagString: Chalk
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

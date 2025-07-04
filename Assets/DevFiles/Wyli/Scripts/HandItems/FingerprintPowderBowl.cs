@@ -12,7 +12,9 @@ public class FingerprintPowderBowl : HandItemBriefcase {
 
 
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
+
         matPowder = mrPowder.material;
     }
     private void Start() {
@@ -26,7 +28,7 @@ public class FingerprintPowderBowl : HandItemBriefcase {
     }
 
     private void OnParticleCollision(GameObject other) {
-        if (other.tag.Equals("FingerprintPowder")) {
+        if (other.CompareTag("FingerprintPowder")) {
             FingerprintPowderBottle fingerprintPowderBottle = other.GetComponentInParent<FingerprintPowderBottle>();
             SetPowder(fingerprintPowderBottle.TypeFingerprintPowder);
         }

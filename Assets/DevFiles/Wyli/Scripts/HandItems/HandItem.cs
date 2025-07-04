@@ -15,7 +15,7 @@ public class HandItem : MonoBehaviour {
 
 
 
-    private void Awake() {
+    protected virtual void Awake() {
         rb = GetComponent<Rigidbody>();
     }
 
