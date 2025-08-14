@@ -12,9 +12,6 @@ public class Fingerprint : MonoBehaviour {
 
     public TypeFingerprintPowder TypeFingerprintPowder;
     public bool IsShowing => TypeFingerprintPowder != TypeFingerprintPowder.None;
-    public void Lift() {
-        TypeFingerprintPowder = TypeFingerprintPowder.None;
-    }
 
     private Material matFingerprint;
 
@@ -40,7 +37,7 @@ public class Fingerprint : MonoBehaviour {
                 FingerprintRecordStrip fingerprintRecordStrip = other.GetComponent<FingerprintRecordStrip>();
                 if (fingerprintRecordStrip != null) {
                     if (fingerprintRecordStrip.LiftFingerprint()) {
-                        Lift();
+                        SetTypeFingerprintPowder(TypeFingerprintPowder.None);
                     }
                 }
             } else {

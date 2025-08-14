@@ -521,10 +521,10 @@ public class ManagerGlobal : MonoBehaviour {
             if (fingerprintTapeRoll.FingerprintTapeLifted == null) {
                 fingerprintTapeRoll.ExtendTape();
             } else {
-                if (fingerprintTapeRoll.FingerprintCurrent != null) {
+                if (fingerprintTapeRoll.CanLiftFingerprint) {
                     fingerprintTapeRoll.LiftFingerprint();
                 } else {
-                    if (fingerprintTapeRoll.FormCurrent != null) {
+                    if (fingerprintTapeRoll.CanAttachToForm) {
                         fingerprintTapeRoll.AttachToForm();
                     }
                 }

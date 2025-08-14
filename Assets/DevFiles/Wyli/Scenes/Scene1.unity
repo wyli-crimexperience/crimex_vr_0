@@ -7408,7 +7408,7 @@ MonoBehaviour:
   raycastDistance: 3
   raycastOffset: 0.1
   useMultipleRaycasts: 1
-  enableDebugLogs: 1
+  enableDebugLogs: 0
   showDebugRaycast: 1
   forceGrounded: 1
 --- !u!4 &1374045102 stripped
@@ -12863,7 +12863,7 @@ PrefabInstance:
     - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
         type: 3}
       propertyPath: enableDebugLogs
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2995404358688238235, guid: 8b675d4cb6d5623468384502b9ffebb3,
         type: 3}

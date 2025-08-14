@@ -13,7 +13,7 @@ public class FormFingerprintSpecialist : Form {
     }
 
     public void AttachFingerprintTapeLifted(FingerprintTapeLifted _fingerprintTapeLifted) {
-        fingerprintDisplay.SetTypeFingerprintPowder(_fingerprintTapeLifted.typeFingerprintPowder);
+        fingerprintDisplay.SetTypeFingerprintPowder(_fingerprintTapeLifted.TypeFingerprintPowder);
         Destroy(_fingerprintTapeLifted.gameObject);
     }
 
