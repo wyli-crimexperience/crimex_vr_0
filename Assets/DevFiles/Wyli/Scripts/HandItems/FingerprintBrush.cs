@@ -15,7 +15,8 @@ public class FingerprintBrush : HandItemBriefcase {
 
 
     private void Start() {
-        matBrushTip = mrBrushTip.material;
+        matBrushTip = mrBrushTip.materials[1];
+        matBrushTip.color = new Color(0, 0, 0, 0);
     }
     private void OnCollisionEnter(Collision collision) {
         FingerprintPowderBowl fingerprintPowderBowl = collision.gameObject.GetComponent<FingerprintPowderBowl>();

@@ -12,8 +12,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Feather Brush Tip
+    second: {fileID: 2100000, guid: 722544ced72921c4ea2abecb150c5baa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Fiber Brush
     second: {fileID: 2100000, guid: d1896d4b1a8ab6440a8fafcbef440bb7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Fiber Brush Tip
+    second: {fileID: 2100000, guid: 93f2130c8c222fc4687bf2c73f2cbf53, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -22,8 +32,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Flat Head Brush Tip
+    second: {fileID: 2100000, guid: 13fde7283b13c6e4c84abeca0f2a1adc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Round Brush
     second: {fileID: 2100000, guid: bd2b71632e6cf334395e6b8260729e04, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Round Brush Tip
+    second: {fileID: 2100000, guid: 27b6473968049224e9d86bad25832e45, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
