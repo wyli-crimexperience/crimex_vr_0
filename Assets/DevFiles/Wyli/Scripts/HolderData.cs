@@ -36,12 +36,14 @@ public class HolderData : ScriptableObject {
         };
     }
 
-    [SerializeField] private GameObject prefabListItemRole, prefabCommandPostCopy, prefabFormFirstResponder, prefabFormInvestigatorOnCase, prefabEvidenceMarkerCopy;
+    [SerializeField] private GameObject prefabListItemRole, prefabCommandPostCopy, prefabFormFirstResponder, prefabFormInvestigatorOnCase, prefabEvidenceMarkerCopy,
+        prefabWipe;
     public GameObject PrefabListItemRole => prefabListItemRole;
     public GameObject PrefabCommandPostCopy => prefabCommandPostCopy;
     public GameObject PrefabFormFirstResponder => prefabFormFirstResponder;
     public GameObject PrefabFormInvestigatorOnCase => prefabFormInvestigatorOnCase;
     public GameObject PrefabEvidenceMarkerCopy => prefabEvidenceMarkerCopy;
+    public GameObject PrefabWipe => prefabWipe;
 
     [SerializeField] private Color colBlack, colFluorescent, colGray, colWhite, colMagnetic;
     public Color GetColorOfFingerprintPowderType(TypeFingerprintPowder typeFingerprintPowder) {

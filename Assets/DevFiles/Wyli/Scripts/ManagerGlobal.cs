@@ -48,6 +48,7 @@ public enum TypeItem {
     FingerprintTapeLifted,
 
     Wipes,
+    Wipe,
     FingerprintInkingSlab,
     FingerprintInk,
     FingerprintInkRoller,
@@ -161,6 +162,9 @@ public class ManagerGlobal : MonoBehaviour {
     private FingerprintSpoon fingerprintSpoon;
     private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
     private EvidencePack evidencePack;
+    private Wipes wipes;
+    [SerializeField] private Transform containerWipes;
+    public Transform ContainerWipes => containerWipes;
     private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
     private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
     public void GrabItem(HandItem handItem) {
@@ -192,6 +196,7 @@ public class ManagerGlobal : MonoBehaviour {
         }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = handItem; }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = handItem; }
+        else if (handItem is Wipes _wipes) { wipes = _wipes; }
         else if (handItem is FingerprintTapeRoll _fingerprintTapeRoll) { fingerprintTapeRoll = _fingerprintTapeRoll; }
         else if (handItem is FingerprintInk _fingerprintInk) { fingerprintInk = _fingerprintInk; }
         else if (handItem is FingerprintInkRoller _fingerprintInkRoller) { fingerprintInkRoller = _fingerprintInkRoller; }
@@ -204,6 +209,7 @@ public class ManagerGlobal : MonoBehaviour {
         else if (handItem is Form) { form = null; }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = null; }
         else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = null; }
+        else if (handItem is Wipes) { wipes = null; }
         else if (handItem is FingerprintTapeRoll) { fingerprintTapeRoll = null; }
         else if (handItem is FingerprintInk) { fingerprintInk = null; }
         else if (handItem is FingerprintInkRoller) { fingerprintInkRoller = null; }
@@ -514,6 +520,11 @@ public class ManagerGlobal : MonoBehaviour {
             } else {
                 listEvidenceMarkerBodyCopies[_evidenceMarkerIndex] = _evidenceMarkerCopy;
             }
+        }
+
+        // wipes
+        if (typeItem1 == TypeItem.Wipes) {
+            wipes.SpawnWipe();
         }
 
         // fingerprint tape

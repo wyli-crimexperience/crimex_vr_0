@@ -21,7 +21,7 @@ public class HandItem : MonoBehaviour {
 
 
 
-    public void Grab() {
+    public virtual void Grab() {
         ManagerGlobal.Instance.GrabItem(this);
     }
     public void Release() {
