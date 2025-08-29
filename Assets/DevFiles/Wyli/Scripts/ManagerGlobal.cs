@@ -11,7 +11,18 @@ using TMPro;
 using UnityEngine.UI;
 
 
+/*[firestore] public class DataMistakes
+{
+    Dictionary of mistakes
 
+}*/
+
+public enum TypeMistake {
+    DidNotUseCorrectSearchMethod,
+    DidNotCheckPulse,
+    IncompleteYellowTape,
+    IncorrectYellowTape,
+}
 public enum TypeItem {
     None,
     Briefcase,
@@ -262,7 +273,16 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
+    private Dictionary<TypeMistake, bool> dictMistakes = new Dictionary<TypeMistake, bool>();
+
+
+
     private void Awake() {
+        foreach (TypeMistake mistake in System.Enum.GetValues(typeof(TypeMistake))) {
+            dictMistakes.Add(mistake, false);
+        }
+
+
         Instance = this;
 
         HolderData.PrimaryButtonLeft.action.performed += PrimaryButtonLeft;
@@ -369,6 +389,20 @@ public class ManagerGlobal : MonoBehaviour {
             StartCoroutine(IE_ChangeRole());
         }
     }
+
+    public void OnSceneEnd()
+    {
+        foreach (KeyValuePair<TypeMistake, bool> item in dictMistakes)
+        {
+            if (item.Value == true)
+            {
+
+            }
+
+        }
+    }
+
+
     private IEnumerator IE_ChangeRole() {
         // retain held items
         interactorLeft.allowSelect = false;

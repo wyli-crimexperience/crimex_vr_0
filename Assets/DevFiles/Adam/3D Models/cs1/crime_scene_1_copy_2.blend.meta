@@ -87,6 +87,16 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: lightbulb.001
+    second: {fileID: 2100000, guid: 3f214c210688ea24aadd6f73e09511f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lightbulb.002
+    second: {fileID: 2100000, guid: 3f214c210688ea24aadd6f73e09511f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: lpg
     second: {fileID: 2100000, guid: 42e992c7c8454e8409f6708619f65563, type: 2}
   - first:
@@ -109,6 +119,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: sink
     second: {fileID: 2100000, guid: 77e0be1448987c4418c884db10d69d6e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: sink.001
+    second: {fileID: 2100000, guid: bf60e92b046184441b336bedc8670c25, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -139,6 +154,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: toilet
     second: {fileID: 2100000, guid: d93dcb6aa19cbcd46a988eb5f3b88717, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: toilet.001
+    second: {fileID: 2100000, guid: dbcb122a3802712489eb2c37dd8e247b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
