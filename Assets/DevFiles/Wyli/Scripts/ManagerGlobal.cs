@@ -10,22 +10,6 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using TMPro;
 using UnityEngine.UI;
 
-
-<<<<<<< Updated upstream
-/*[firestore] public class DataMistakes
-{
-    Dictionary of mistakes
-
-}*/
-
-public enum TypeMistake {
-    DidNotUseCorrectSearchMethod,
-    DidNotCheckPulse,
-    IncompleteYellowTape,
-    IncorrectYellowTape,
-}
-=======
->>>>>>> Stashed changes
 public enum TypeItem {
     None,
     Briefcase,
@@ -118,9 +102,8 @@ public enum TypeRole {
     EvidenceCustodian,
 
     // scene 2
+
 }
-
-
 
 public class ManagerGlobal : MonoBehaviour {
     public static ManagerGlobal Instance;
@@ -276,23 +259,10 @@ public class ManagerGlobal : MonoBehaviour {
     private Quaternion playerStartRot;
     private Dictionary<TypeRole, Player> dictPlayers = new Dictionary<TypeRole, Player>();
 
-
-
-    private Dictionary<TypeMistake, bool> dictMistakes = new Dictionary<TypeMistake, bool>();
-
-
-
     private void Awake() {
-<<<<<<< Updated upstream
-        foreach (TypeMistake mistake in System.Enum.GetValues(typeof(TypeMistake))) {
-            dictMistakes.Add(mistake, false);
-        }
-
-=======
 
         //Init DialogueManager
         dialogueManager.Init(player);
->>>>>>> Stashed changes
 
         Instance = this;
 
@@ -406,14 +376,6 @@ public class ManagerGlobal : MonoBehaviour {
 
     public void OnSceneEnd()
     {
-        foreach (KeyValuePair<TypeMistake, bool> item in dictMistakes)
-        {
-            if (item.Value == true)
-            {
-
-            }
-
-        }
     }
 
 
