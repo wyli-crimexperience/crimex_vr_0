@@ -10,7 +10,6 @@ public class PauseMenuManager : MonoBehaviour
     public Button statisticsButton;
     public Button restartButton;
     public Button quitToMainMenuButton;
-    public Button exitToDesktopButton;
     public GameObject playerCamera;
     public GameObject leftRay;
     public GameObject rightRay;
@@ -24,7 +23,6 @@ public class PauseMenuManager : MonoBehaviour
         statisticsButton.onClick.AddListener(ShowStatistics);
         restartButton.onClick.AddListener(RestartGame);
         quitToMainMenuButton.onClick.AddListener(QuitToMainMenu);
-        exitToDesktopButton.onClick.AddListener(ExitToDesktop);
 
         pauseMenuCanvas.gameObject.SetActive(false);
 
@@ -106,10 +104,4 @@ public class PauseMenuManager : MonoBehaviour
         SceneManager.LoadScene("LobbyArea");
     }
 
-    void ExitToDesktop()
-    {
-        Time.timeScale = 1f;
-        Application.Quit();
-        Debug.Log("Exiting to desktop...");
-    }
 }

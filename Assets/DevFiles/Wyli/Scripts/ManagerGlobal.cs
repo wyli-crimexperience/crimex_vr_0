@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine.UI;
 
 
+<<<<<<< Updated upstream
 /*[firestore] public class DataMistakes
 {
     Dictionary of mistakes
@@ -23,6 +24,8 @@ public enum TypeMistake {
     IncompleteYellowTape,
     IncorrectYellowTape,
 }
+=======
+>>>>>>> Stashed changes
 public enum TypeItem {
     None,
     Briefcase,
@@ -126,6 +129,17 @@ public class ManagerGlobal : MonoBehaviour {
 
     public HolderData HolderData;
 
+    //Refactor Stuff
+
+    //Hookup
+    [SerializeField] private DialogueManager dialogueManager;
+    [SerializeField] private ThoughtManager thoughtManager;
+    public DialogueManager DialogueManager => dialogueManager;
+    public ThoughtManager ThoughtManager => thoughtManager;
+
+    //end of Refactor Stuff
+
+
     [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
     public NearFarInteractor InteractorLeft => interactorLeft;
     public NearFarInteractor InteractorRight => interactorRight;
@@ -134,7 +148,6 @@ public class ManagerGlobal : MonoBehaviour {
     [SerializeField] private Player player;
     public TypeRole TypeRolePlayer => player == null ? TypeRole.None : player.TypeRole;
 
-    [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private Transform containerPoliceTape;
     public Transform ContainerPoliceTape => containerPoliceTape;
     [SerializeField] private Transform handLeftTarget, handRightTarget;
@@ -147,8 +160,7 @@ public class ManagerGlobal : MonoBehaviour {
     public Transform VRTargetHead => vrTargetHead;
 
     [SerializeField] private ScrollRect srChangeRole;
-    [SerializeField] private GameObject goChangeRole, goThought, goDialogue;
-    [SerializeField] private TextMeshProUGUI txtThought, txtDialogue;
+    [SerializeField] private GameObject goChangeRole;
 
     [SerializeField] private Transform containerRoles;
 
@@ -228,10 +240,6 @@ public class ManagerGlobal : MonoBehaviour {
         else if (handItem is FingerprintSpoon) { fingerprintSpoon = null; }
     }
 
-    //
-    private float thoughtTimer = 0;
-    private Coroutine corThoughtTimer;
-    private GameObject thoughtSender;
 
     // timings
     private DateTime dateTimeIncident;
@@ -259,10 +267,7 @@ public class ManagerGlobal : MonoBehaviour {
     private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse, canWriteForm;
 
     private int pulse;
-    private Witness currentWitness;
-    private Phone currentPhone;
-    private DialogueData currentDialogue;
-    private int dialogueIndex;
+
 
     private List<ListItemRole> listItemRoles = new List<ListItemRole>();
     private int indexRole;
@@ -278,10 +283,16 @@ public class ManagerGlobal : MonoBehaviour {
 
 
     private void Awake() {
+<<<<<<< Updated upstream
         foreach (TypeMistake mistake in System.Enum.GetValues(typeof(TypeMistake))) {
             dictMistakes.Add(mistake, false);
         }
 
+=======
+
+        //Init DialogueManager
+        dialogueManager.Init(player);
+>>>>>>> Stashed changes
 
         Instance = this;
 
@@ -306,8 +317,10 @@ public class ManagerGlobal : MonoBehaviour {
         dateTimeReported = dateTimeIncident.AddHours(0.25f);
         dateTimeFirstResponderArrived = dateTimeReported.AddHours(0.25f);
 
-        goThought.SetActive(false);
-        goDialogue.SetActive(false);
+        if (thoughtManager != null)
+            thoughtManager.ClearCurrentThought();
+        if (dialogueManager != null)
+            dialogueManager.StopDialogue();
 
         // init player
         if (player != null) {
@@ -352,33 +365,34 @@ public class ManagerGlobal : MonoBehaviour {
         HolderData.PinchRight.action.performed -= PinchRight;
         HolderData.ThumbstickRight.action.started -= ThumbstickRightTap;
     }
-    private void Update() {
-        //ManagerGlobal.Instance.ShowThought($"{srChangeRole.verticalNormalizedPosition}");
+    private void Update()
+    {
+        // Example debug thought (optional)
+        // thoughtManager.ShowThought(gameObject, $"{srChangeRole.verticalNormalizedPosition}");
 
-        if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.transform.position) > DIST_CONVERSE) {
-            StopDialogue();
-            currentWitness = null;
-        }
-        if (currentPhone != null && Vector3.Distance(currentPhone.transform.position, player.transform.position) > DIST_CONVERSE) {
-            StopDialogue();
-            currentPhone = null;
-        }
+        // No more dialogue checks here
+        // DialogueManager now handles witness/phone distance in its own Update().
     }
-
     private void PrimaryButtonLeft(InputAction.CallbackContext context) {
         PrimaryButton();
     }
     private void PrimaryButtonRight(InputAction.CallbackContext context) {
         PrimaryButton();
     }
-    private void PrimaryButton() {
-        if (currentDialogue == null) {
-            goThought.SetActive(false);
+    private void PrimaryButton()
+    {
+        if (!dialogueManager.IsInDialogue)   // ✅ use DialogueManager state
+        {
+            thoughtManager.ClearCurrentThought();   // ✅ instead of goThought.SetActive(false)
             ToggleMenuChangeRole(!goChangeRole.activeSelf);
-        } else {
-            NextDialogue();
+        }
+        else
+        {
+            dialogueManager.NextDialogue();   // ✅ delegate dialogue progression
         }
     }
+
+
     private void ToggleMenuChangeRole(bool b) {
         goChangeRole.SetActive(b);
         Time.timeScale = b ? 0 : 1;
@@ -644,60 +658,6 @@ public class ManagerGlobal : MonoBehaviour {
         }
     }
 
-
-
-    // thought
-    private IEnumerator IE_ShowThought() {
-        goThought.SetActive(true);
-        cgThought.alpha = 1;
-
-        // animate in
-        float duration = 0f;
-        while (duration < 0.5f) {
-            goThought.transform.localScale = Vector3.Lerp(Vector3.forward, new Vector3(0.01f, 0.01f, 1), duration / 0.5f);
-            goThought.transform.localPosition = Vector3.Lerp(Vector3.zero, new Vector3(0, 0.25f, 0.67f), duration / 0.5f);
-
-            duration += Time.deltaTime;
-            yield return null;
-        }
-
-        // fade out
-        yield return new WaitForSeconds(THOUGHT_TIMER_MAX);
-
-        thoughtTimer = THOUGHT_TIMER_MAX;
-        while (thoughtTimer > 0) {
-            cgThought.alpha = Mathf.Lerp(0, 1, thoughtTimer / THOUGHT_TIMER_MAX);
-
-            thoughtTimer -= Time.deltaTime;
-            yield return null;
-        }
-
-        // reset
-        ClearCurrentThought();
-    }
-    public void ShowThought(GameObject sender, string str) {
-        //if (sender == thoughtSender) { return; }
-
-
-
-        thoughtSender = sender;
-
-        txtThought.text = str;
-        if (corThoughtTimer != null) { StopCoroutine(corThoughtTimer); }
-        corThoughtTimer = StartCoroutine(IE_ShowThought());
-    }
-    private void ClearCurrentThought() {
-        if (corThoughtTimer != null) {
-            StopCoroutine(corThoughtTimer);
-            corThoughtTimer = null;
-        }
-
-        goThought.SetActive(false);
-        txtThought.text = "Hmmm...";
-
-        thoughtSender = null;
-    }
-
     // wristwatch
     public void CheckWristwatch(GameObject sender) {
         if (!hasCheckedTimeOfArrival) {
@@ -705,7 +665,7 @@ public class ManagerGlobal : MonoBehaviour {
             dateTimeFirstResponderArrived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
             hasCheckedTimeOfArrival = true;
         }
-        ShowThought(sender, $"It's {dateTimeFirstResponderArrived:hh:mm tt}");
+        thoughtManager.ShowThought(sender, "They have no more pulse...");
     }
 
     // pulse
@@ -714,9 +674,9 @@ public class ManagerGlobal : MonoBehaviour {
 
         // todo: pulse should be set in EvidenceBody, and assigned to their TouchAreaPulse/s instead of here
         if (pulse == 0) {
-            ShowThought(sender, "They have no more pulse...");
+            thoughtManager.ShowThought(sender, "They have no more pulse...");
         } else {
-            ShowThought(sender, $"Their pulse is {pulse} BPM");
+            thoughtManager.ShowThought(sender, "They have no more pulse...");
         }
     }
 
@@ -772,62 +732,6 @@ public class ManagerGlobal : MonoBehaviour {
     // evidence pack seal + pen
     public void SetCanWriteEvidencePackSeal(bool b) {
         canWriteEvidencePackSeal = b;
-    }
-
-    // dialogue
-    private void ClearCurrentConversation() {
-        currentWitness = null;
-        currentPhone = null;
-    }
-    public void StartConversation(Witness witness) {
-        if (currentWitness != null || Vector3.Distance(witness.transform.position, player.transform.position) > DIST_CONVERSE) { return; }
-
-
-
-        ClearCurrentThought();
-        ClearCurrentConversation();
-        currentWitness = witness;
-        currentDialogue = witness.DialogueData;
-
-        StartConservation();
-    }
-    public void StartConversation(Phone phone) {
-        if (currentPhone != null || Vector3.Distance(phone.transform.position, player.transform.position) > DIST_CONVERSE) { return; }
-
-
-
-        ClearCurrentThought();
-        ClearCurrentConversation();
-        currentPhone = phone;
-        currentDialogue = phone.DialogueData;
-
-        StartConservation();
-    }
-    private void StartConservation() {
-        goDialogue.SetActive(true);
-        dialogueIndex = -1;
-        NextDialogue();
-    }
-    private void NextDialogue() {
-        dialogueIndex += 1;
-        if (dialogueIndex < currentDialogue.Dialogue.Length) {
-            txtDialogue.text = currentDialogue.Dialogue[dialogueIndex].speakerText;
-        } else {
-            StopDialogue();
-
-            if (currentWitness != null) {
-                currentWitness.DoneConversing();
-                currentWitness = null;
-            }
-            if (currentPhone != null) {
-                currentPhone.DoneConversing();
-                currentPhone = null;
-            }
-        }
-    }
-    private void StopDialogue() {
-        goDialogue.SetActive(false);
-        currentDialogue = null;
     }
 
     // string formatting
