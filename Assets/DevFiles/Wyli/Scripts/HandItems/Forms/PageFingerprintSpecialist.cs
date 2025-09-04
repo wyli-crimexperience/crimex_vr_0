@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using static Unity.Tutorials.Core.Editor.RichTextParser;
 
 
 
