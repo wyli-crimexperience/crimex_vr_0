@@ -4,34 +4,6 @@ using UnityEngine;
 using UnityEngine.Audio;
 using System;
 
-[System.Serializable]
-public class AmbientSoundZone
-{
-    public string zoneName;
-    public AudioClip[] ambientClips;
-    public float volume = 1f;
-    public float fadeInTime = 2f;
-    public float fadeOutTime = 2f;
-    public bool loop = true;
-    public bool randomizePlayback = false;
-    public Vector2 randomPlaybackInterval = new Vector2(5f, 15f);
-    public AudioMixerGroup mixerGroup;
-}
-
-[System.Serializable]
-public class PositionalAmbientSound
-{
-    public string soundId;
-    public AudioClip clip;
-    public Transform sourceTransform;
-    public float maxDistance = 50f;
-    public float volume = 1f;
-    public bool loop = true;
-    public AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic;
-    public AnimationCurve customRolloffCurve;
-    public AudioMixerGroup mixerGroup;
-}
-
 public class AmbientSFXManager : MonoBehaviour
 {
     [Header("Audio Setup")]

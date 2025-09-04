@@ -2,169 +2,190 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using System;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("Audio Pool Settings")]
-    [SerializeField] private int poolSize = 20;
-
-    [Header("Audio Mixer Settings")]
+    [Header("Audio Mixer Groups")]
+    [SerializeField] private AudioMixerGroup masterMixerGroup;
     [SerializeField] private AudioMixerGroup sfxMixerGroup;
     [SerializeField] private AudioMixerGroup footstepMixerGroup;
+    [SerializeField] private AudioMixerGroup ambientMixerGroup;
+    [SerializeField] private AudioMixerGroup positionalMixerGroup;
 
-    [Header("Debug Settings")]
+    [Header("General Pool Settings")]
+    [SerializeField] private int poolSize = 30;
+    private Queue<AudioSource> audioSourcePool;
+    private List<AudioSource> activeAudioSources;
+
+    [Header("Ambient Zones")]
+    public AmbientSoundZone[] ambientZones;
+    public string defaultZone = "Default";
+    private Dictionary<string, AmbientSoundZone> zoneDatabase;
+    private Dictionary<string, AudioSource> zoneAudioSources;
+    private Dictionary<string, Coroutine> fadeCoroutines;
+    private string currentZone;
+
+    [Header("Positional Sounds")]
+    public PositionalAmbientSound[] positionalSounds;
+    private Dictionary<string, PositionalAmbientSound> positionalDatabase;
+
+    [Header("Debug")]
     [SerializeField] private bool enableDebugLogs = true;
 
-    [Header("Volume Settings")]
-    [SerializeField] private float masterVolume = 1.0f;
-    [SerializeField] private float sfxVolumeMultiplier = 1.0f;
-    [SerializeField] private float footstepVolumeMultiplier = 2.0f; // Boost footsteps specifically
-
-    private Queue<AudioSource> audioSourcePool;
-
-    void Awake()
+    // ================= UNITY LIFECYCLE =================
+    private void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            InitializePool();
 
-            if (enableDebugLogs)
-                Debug.Log("[AudioManager] AudioManager instance created and initialized.");
+            InitializePool();
+            InitializeAmbientSystem();
+
+            if (enableDebugLogs) Debug.Log("[AudioManager] Initialized.");
         }
         else
         {
-            if (enableDebugLogs)
-                Debug.Log("[AudioManager] Duplicate AudioManager destroyed.");
             Destroy(gameObject);
         }
     }
 
-    void InitializePool()
+    // ================= INITIALIZATION =================
+    private void InitializePool()
     {
         audioSourcePool = new Queue<AudioSource>();
+        activeAudioSources = new List<AudioSource>();
 
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject audioObj = new GameObject($"PooledAudioSource_{i}");
-            audioObj.transform.SetParent(transform);
+            GameObject obj = new GameObject($"PooledAudioSource_{i}");
+            obj.transform.SetParent(transform);
 
-            AudioSource source = audioObj.AddComponent<AudioSource>();
-            source.playOnAwake = false;
-            source.spatialBlend = 1f; // 3D sound
-            source.rolloffMode = AudioRolloffMode.Logarithmic;
-            source.minDistance = 1f;
-            source.maxDistance = 20f;
+            AudioSource src = obj.AddComponent<AudioSource>();
+            src.playOnAwake = false;
+            src.spatialBlend = 1f;
+            src.rolloffMode = AudioRolloffMode.Logarithmic;
+            src.minDistance = 1f;
+            src.maxDistance = 50f;
 
-            audioSourcePool.Enqueue(source);
+            audioSourcePool.Enqueue(src);
         }
-
-        if (enableDebugLogs)
-            Debug.Log($"[AudioManager] Audio pool initialized with {poolSize} AudioSources.");
     }
 
-    // General sound play method
-    // Updated PlaySound method
-    public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f)
+    private void InitializeAmbientSystem()
     {
-        float finalVolume = volume * sfxVolumeMultiplier * masterVolume;
-        if (enableDebugLogs)
-            Debug.Log($"[AudioManager] PlaySound - Original: {volume}, Final: {finalVolume}");
+        zoneDatabase = new Dictionary<string, AmbientSoundZone>();
+        zoneAudioSources = new Dictionary<string, AudioSource>();
+        fadeCoroutines = new Dictionary<string, Coroutine>();
+        positionalDatabase = new Dictionary<string, PositionalAmbientSound>();
 
-        PlaySoundWithMixer(clip, position, finalVolume, pitch, sfxMixerGroup);
+        foreach (var z in ambientZones) zoneDatabase[z.zoneName] = z;
+        foreach (var s in positionalSounds) positionalDatabase[s.soundId] = s;
+
+        if (!string.IsNullOrEmpty(defaultZone) && zoneDatabase.ContainsKey(defaultZone))
+            SetAmbientZone(defaultZone);
     }
 
-    // Updated PlayFootstep method  
-    public void PlayFootstep(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f)
+    // ================= GENERAL SFX =================
+    public void PlaySound(AudioClip clip, Vector3 pos, float volume = 1f, float pitch = 1f)
     {
-        float finalVolume = volume * footstepVolumeMultiplier * masterVolume;
-        if (enableDebugLogs)
-            Debug.Log($"[AudioManager] PlayFootstep - Original: {volume}, Multiplier: {footstepVolumeMultiplier}, Final: {finalVolume}");
-
-        PlaySoundWithMixer(clip, position, finalVolume, pitch, footstepMixerGroup);
+        PlaySoundWithMixer(clip, pos, volume, pitch, sfxMixerGroup);
     }
 
-
-    // Main method that handles mixer assignment
-    public void PlaySoundWithMixer(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, AudioMixerGroup mixerGroup = null)
+    public void PlayFootstep(AudioClip clip, Vector3 pos, float volume = 1f, float pitch = 1f)
     {
-        if (clip == null)
-        {
-            if (enableDebugLogs)
-                Debug.LogError("[AudioManager] Cannot play sound - AudioClip is null!");
-            return;
-        }
-
-        if (audioSourcePool.Count == 0)
-        {
-            if (enableDebugLogs)
-                Debug.LogWarning("[AudioManager] No available AudioSources in pool!");
-            return;
-        }
-
-        AudioSource source = audioSourcePool.Dequeue();
-        source.transform.position = position;
-        source.clip = clip;
-        source.volume = volume;
-        source.pitch = pitch;
-
-        // Assign mixer group
-        source.outputAudioMixerGroup = mixerGroup ?? sfxMixerGroup;
-
-        if (enableDebugLogs)
-        {
-            Debug.Log($"[AudioManager] Playing sound: {clip.name}");
-            Debug.Log($"[AudioManager] AudioSource position: {source.transform.position}");
-            Debug.Log($"[AudioManager] Volume: {volume}, Pitch: {pitch}");
-            Debug.Log($"[AudioManager] Mixer Group: {(source.outputAudioMixerGroup ? source.outputAudioMixerGroup.name : "None")}");
-            Debug.Log($"[AudioManager] Available sources in pool: {audioSourcePool.Count}");
-        }
-
-        source.Play();
-
-        if (!source.isPlaying)
-        {
-            if (enableDebugLogs)
-                Debug.LogError("[AudioManager] AudioSource failed to play!");
-        }
-
-        StartCoroutine(ReturnToPool(source, clip.length));
+        PlaySoundWithMixer(clip, pos, volume * 2f, pitch, footstepMixerGroup);
     }
 
-    private IEnumerator ReturnToPool(AudioSource source, float delay)
+    private void PlaySoundWithMixer(AudioClip clip, Vector3 pos, float vol, float pitch, AudioMixerGroup group)
+    {
+        if (clip == null || audioSourcePool.Count == 0) return;
+
+        AudioSource src = audioSourcePool.Dequeue();
+        src.transform.position = pos;
+        src.clip = clip;
+        src.volume = vol;
+        src.pitch = pitch;
+        src.outputAudioMixerGroup = group;
+
+        src.Play();
+        activeAudioSources.Add(src);
+        StartCoroutine(ReturnToPool(src, clip.length));
+    }
+
+    private IEnumerator ReturnToPool(AudioSource src, float delay)
     {
         yield return new WaitForSeconds(delay);
-
-        if (audioSourcePool != null && source != null)
-        {
-            // Clear the mixer group when returning to pool
-            source.outputAudioMixerGroup = null;
-            source.clip = null;
-            audioSourcePool.Enqueue(source);
-
-            if (enableDebugLogs)
-                Debug.Log($"[AudioManager] AudioSource returned to pool. Pool size: {audioSourcePool.Count}");
-        }
+        activeAudioSources.Remove(src);
+        src.Stop();
+        src.clip = null;
+        src.outputAudioMixerGroup = null;
+        audioSourcePool.Enqueue(src);
     }
 
-    // Utility methods for controlling mixer volumes
+    // ================= AMBIENT SYSTEM =================
+    public void SetAmbientZone(string zoneName)
+    {
+        if (!zoneDatabase.ContainsKey(zoneName)) return;
+        // (reuse FadeIn / FadeOut logic from AmbientSFXManager here)
+    }
+
+    public void PlayPositionalSound(string soundId, Vector3? position = null)
+    {
+        if (!positionalDatabase.ContainsKey(soundId)) return;
+
+        var sound = positionalDatabase[soundId];
+        AudioSource src = audioSourcePool.Count > 0 ? audioSourcePool.Dequeue() : null;
+        if (src == null) return;
+
+        src.transform.position = position ?? sound.sourceTransform.position;
+        src.clip = sound.clip;
+        src.volume = sound.volume;
+        src.loop = sound.loop;
+        src.outputAudioMixerGroup = sound.mixerGroup ?? positionalMixerGroup;
+
+        src.Play();
+        if (!sound.loop) StartCoroutine(ReturnToPool(src, sound.clip.length));
+    }
+
+    // ================= MIXER HELPERS =================
     public void SetMixerVolume(AudioMixer mixer, string parameterName, float volume)
     {
-        // Convert linear volume (0-1) to decibel (-80 to 0)
-        float dbVolume = volume > 0 ? Mathf.Log10(volume) * 20 : -80f;
-        mixer.SetFloat(parameterName, dbVolume);
-
-        if (enableDebugLogs)
-            Debug.Log($"[AudioManager] Set mixer parameter '{parameterName}' to {dbVolume}dB (linear: {volume})");
+        float db = volume > 0 ? Mathf.Log10(volume) * 20 : -80f;
+        mixer.SetFloat(parameterName, db);
     }
+}
 
-    // Debug method to check pool status
-    public void DebugPoolStatus()
-    {
-        Debug.Log($"[AudioManager] Pool Status - Available: {audioSourcePool.Count}/{poolSize}");
-    }
+// Keep your AmbientSoundZone + PositionalAmbientSound classes here (unchanged from AmbientSFXManager)
+
+[System.Serializable]
+public class AmbientSoundZone
+{
+    public string zoneName;
+    public AudioClip[] ambientClips;
+    public float volume = 1f;
+    public float fadeInTime = 2f;
+    public float fadeOutTime = 2f;
+    public bool loop = true;
+    public bool randomizePlayback = false;
+    public Vector2 randomPlaybackInterval = new Vector2(5f, 15f);
+    public AudioMixerGroup mixerGroup;
+}
+
+[System.Serializable]
+public class PositionalAmbientSound
+{
+    public string soundId;
+    public AudioClip clip;
+    public Transform sourceTransform;
+    public float maxDistance = 50f;
+    public float volume = 1f;
+    public bool loop = true;
+    public AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic;
+    public AnimationCurve customRolloffCurve;
+    public AudioMixerGroup mixerGroup;
 }
