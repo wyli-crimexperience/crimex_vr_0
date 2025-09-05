@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class BuildingEntranceZone : MonoBehaviour
 {
@@ -13,30 +14,25 @@ public class BuildingEntranceZone : MonoBehaviour
 
     [Header("Volume Transitions")]
     [Range(0f, 1f)]
-    public float interiorVolumeDamping = 0.3f; // Dampen exterior sounds when inside
-    public string exteriorMixerParameter = "CityVolume"; // Mixer parameter name
+    public float interiorVolumeDamping = 0.3f;
+    public string exteriorMixerParameter = "CityVolume";
 
     [Header("Trigger Settings")]
     public bool requirePlayerTag = true;
     public string playerTag = "Player";
 
-    private AmbientSFXManager ambientManager;
     private AudioReverbZone reverbZone;
     private bool playerInside = false;
 
     private void Start()
     {
-        ambientManager = FindFirstObjectByType<AmbientSFXManager>();
-
-        if (ambientManager == null)
+        if (AudioManager.Instance == null)
         {
-            Debug.LogError("AmbientSFXManager not found in scene!");
+            Debug.LogWarning("[BuildingEntranceZone] AudioManager not found at Start. Will check when triggered.");
         }
 
-        // Setup building collider
         SetupBuildingCollider();
 
-        // Setup reverb zone for interior acoustics
         if (enableReverbTransition)
         {
             SetupReverbZone();
@@ -62,7 +58,6 @@ public class BuildingEntranceZone : MonoBehaviour
             reverbZone = gameObject.AddComponent<AudioReverbZone>();
         }
 
-        // Configure reverb zone to match building interior
         reverbZone.reverbPreset = interiorReverb;
         reverbZone.minDistance = 1f;
         reverbZone.maxDistance = 15f;
@@ -92,15 +87,21 @@ public class BuildingEntranceZone : MonoBehaviour
 
     private void EnterBuilding()
     {
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogError("[BuildingEntranceZone] AudioManager instance not found!");
+            return;
+        }
+
         Debug.Log($"Player entered building - switching to {interiorZone}");
 
         // Switch to interior ambience
-        ambientManager?.SetAmbientZone(interiorZone);
+        AudioManager.Instance.SetAmbientZone(interiorZone);
 
         // Dampen exterior city sounds
         if (!string.IsNullOrEmpty(exteriorMixerParameter))
         {
-            StartCoroutine(TransitionMixerParameter(exteriorMixerParameter, interiorVolumeDamping, 1f));
+            StartCoroutine(AudioManager.Instance.TransitionMixerParameter(exteriorMixerParameter, interiorVolumeDamping, 1f));
         }
 
         // Set interior reverb
@@ -112,15 +113,21 @@ public class BuildingEntranceZone : MonoBehaviour
 
     private void ExitBuilding()
     {
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogError("[BuildingEntranceZone] AudioManager instance not found!");
+            return;
+        }
+
         Debug.Log($"Player exited building - switching to {exteriorZone}");
 
         // Switch back to exterior ambience
-        ambientManager?.SetAmbientZone(exteriorZone);
+        AudioManager.Instance.SetAmbientZone(exteriorZone);
 
         // Restore exterior city sounds
         if (!string.IsNullOrEmpty(exteriorMixerParameter))
         {
-            StartCoroutine(TransitionMixerParameter(exteriorMixerParameter, 1f, 1f));
+            StartCoroutine(AudioManager.Instance.TransitionMixerParameter(exteriorMixerParameter, 1f, 1f));
         }
 
         // Set exterior reverb
@@ -130,36 +137,8 @@ public class BuildingEntranceZone : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator TransitionMixerParameter(string parameterName, float targetValue, float duration)
-    {
-        if (ambientManager.masterMixerGroup?.audioMixer == null) yield break;
-
-        var mixer = ambientManager.masterMixerGroup.audioMixer;
-        mixer.GetFloat(parameterName, out float currentValue);
-
-        float startValue = Mathf.Pow(10, currentValue / 20); // Convert from dB to linear
-        float targetLinear = targetValue;
-
-        float elapsedTime = 0f;
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float normalizedTime = elapsedTime / duration;
-
-            float currentLinear = Mathf.Lerp(startValue, targetLinear, normalizedTime);
-            float dBValue = currentLinear > 0 ? Mathf.Log10(currentLinear) * 20 : -80f;
-
-            mixer.SetFloat(parameterName, dBValue);
-            yield return null;
-        }
-
-        float finalDB = targetLinear > 0 ? Mathf.Log10(targetLinear) * 20 : -80f;
-        mixer.SetFloat(parameterName, finalDB);
-    }
-
     private void OnDrawGizmos()
     {
-        // Draw building entrance zone
         Gizmos.color = playerInside ? new Color(1f, 0.5f, 0f, 0.3f) : new Color(0f, 0.5f, 1f, 0.3f);
 
         Collider col = GetComponent<Collider>();
@@ -177,7 +156,6 @@ public class BuildingEntranceZone : MonoBehaviour
             }
         }
 
-        // Draw reverb zone if enabled
         if (enableReverbTransition && reverbZone != null)
         {
             Gizmos.color = new Color(1f, 1f, 0f, 0.2f);

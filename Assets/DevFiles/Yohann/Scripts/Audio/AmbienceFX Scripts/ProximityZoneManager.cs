@@ -9,7 +9,7 @@ public class ProximityZoneManager : MonoBehaviour
         public string zoneName;
         public Transform zoneCenter;
         public float radius = 10f;
-        public int priority = 0; // Higher priority zones override lower ones
+        public int priority = 0;
     }
 
     [Header("Proximity Zones")]
@@ -19,13 +19,15 @@ public class ProximityZoneManager : MonoBehaviour
     public float checkInterval = 0.5f;
     public string defaultZone = "Default";
 
-    private AmbientSFXManager ambientManager;
     private Transform playerTransform;
     private string currentProximityZone;
 
     private void Start()
     {
-        ambientManager = FindFirstObjectByType<AmbientSFXManager>();
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogWarning("[ProximityZoneManager] AudioManager not found at Start. Will check periodically.");
+        }
 
         // Get player transform from VR camera
         GameObject playerObject = GameObject.FindWithTag("Player");
@@ -40,12 +42,17 @@ public class ProximityZoneManager : MonoBehaviour
             playerTransform = playerObject.transform;
         }
 
+        if (playerTransform == null)
+        {
+            Debug.LogError("[ProximityZoneManager] Could not find player transform! Make sure Player or MainCamera is tagged properly.");
+        }
+
         InvokeRepeating(nameof(CheckProximityZones), 0f, checkInterval);
     }
 
     private void CheckProximityZones()
     {
-        if (playerTransform == null || ambientManager == null) return;
+        if (playerTransform == null || AudioManager.Instance == null) return;
 
         string nearestZone = defaultZone;
         int highestPriority = -1;
@@ -65,8 +72,9 @@ public class ProximityZoneManager : MonoBehaviour
 
         if (nearestZone != currentProximityZone)
         {
+            Debug.Log($"[ProximityZoneManager] Zone changed from {currentProximityZone} to {nearestZone}");
             currentProximityZone = nearestZone;
-            ambientManager.SetAmbientZone(nearestZone);
+            AudioManager.Instance.SetAmbientZone(nearestZone);
         }
     }
 
@@ -81,6 +89,18 @@ public class ProximityZoneManager : MonoBehaviour
 
             Gizmos.color = Color.magenta;
             Gizmos.DrawWireSphere(zone.zoneCenter.position, zone.radius);
+
+            // Draw zone name in scene view
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(zone.zoneCenter.position + Vector3.up * (zone.radius + 1f), zone.zoneName);
+#endif
         }
+    }
+
+    // Public method to manually set a zone (useful for debugging)
+    [ContextMenu("Force Check Zones")]
+    public void ForceCheckZones()
+    {
+        CheckProximityZones();
     }
 }

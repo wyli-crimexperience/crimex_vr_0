@@ -6,20 +6,20 @@ public class FootstepController : MonoBehaviour
     [SerializeField] private AudioClip[] footstepClips;
     [SerializeField] private float stepInterval = 0.5f;
     [SerializeField] private float minSpeed = 0.1f;
-    [SerializeField] private float baseVolume = 2.0f; // ADD THIS - Base volume multiplier
+    [SerializeField] private float baseVolume = 2.0f;
     [SerializeField] private float volumeRange = 0.2f;
     [SerializeField] private float pitchRange = 0.1f;
 
     [Header("Ground Detection Settings")]
-    [SerializeField] private LayerMask groundLayerMask = -1; // Changed to detect all layers by default
-    [SerializeField] private float raycastDistance = 2f; // Increased distance
-    [SerializeField] private float raycastOffset = 0.1f; // Start raycast slightly above ground
-    [SerializeField] private bool useMultipleRaycasts = true; // Cast multiple rays for better detection
+    [SerializeField] private LayerMask groundLayerMask = -1;
+    [SerializeField] private float raycastDistance = 2f;
+    [SerializeField] private float raycastOffset = 0.1f;
+    [SerializeField] private bool useMultipleRaycasts = true;
 
     [Header("Debug Settings")]
     [SerializeField] private bool enableDebugLogs = true;
     [SerializeField] private bool showDebugRaycast = true;
-    [SerializeField] private bool forceGrounded = false; // Emergency override for testing
+    [SerializeField] private bool forceGrounded = false;
 
     private CharacterController characterController;
     private float stepTimer;
@@ -31,7 +31,6 @@ public class FootstepController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         lastPosition = transform.position;
 
-        // Validation checks
         if (footstepClips.Length == 0)
         {
             Debug.LogError($"[FootstepController] No footstep clips assigned to {gameObject.name}!");
@@ -39,12 +38,13 @@ public class FootstepController : MonoBehaviour
         else if (enableDebugLogs)
         {
             Debug.Log($"[FootstepController] Initialized with {footstepClips.Length} footstep clips.");
-            Debug.Log($"[FootstepController] Ground LayerMask: {groundLayerMask.value} (Binary: {System.Convert.ToString(groundLayerMask.value, 2)})");
+            Debug.Log($"[FootstepController] Ground LayerMask: {groundLayerMask.value}");
         }
 
-        if (AudioManager.Instance == null)
+        // Wait for AudioManager to initialize
+        if (AudioManager.Instance == null && enableDebugLogs)
         {
-            Debug.LogError("[FootstepController] AudioManager instance not found!");
+            Debug.LogWarning("[FootstepController] AudioManager instance not found! Will retry each frame.");
         }
 
         if (characterController == null && enableDebugLogs)
@@ -55,20 +55,19 @@ public class FootstepController : MonoBehaviour
 
     void Update()
     {
+        // Check if AudioManager is available
+        if (AudioManager.Instance == null) return;
+
         HandleFootsteps();
     }
 
     void HandleFootsteps()
     {
-        // Calculate movement
         float distanceMoved = Vector3.Distance(transform.position, lastPosition);
         float speedThreshold = minSpeed * Time.deltaTime;
         bool isMoving = distanceMoved > speedThreshold;
-
-        // Check if grounded with improved detection
         bool isGrounded = IsGroundedImproved();
 
-        // Debug logging (every 30 frames to reduce spam)
         if (enableDebugLogs && Time.frameCount % 30 == 0)
         {
             Debug.Log($"[FootstepController] Status - Moving: {isMoving} ({distanceMoved:F4} > {speedThreshold:F4}), Grounded: {isGrounded}, Timer: {stepTimer:F2}");
@@ -79,15 +78,11 @@ public class FootstepController : MonoBehaviour
                 Debug.Log($"  - Position: {transform.position}");
                 Debug.Log($"  - Raycast Distance: {raycastDistance}");
                 Debug.Log($"  - LayerMask: {groundLayerMask.value}");
-                Debug.Log($"  - CharacterController: {(characterController != null ? "Found" : "Missing")}");
                 if (characterController != null)
-                {
                     Debug.Log($"  - CC.isGrounded: {characterController.isGrounded}");
-                }
             }
         }
 
-        // Alert when grounded state changes
         if (isGrounded != wasGroundedLastFrame && enableDebugLogs)
         {
             Debug.Log($"[FootstepController] Ground state changed: {wasGroundedLastFrame} → {isGrounded}");
@@ -117,24 +112,12 @@ public class FootstepController : MonoBehaviour
 
     bool IsGroundedImproved()
     {
-        // Emergency override for testing
         if (forceGrounded) return true;
 
-        // Try CharacterController first if available
         if (characterController != null && characterController.isGrounded)
-        {
             return true;
-        }
 
-        // Multiple raycast approach for better detection
-        if (useMultipleRaycasts)
-        {
-            return IsGroundedMultiRaycast();
-        }
-        else
-        {
-            return IsGroundedSingleRaycast();
-        }
+        return useMultipleRaycasts ? IsGroundedMultiRaycast() : IsGroundedSingleRaycast();
     }
 
     bool IsGroundedSingleRaycast()
@@ -154,12 +137,9 @@ public class FootstepController : MonoBehaviour
     bool IsGroundedMultiRaycast()
     {
         Vector3 center = transform.position + Vector3.up * raycastOffset;
-        float radius = 0.3f; // Adjust based on your character size
+        float radius = 0.3f;
 
-        // Center raycast
         bool centerHit = Physics.Raycast(center, Vector3.down, raycastDistance, groundLayerMask);
-
-        // Four corner raycasts
         Vector3[] offsets = {
             new Vector3(radius, 0, 0),
             new Vector3(-radius, 0, 0),
@@ -183,7 +163,6 @@ public class FootstepController : MonoBehaviour
             if (hit) hitCount++;
         }
 
-        // Consider grounded if at least 2 out of 5 rays hit
         return hitCount >= 2;
     }
 
@@ -201,7 +180,6 @@ public class FootstepController : MonoBehaviour
             return;
         }
 
-        // Apply base volume multiplier
         float randomVolume = baseVolume + Random.Range(-volumeRange, volumeRange);
         float randomPitch = 1f + Random.Range(-pitchRange, pitchRange);
 
@@ -216,7 +194,6 @@ public class FootstepController : MonoBehaviour
         AudioManager.Instance.PlayFootstep(clipToPlay, footstepPosition, randomVolume, randomPitch);
     }
 
-    // Debug methods
     [ContextMenu("Test Footstep")]
     public void TestFootstep()
     {
@@ -232,7 +209,6 @@ public class FootstepController : MonoBehaviour
         Debug.Log($"CharacterController: {(characterController != null ? "Present" : "Missing")}");
         if (characterController != null)
             Debug.Log($"CC.isGrounded: {characterController.isGrounded}");
-
         Debug.Log($"Single Raycast Result: {IsGroundedSingleRaycast()}");
         Debug.Log($"Multi Raycast Result: {IsGroundedMultiRaycast()}");
         Debug.Log($"LayerMask: {groundLayerMask.value}");

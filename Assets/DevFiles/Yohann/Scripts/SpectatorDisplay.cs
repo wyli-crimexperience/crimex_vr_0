@@ -1,7 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Runtime.InteropServices;
-using System;
 
 public class MultiDisplaySpectatorManager : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
     private UnityEngine.Camera displayCamera;
     private Canvas displayCanvas;
     private RawImage spectatorRawImage;
-
+    private List<IntPtr> windowHandles = new List<IntPtr>();
     // Windows API imports for proper window styling
 #if UNITY_STANDALONE_WIN
     [DllImport("user32.dll")]
@@ -368,54 +369,70 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
         return textObj;
     }
 
+    // Add a list of window handles
+
     System.Collections.IEnumerator SetupWindowControls()
     {
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-        yield return new WaitForSeconds(1f);
-        
-        // Try multiple methods to get the window handle
-        windowHandle = GetActiveWindow();
-        if (windowHandle == IntPtr.Zero)
+    yield return new WaitForSeconds(1f);
+
+    windowHandles.Clear();
+
+    // Always try to get the main Unity window
+    IntPtr mainHandle = GetActiveWindow();
+    if (mainHandle == IntPtr.Zero) mainHandle = GetForegroundWindow();
+    if (mainHandle == IntPtr.Zero) mainHandle = FindWindow(null, Application.productName);
+
+    if (mainHandle != IntPtr.Zero)
+    {
+        windowHandles.Add(mainHandle);
+    }
+
+    // Also try to find the spectator display window by title
+    IntPtr spectatorHandle = FindWindow(null, spectatorWindowTitle);
+    if (spectatorHandle != IntPtr.Zero && spectatorHandle != mainHandle)
+    {
+        windowHandles.Add(spectatorHandle);
+    }
+
+    if (windowHandles.Count > 0)
+    {
+        foreach (var handle in windowHandles)
         {
-            windowHandle = GetForegroundWindow();
+            // Store original properties just for the first window
+            if (handle == windowHandles[0])
+            {
+                originalStyle = (uint)GetWindowLong(handle, GWL_STYLE);
+                originalExStyle = (uint)GetWindowLong(handle, GWL_EXSTYLE);
+                GetWindowRect(handle, out originalRect);
+            }
+
+            // Set title text for spectator window
+            SetWindowText(handle, spectatorWindowTitle);
+
+            // Apply style and mode
+            ApplyWindowStyle(handle);
+            ApplyWindowMode(spectatorWindowMode, handle);
         }
-        if (windowHandle == IntPtr.Zero)
-        {
-            windowHandle = FindWindow(null, Application.productName);
-        }
-        
-        if (windowHandle != IntPtr.Zero)
-        {
-            // Store original window properties
-            originalStyle = (uint)GetWindowLong(windowHandle, GWL_STYLE);
-            originalExStyle = (uint)GetWindowLong(windowHandle, GWL_EXSTYLE);
-            GetWindowRect(windowHandle, out originalRect);
-            
-            // Set window title
-            SetWindowText(windowHandle, spectatorWindowTitle);
-            
-            // Apply window style and mode
-            ApplyWindowStyle();
-            ApplyWindowMode(spectatorWindowMode);
-            
-            currentWindowMode = spectatorWindowMode;
-            isInitialized = true;
-            
-            Debug.Log($"Window controls initialized. Handle: {windowHandle}, Mode: {spectatorWindowMode}");
-        }
-        else
-        {
-            Debug.LogWarning("Could not get window handle for window controls");
-        }
+
+        currentWindowMode = spectatorWindowMode;
+        isInitialized = true;
+        Debug.Log($"Window controls initialized. Found {windowHandles.Count} windows.");
+    }
+    else
+    {
+        Debug.LogWarning("Could not get any window handles for window controls");
+    }
 #else
         yield return null;
 #endif
     }
 
 #if UNITY_STANDALONE_WIN
-    void ApplyWindowStyle()
+    // Updated ApplyWindowStyle to take a handle
+    void ApplyWindowStyle(IntPtr handle)
     {
-        if (windowHandle == IntPtr.Zero) return;
+        if (handle == IntPtr.Zero) return;
 
         uint style = WS_VISIBLE;
         uint exStyle = WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR;
@@ -424,126 +441,85 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
         {
             style |= WS_CAPTION | WS_SYSMENU;
 
-            if (showMinimizeButton)
-                style |= WS_MINIMIZEBOX;
+            if (showMinimizeButton) style |= WS_MINIMIZEBOX;
+            if (showMaximizeButton) style |= WS_MAXIMIZEBOX;
 
-            if (showMaximizeButton)
-                style |= WS_MAXIMIZEBOX;
-
-            if (allowWindowResize)
-                style |= WS_THICKFRAME;
-            else
-                style |= WS_BORDER;
+            style |= allowWindowResize ? WS_THICKFRAME : WS_BORDER;
         }
         else
         {
             style |= WS_POPUP;
         }
 
-        // Apply the new style
-        SetWindowLong(windowHandle, GWL_STYLE, (int)style);
-        SetWindowLong(windowHandle, GWL_EXSTYLE, (int)exStyle);
+        SetWindowLong(handle, GWL_STYLE, (int)style);
+        SetWindowLong(handle, GWL_EXSTYLE, (int)exStyle);
 
-        // Force the window to redraw with new style
-        SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0,
-                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+        SetWindowPos(handle, IntPtr.Zero, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-        Debug.Log($"Applied window style: ShowTitleBar={showTitleBar}, Resizable={allowWindowResize}");
+        Debug.Log($"Applied window style to handle {handle}");
     }
 
-    void ApplyWindowMode(WindowMode mode)
+    // Updated ApplyWindowMode to take a handle
+    void ApplyWindowMode(WindowMode mode, IntPtr handle)
     {
-        if (windowHandle == IntPtr.Zero) return;
+        if (handle == IntPtr.Zero) return;
 
         switch (mode)
         {
             case WindowMode.Windowed:
-                SetWindowedMode();
+                SetWindowedMode(handle);
                 break;
-
             case WindowMode.Maximized:
                 Screen.fullScreen = false;
-                ShowWindow(windowHandle, SW_MAXIMIZE);
+                ShowWindow(handle, SW_MAXIMIZE);
                 break;
-
             case WindowMode.Fullscreen:
                 Screen.fullScreen = true;
                 break;
-
             case WindowMode.FullscreenWindowed:
                 Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
                 break;
-
             case WindowMode.BorderlessWindowed:
-                SetBorderlessWindowedMode();
+                SetBorderlessWindowedMode(handle);
                 break;
         }
 
-        currentWindowMode = mode;
-        Debug.Log($"Applied window mode: {mode}");
+        Debug.Log($"Applied window mode {mode} to handle {handle}");
     }
 
-    void SetWindowedMode()
+    void SetWindowedMode(IntPtr handle)
     {
         Screen.fullScreen = false;
+        ApplyWindowStyle(handle);
 
-        // Ensure window style is applied
-        ApplyWindowStyle();
+        // Position + size logic same as before, just use `handle` instead of windowHandle
+        SetWindowPos(handle, IntPtr.Zero, windowedPosition.x, windowedPosition.y,
+            windowedSize.x, windowedSize.y, SWP_SHOWWINDOW);
 
-        // Position window (try to position on second monitor if available)
-        IntPtr monitor = MonitorFromWindow(windowHandle, MONITOR_DEFAULTTONEAREST);
-
-        MONITORINFO monitorInfo = new MONITORINFO();
-        monitorInfo.cbSize = (uint)Marshal.SizeOf(monitorInfo);
-
-        int windowX = windowedPosition.x;
-        int windowY = windowedPosition.y;
-
-        if (GetMonitorInfo(monitor, ref monitorInfo))
-        {
-            // Position on the work area of the monitor (excluding taskbar)
-            windowX = monitorInfo.rcWork.Left + windowedPosition.x;
-            windowY = monitorInfo.rcWork.Top + windowedPosition.y;
-
-            // Ensure window fits on screen
-            if (windowX + windowedSize.x > monitorInfo.rcWork.Right)
-                windowX = monitorInfo.rcWork.Right - windowedSize.x;
-
-            if (windowY + windowedSize.y > monitorInfo.rcWork.Bottom)
-                windowY = monitorInfo.rcWork.Bottom - windowedSize.y;
-        }
-
-        // Set window position and size
-        SetWindowPos(windowHandle, IntPtr.Zero, windowX, windowY,
-                    windowedSize.x, windowedSize.y, SWP_SHOWWINDOW);
-
-        ShowWindow(windowHandle, SW_RESTORE);
-
-        Debug.Log($"Set windowed mode: {windowedSize.x}x{windowedSize.y} at ({windowX}, {windowY})");
+        ShowWindow(handle, SW_RESTORE);
     }
 
-    void SetBorderlessWindowedMode()
+    void SetBorderlessWindowedMode(IntPtr handle)
     {
         Screen.fullScreen = false;
-
-        // Remove all window decorations
         uint style = WS_VISIBLE | WS_POPUP;
-        SetWindowLong(windowHandle, GWL_STYLE, (int)style);
+        SetWindowLong(handle, GWL_STYLE, (int)style);
 
-        // Get monitor size for borderless fullscreen
-        IntPtr monitor = MonitorFromWindow(windowHandle, MONITOR_DEFAULTTONEAREST);
+        IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST);
         MONITORINFO monitorInfo = new MONITORINFO();
         monitorInfo.cbSize = (uint)Marshal.SizeOf(monitorInfo);
 
         if (GetMonitorInfo(monitor, ref monitorInfo))
         {
-            SetWindowPos(windowHandle, IntPtr.Zero,
-                        monitorInfo.rcMonitor.Left, monitorInfo.rcMonitor.Top,
-                        monitorInfo.rcMonitor.Width, monitorInfo.rcMonitor.Height,
-                        SWP_SHOWWINDOW | SWP_FRAMECHANGED);
+            SetWindowPos(handle, IntPtr.Zero,
+                monitorInfo.rcMonitor.Left, monitorInfo.rcMonitor.Top,
+                monitorInfo.rcMonitor.Width, monitorInfo.rcMonitor.Height,
+                SWP_SHOWWINDOW | SWP_FRAMECHANGED);
         }
     }
 #endif
+
 
     // Public methods
     public void SetWindowMode(WindowMode mode)
