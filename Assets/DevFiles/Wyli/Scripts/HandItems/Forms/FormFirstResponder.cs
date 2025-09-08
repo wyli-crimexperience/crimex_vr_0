@@ -1,35 +1,39 @@
 using System;
-
 using UnityEngine;
-
 using TMPro;
 
+public class FormFirstResponder : Form
+{
+    [SerializeField]
+    private TextMeshProUGUI txtDateTimeFilledUp, txtDateTimeReported,
+        txtDateTimeFirstResponderArrived, txtDateTimeCordoned, txtDateTimeCalledTOC,
+        txtDateTimeInvestigatorArrived, txtDateTimeInvestigatorReceived;
 
-
-public class FormFirstResponder : Form {
-
-    [SerializeField] private TextMeshProUGUI txtDateTimeFilledUp, txtDateTimeReported, txtDateTimeFirstResponderArrived, txtDateTimeCordoned, txtDateTimeCalledTOC, txtDateTimeInvestigatorArrived, txtDateTimeInvestigatorReceived;
     [SerializeField] private TextMeshProUGUI[] txtInterviewed;
 
+    public override void Receive()
+    {
+        var timeline = ManagerGlobal.Instance.TimelineManager;
 
+        txtDateTimeFilledUp.text = FormatDate(timeline.GetEventTime(TimelineEvent.FirstResponderFilledUp));
+        txtDateTimeReported.text = FormatDate(timeline.GetEventTime(TimelineEvent.Reported), "HHmmH, MMM dd, yyyy");
+        txtDateTimeFirstResponderArrived.text = FormatDate(timeline.GetEventTime(TimelineEvent.FirstResponderArrived), "HHmmH, MMM dd, yyyy");
+        txtDateTimeCordoned.text = FormatDate(timeline.GetEventTime(TimelineEvent.Cordoned), "HHmmH, MMM dd, yyyy", "N/A");
+        txtDateTimeCalledTOC.text = FormatDate(timeline.GetEventTime(TimelineEvent.CalledTOC), "HHmmH, MMM dd, yyyy", "N/A");
+        txtDateTimeInvestigatorArrived.text = FormatDate(timeline.GetEventTime(TimelineEvent.InvestigatorArrived), "HHmmH, MMM dd, yyyy");
 
-    public override void Receive() {
-        txtDateTimeFilledUp.text = $"{ManagerGlobal.Instance.DateTimeFirstResponderFilledUp:MMM dd, yyyy}";
-        txtDateTimeReported.text = $"{ManagerGlobal.Instance.DateTimeReported:HH}{ManagerGlobal.Instance.DateTimeReported:mm}H, {ManagerGlobal.Instance.DateTimeReported:MMM dd, yyyy}";
-        txtDateTimeFirstResponderArrived.text = $"{ManagerGlobal.Instance.DateTimeFirstResponderArrived:HH}{ManagerGlobal.Instance.DateTimeFirstResponderArrived:mm}H, {ManagerGlobal.Instance.DateTimeFirstResponderArrived:MMM dd, yyyy}";
+        // Ensure InvestigatorReceived is logged
+        if (!timeline.HasEvent(TimelineEvent.InvestigatorReceived))
+            timeline.SetEventNow(TimelineEvent.InvestigatorReceived, timeline.GetEventTime(TimelineEvent.Incident).Value);
 
-        txtDateTimeCordoned.text = ManagerGlobal.Instance.DateTimeCordoned == DateTime.MinValue ? "N/A" :
-            $"{ManagerGlobal.Instance.DateTimeCordoned:HH}{ManagerGlobal.Instance.DateTimeCordoned:mm}H, {ManagerGlobal.Instance.DateTimeCordoned:MMM dd, yyyy}";
-
-        txtDateTimeCalledTOC.text = ManagerGlobal.Instance.DateTimeCalledTOC == DateTime.MinValue ? "N/A" :
-            $"{ManagerGlobal.Instance.DateTimeCalledTOC:HH}{ManagerGlobal.Instance.DateTimeCalledTOC:mm}H, {ManagerGlobal.Instance.DateTimeCalledTOC:MMM dd, yyyy}";
-
-        // todo: only make interviewed witnesses writeable if they were actually interviewed
-
-        txtDateTimeInvestigatorArrived.text = $"{ManagerGlobal.Instance.DateTimeInvestigatorArrived:HH}{ManagerGlobal.Instance.DateTimeInvestigatorArrived:mm}H, {ManagerGlobal.Instance.DateTimeInvestigatorArrived:MMM dd, yyyy}";
-
-        ManagerGlobal.Instance.SetDateTimeInvestigatorReceived();
-        txtDateTimeInvestigatorReceived.text = $"{ManagerGlobal.Instance.DateTimeInvestigatorReceived:HH}{ManagerGlobal.Instance.DateTimeInvestigatorReceived:mm}H, {ManagerGlobal.Instance.DateTimeInvestigatorReceived:MMM dd, yyyy}";
+        txtDateTimeInvestigatorReceived.text = FormatDate(timeline.GetEventTime(TimelineEvent.InvestigatorReceived), "HHmmH, MMM dd, yyyy");
     }
 
+    private string FormatDate(DateTime? dateTime, string format = "MMM dd, yyyy", string fallback = "")
+    {
+        if (dateTime == null || dateTime == DateTime.MinValue)
+            return fallback;
+
+        return dateTime.Value.ToString(format);
+    }
 }

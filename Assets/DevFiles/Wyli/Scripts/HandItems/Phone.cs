@@ -96,7 +96,8 @@ public class Phone : HandItemBriefcase
         isDoneConversing = true;
         if (correctContact == TypePhoneContact.TacticalOperationsCenter)
         {
-            ManagerGlobal.Instance.SetDateTimeCalledTOC();
+            var timeline = ManagerGlobal.Instance.TimelineManager;
+            var dateTimeIncident = timeline.GetEventTime(TimelineEvent.CalledTOC).Value;
         }
     }
 }

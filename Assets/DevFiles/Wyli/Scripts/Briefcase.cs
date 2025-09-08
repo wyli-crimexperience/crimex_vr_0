@@ -1,11 +1,9 @@
 using System.Collections;
-
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-
-
-public class Briefcase : MonoBehaviour {
+public class Briefcase : MonoBehaviour
+{
     [Header("Briefcase References")]
     [SerializeField] private Transform briefcaseObject;
     [SerializeField] private XRSimpleInteractable lid;
@@ -13,7 +11,7 @@ public class Briefcase : MonoBehaviour {
     [SerializeField] private HandItemBriefcase[] items;
 
     [Header("Lid Control")]
-    [Tooltip("Minimum angle to consider the briefcase open.")]
+    [Tooltip("Minimum angle (degrees) before the briefcase counts as open.")]
     [SerializeField] private float openThresholdAngle = 11.25f;
 
     private bool isGrabbingLid;
@@ -21,84 +19,121 @@ public class Briefcase : MonoBehaviour {
     private float lidAngle;
     private Rigidbody rb;
 
+    /// <summary> True if the lid is rotated past the threshold. </summary>
     public bool IsOpen => Mathf.Abs(lidAngle) > openThresholdAngle;
 
-
-
-    private void Awake() {
+    private void Awake()
+    {
         rb = GetComponent<Rigidbody>();
     }
 
-    private IEnumerator Start() {
-        // Detach to appropriate hierarchy level if necessary
+    private IEnumerator Start()
+    {
+        // Ensure the briefcase is placed correctly in hierarchy
         if (transform.parent != null && transform.parent.root != null)
             transform.parent = transform.parent.root.parent;
 
-        // Initialize sockets
-        foreach (XRSocketInteractorBriefcase socket in sockets) {
+        // Init sockets (disabled initially)
+        foreach (var socket in sockets)
+        {
+            if (socket == null) continue;
             socket.SetBriefcase(this);
             socket.socketActive = false;
         }
 
         yield return new WaitForEndOfFrame();
 
-        // Snap items to their assigned sockets
-        foreach (HandItemBriefcase item in items) {
-            if (item.SocketBriefcase != null) {
-                item.SocketBriefcase.socketActive = true;
-                item.transform.position = item.SocketBriefcase.transform.position;
-            }
+        // Snap items into sockets
+        foreach (var item in items)
+        {
+            if (item == null || item.SocketBriefcase == null) continue;
+            item.SocketBriefcase.socketActive = true;
+            item.transform.SetPositionAndRotation(
+                item.SocketBriefcase.transform.position,
+                item.SocketBriefcase.transform.rotation
+            );
         }
 
         yield return new WaitForEndOfFrame();
 
-        // Activate all sockets
-        foreach (XRSocketInteractorBriefcase socket in sockets) {
-            socket.socketActive = true;
+        // Reactivate all sockets
+        foreach (var socket in sockets)
+        {
+            if (socket != null)
+                socket.socketActive = true;
         }
 
         yield return new WaitForEndOfFrame();
 
-        // Finalize initialization for each item
-        foreach (HandItemBriefcase item in items) {
-            item.InitBriefcase();
+        // Finalize item initialization
+        foreach (var item in items)
+        {
+            if (item != null) item.InitBriefcase();
         }
     }
 
-    private void Update() {
+    private void Update()
+    {
         if (!isGrabbingLid || handGrabbingLid == null) return;
 
+        // Vector from lid pivot to hand
         Vector3 handOffset = handGrabbingLid.position - lid.transform.position;
+
+        // Project offset onto lid plane
         Vector3 projected = Vector3.ProjectOnPlane(handOffset, lid.transform.right);
 
-        float signedAngle = Vector3.SignedAngle(-briefcaseObject.forward, projected,
-            briefcaseObject.forward.x < 0 ? Vector3.forward : -Vector3.forward);
+        // Calculate signed angle
+        float signedAngle = Vector3.SignedAngle(
+            -briefcaseObject.forward,
+            projected,
+            (briefcaseObject.up.y > 0 ? -Vector3.forward : Vector3.forward)
+        );
 
-        lidAngle = StaticUtils.ClampAngle(signedAngle * (briefcaseObject.up.y > 0 ? -1 : 1), -180, 0);
+        // Clamp and apply rotation
+        lidAngle = StaticUtils.ClampAngle(signedAngle, -180f, 0f);
         lid.transform.localRotation = Quaternion.AngleAxis(lidAngle, Vector3.right);
     }
 
-    public void GrabLid() {
+    public void GrabLid()
+    {
         isGrabbingLid = true;
 
-        var interactorLeft = ManagerGlobal.Instance.InteractorLeft;
-        var interactorRight = ManagerGlobal.Instance.InteractorRight;
+        var mgr = ManagerGlobal.Instance;
+        if (mgr == null || mgr.InteractionManager == null) return;
 
-        if (interactorLeft.firstInteractableSelected as XRSimpleInteractable == lid) {
-            handGrabbingLid = ManagerGlobal.Instance.HandLeftTarget;
-        } else if (interactorRight.firstInteractableSelected as XRSimpleInteractable == lid) {
-            handGrabbingLid = ManagerGlobal.Instance.HandRightTarget;
+        var interactorLeft = mgr.InteractionManager.InteractorLeft;
+        var interactorRight = mgr.InteractionManager.InteractorRight;
+
+        if (interactorLeft != null && interactorLeft.firstInteractableSelected as XRSimpleInteractable == lid)
+        {
+            handGrabbingLid = mgr.HandLeftTarget;
+        }
+        else if (interactorRight != null && interactorRight.firstInteractableSelected as XRSimpleInteractable == lid)
+        {
+            handGrabbingLid = mgr.HandRightTarget;
         }
     }
 
-    public void ReleaseLid() {
+
+    public void ReleaseLid()
+    {
         isGrabbingLid = false;
         handGrabbingLid = null;
     }
 
-    public void SetPaused(bool paused) {
+    public void SetPaused(bool paused)
+    {
         if (rb != null)
             rb.isKinematic = paused;
-    }
 
+        foreach (var socket in sockets)
+        {
+            if (socket != null) socket.socketActive = !paused;
+        }
+
+        foreach (var item in items)
+        {
+            if (item != null) item.SetPaused(paused);
+        }
+    }
 }

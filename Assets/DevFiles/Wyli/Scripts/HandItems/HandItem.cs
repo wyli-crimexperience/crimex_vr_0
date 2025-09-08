@@ -1,35 +1,40 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-
-
-public class HandItem : MonoBehaviour {
-
-    // my own interactable
+public class HandItem : MonoBehaviour
+{
     [SerializeField] protected XRGrabInteractable interactable;
     public XRGrabInteractable Interactable => interactable;
-    // my item type
+
     public TypeItem TypeItem;
 
     private Rigidbody rb;
 
-
-
-    protected virtual void Awake() {
+    protected virtual void Awake()
+    {
         rb = GetComponent<Rigidbody>();
     }
 
-
-
-    public virtual void Grab() {
-        ManagerGlobal.Instance.GrabItem(this);
+    public virtual void Grab()
+    {
+        if (ManagerGlobal.Instance != null && ManagerGlobal.Instance.InteractionManager != null)
+        {
+            ManagerGlobal.Instance.InteractionManager.GrabItem(this);
+        }
     }
-    public void Release() {
-        ManagerGlobal.Instance.ReleaseItem(this);
+
+    public void Release()
+    {
+        if (ManagerGlobal.Instance != null && ManagerGlobal.Instance.InteractionManager != null)
+        {
+            ManagerGlobal.Instance.InteractionManager.ReleaseItem(this);
+        }
+
         rb.isKinematic = false;
     }
-    public void SetPaused(bool b) {
+
+    public void SetPaused(bool b)
+    {
         rb.isKinematic = b;
     }
-
 }

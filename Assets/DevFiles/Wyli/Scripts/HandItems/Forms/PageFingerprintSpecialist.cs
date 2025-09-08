@@ -2,18 +2,20 @@ using System;
 using TMPro;
 using UnityEngine;
 
+public class PageFingerprintSpecialist : Page
+{
+    [SerializeField]
+    private TextMeshProUGUI txtCaseNumber, txtNatureOfCase, txtDate, txtWeatherCondition,
+        txtNameOfVictim, txtTimeOfArrival, txtTimeDatePlaceOfOccurrence, txtLocationOfFingerprint;
 
-
-public class PageFingerprintSpecialist : Page {
-
-    [SerializeField] private TextMeshProUGUI txtCaseNumber, txtNatureOfCase, txtDate, txtWeatherCondition, txtNameOfVictim, txtTimeOfArrival, txtTimeDatePlaceOfOccurrence, txtLocationOfFingerprint;
     [SerializeField] private GameObject goSketch;
 
-    private bool hasWrittenCaseNumber, hasWrittenNatureOfCase, hasWrittenDate, hasWrittenWeatherCondition, hasWrittenNameOfVictim, hasWrittenTimeOfArrival, hasWrittenTimeDatePlaceOfOccurrence, hasWrittenLocationOfFingerprint, hasWrittenSketch;
+    private bool hasWrittenCaseNumber, hasWrittenNatureOfCase, hasWrittenDate, hasWrittenWeatherCondition,
+        hasWrittenNameOfVictim, hasWrittenTimeOfArrival, hasWrittenTimeDatePlaceOfOccurrence,
+        hasWrittenLocationOfFingerprint, hasWrittenSketch;
 
-
-
-    private void Awake() {
+    private void Awake()
+    {
         txtCaseNumber.text = "";
         txtNatureOfCase.text = "";
         txtDate.text = "";
@@ -21,65 +23,92 @@ public class PageFingerprintSpecialist : Page {
         txtNameOfVictim.text = "";
         txtTimeOfArrival.text = "";
         txtTimeDatePlaceOfOccurrence.text = "";
-        goSketch.SetActive(false);
         txtLocationOfFingerprint.text = "";
+        goSketch.SetActive(false);
     }
 
-
-
-    public override void WriteNext() {
+    public override void WriteNext()
+    {
         base.WriteNext();
 
+        var timeline = ManagerGlobal.Instance.TimelineManager;
 
-        while (true) {
-            if (!hasWrittenCaseNumber) {
-                DateTime dateTimeNow = StaticUtils.DateTimeNowInEvening(ManagerGlobal.Instance.DateTimeIncident);
-                txtCaseNumber.text = $"CXP-{dateTimeNow:MM}-{dateTimeNow:yyyy}";
+        while (true)
+        {
+            if (!hasWrittenCaseNumber)
+            {
+                // Ensure Incident exists
+                if (!timeline.HasEvent(TimelineEvent.Incident))
+                    timeline.InitIncident(DateTime.Now);
+
+                var incident = timeline.GetEventTime(TimelineEvent.Incident).Value;
+                txtCaseNumber.text = $"CXP-{incident:MM}-{incident:yyyy}";
                 hasWrittenCaseNumber = true;
                 break;
             }
-            if (!hasWrittenNatureOfCase) {
+
+            if (!hasWrittenNatureOfCase)
+            {
                 txtNatureOfCase.text = "Alleged Homicide Stabbing Incident";
                 hasWrittenNatureOfCase = true;
                 break;
             }
-            if (!hasWrittenDate) {
-                txtDate.text = $"{StaticUtils.DateTimeNowInEvening(ManagerGlobal.Instance.DateTimeIncident):MMM dd, yyyy}";
+
+            if (!hasWrittenDate)
+            {
+                var incident = timeline.GetEventTime(TimelineEvent.Incident);
+                txtDate.text = incident?.ToString("MMM dd, yyyy");
                 hasWrittenDate = true;
                 break;
             }
-            if (!hasWrittenWeatherCondition) {
+
+            if (!hasWrittenWeatherCondition)
+            {
                 txtWeatherCondition.text = "Fair";
                 hasWrittenWeatherCondition = true;
                 break;
             }
-            if (!hasWrittenNameOfVictim) {
+
+            if (!hasWrittenNameOfVictim)
+            {
                 txtNameOfVictim.text = "Jose Martinez";
                 hasWrittenNameOfVictim = true;
                 break;
             }
-            if (!hasWrittenTimeOfArrival) {
-                txtTimeOfArrival.text = $"{StaticUtils.DateTimeNowInEvening(ManagerGlobal.Instance.DateTimeInvestigatorArrived):MMM dd, yyyy}";
+
+            if (!hasWrittenTimeOfArrival)
+            {
+                // Ensure InvestigatorArrived exists
+                if (!timeline.HasEvent(TimelineEvent.InvestigatorArrived))
+                    timeline.SetEventNow(TimelineEvent.InvestigatorArrived, timeline.GetEventTime(TimelineEvent.Incident).Value);
+
+                txtTimeOfArrival.text = timeline.GetEventTime(TimelineEvent.InvestigatorArrived)?.ToString("MMM dd, yyyy");
                 hasWrittenTimeOfArrival = true;
                 break;
             }
-            if (!hasWrittenTimeDatePlaceOfOccurrence) {
+
+            if (!hasWrittenTimeDatePlaceOfOccurrence)
+            {
                 txtTimeDatePlaceOfOccurrence.text = "#132 Legarda Rd., Baguio City";
                 hasWrittenTimeDatePlaceOfOccurrence = true;
                 break;
             }
-            if (!hasWrittenSketch) {
+
+            if (!hasWrittenSketch)
+            {
                 goSketch.SetActive(true);
                 hasWrittenSketch = true;
                 break;
             }
-            if (!hasWrittenLocationOfFingerprint) {
+
+            if (!hasWrittenLocationOfFingerprint)
+            {
                 txtLocationOfFingerprint.text = "On the handle of the knife beside the victim";
                 hasWrittenLocationOfFingerprint = true;
                 break;
             }
+
             break;
         }
     }
-
 }

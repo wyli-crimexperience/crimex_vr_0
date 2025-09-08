@@ -117,15 +117,29 @@ public class ManagerGlobal : MonoBehaviour {
     //Hookup
     [SerializeField] private DialogueManager dialogueManager;
     [SerializeField] private ThoughtManager thoughtManager;
+    [SerializeField] private TimelineManager timelineManager;
+    [SerializeField] private InteractionManager interactionManager;
     public DialogueManager DialogueManager => dialogueManager;
     public ThoughtManager ThoughtManager => thoughtManager;
+    public TimelineManager TimelineManager => timelineManager;
+    public InteractionManager InteractionManager => interactionManager;
 
     //end of Refactor Stuff
+    // Expose flags used by InteractionManager (read/write as needed)
+    public bool CanWriteNotepad { get => canWriteNotepad; set => canWriteNotepad = value; }
+    public bool CanWriteForm { get => canWriteForm; set => canWriteForm = value; }
+    public bool CanWriteEvidencePackSeal { get => canWriteEvidencePackSeal; set => canWriteEvidencePackSeal = value; }
+
+    public bool HasCheckedTimeOfArrival { get => hasCheckedTimeOfArrival; set => hasCheckedTimeOfArrival = value; }
+    public bool HasCheckedPulse { get => hasCheckedPulse; set => hasCheckedPulse = value; }
+    public bool HasWrittenTimeOfArrival { get => hasWrittenTimeOfArrival; set => hasWrittenTimeOfArrival = value; }
+    public bool HasWrittenPulse { get => hasWrittenPulse; set => hasWrittenPulse = value; }
+
+    public int Pulse { get => pulse; set => pulse = value; }
 
 
     [SerializeField] private NearFarInteractor interactorLeft, interactorRight;
-    public NearFarInteractor InteractorLeft => interactorLeft;
-    public NearFarInteractor InteractorRight => interactorRight;
+
     [SerializeField] private IXRFilter_HandToBriefcaseItem ixrFilter_handToBriefcaseItem;
 
     [SerializeField] private Player player;
@@ -149,102 +163,12 @@ public class ManagerGlobal : MonoBehaviour {
 
     private GameObject commandPostCopy;
 
-    [SerializeField] private Transform containerEvidenceMarker;
     private EvidenceMarkerCopy _evidenceMarkerCopy;
     private int _evidenceMarkerIndex;
     private List<EvidenceMarkerCopy> listEvidenceMarkerItemCopies = new List<EvidenceMarkerCopy>();
     private List<EvidenceMarkerCopy> listEvidenceMarkerBodyCopies = new List<EvidenceMarkerCopy>();
 
-    // hand items (when adding a new one, update the AssignGrabbedItem and UnassignGrabbedItem methods
-    private HandItem handItemLeft, handItemRight;
-    private Notepad notepad;
-    private PoliceTapeRoll policeTapeRoll;
-    private Form form;
-    private HandItem evidenceMarkerItem, evidenceMarkerBody;
-    private FingerprintTapeRoll fingerprintTapeRoll;
-    private FingerprintInk fingerprintInk;
-    private FingerprintInkRoller fingerprintInkRoller;
-    private FingerprintRecordStrip fingerprintRecordStrip;
-    private FingerprintSpoon fingerprintSpoon;
-    private EvidencePackSealTapeRoll evidencePackSealTapeRoll;
-    private EvidencePack evidencePack;
-    private Wipes wipes;
-    [SerializeField] private Transform containerWipes;
-    public Transform ContainerWipes => containerWipes;
-    private TypeItem TypeItemLeft => handItemLeft == null ? TypeItem.None : handItemLeft.TypeItem;
-    private TypeItem TypeItemRight => handItemRight == null ? TypeItem.None : handItemRight.TypeItem;
-    public void GrabItem(HandItem handItem) {
-        if (interactorLeft.firstInteractableSelected is XRGrabInteractable interactableLeft && interactableLeft == handItem.Interactable) {
-            handItemLeft = handItem;
-            AssignGrabbedItem(handItem);
-        }
-        if (interactorRight.firstInteractableSelected is XRGrabInteractable interactableRight && interactableRight == handItem.Interactable) {
-            handItemRight = handItem;
-            AssignGrabbedItem(handItem);
-        }
-    }
-    public void ReleaseItem(HandItem handItem) {
-        if (handItemLeft == handItem) {
-            handItemLeft = null;
-            UnassignGrabbedItem(handItem);
-        }
-        if (handItemRight == handItem) {
-            handItemRight = null;
-            UnassignGrabbedItem(handItem);
-        }
-    }
-    private void AssignGrabbedItem(HandItem handItem) {
-        if (handItem is Notepad _notepad) { notepad = _notepad; }
-        else if (handItem is PoliceTapeRoll _policeTapeRoll) { policeTapeRoll = _policeTapeRoll; }
-        else if (handItem is Form _form) {
-            form = _form;
-            form.Receive();
-        }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = handItem; }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = handItem; }
-        else if (handItem is Wipes _wipes) { wipes = _wipes; }
-        else if (handItem is FingerprintTapeRoll _fingerprintTapeRoll) { fingerprintTapeRoll = _fingerprintTapeRoll; }
-        else if (handItem is FingerprintInk _fingerprintInk) { fingerprintInk = _fingerprintInk; }
-        else if (handItem is FingerprintInkRoller _fingerprintInkRoller) { fingerprintInkRoller = _fingerprintInkRoller; }
-        else if (handItem is FingerprintRecordStrip _fingerprintRecordStrip) { fingerprintRecordStrip = _fingerprintRecordStrip; }
-        else if (handItem is FingerprintSpoon _fingerprintSpoon) { fingerprintSpoon = _fingerprintSpoon; }
-    }
-    private void UnassignGrabbedItem(HandItem handItem) {
-        if (handItem is Notepad) { notepad = null; }
-        else if (handItem is PoliceTapeRoll) { policeTapeRoll = null; }
-        else if (handItem is Form) { form = null; }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerItem) { evidenceMarkerItem = null; }
-        else if (handItem.TypeItem == TypeItem.EvidenceMarkerBody) { evidenceMarkerBody = null; }
-        else if (handItem is Wipes) { wipes = null; }
-        else if (handItem is FingerprintTapeRoll) { fingerprintTapeRoll = null; }
-        else if (handItem is FingerprintInk) { fingerprintInk = null; }
-        else if (handItem is FingerprintInkRoller) { fingerprintInkRoller = null; }
-        else if (handItem is FingerprintRecordStrip) { fingerprintRecordStrip = null; }
-        else if (handItem is FingerprintSpoon) { fingerprintSpoon = null; }
-    }
-
-
-    // timings
-    private DateTime dateTimeIncident;
-    public DateTime DateTimeIncident => dateTimeIncident;
-    // timings for first responder
-    private DateTime dateTimeReported, dateTimeFirstResponderArrived, dateTimeCordoned, dateTimeCalledTOC, dateTimeFirstResponderFilledUp, dateTimeInvestigatorArrived, dateTimeInvestigatorReceived;
-    public DateTime DateTimeReported => dateTimeReported;
-    public DateTime DateTimeFirstResponderArrived => dateTimeFirstResponderArrived;
-    public DateTime DateTimeCordoned => dateTimeCordoned;
-    public DateTime DateTimeCalledTOC => dateTimeCalledTOC;
-    public void SetDateTimeCalledTOC() {
-        dateTimeCalledTOC = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
-    }
-    public DateTime DateTimeFirstResponderFilledUp => dateTimeFirstResponderFilledUp;
-    public DateTime DateTimeInvestigatorArrived => dateTimeInvestigatorArrived;
-    public DateTime DateTimeInvestigatorReceived => dateTimeInvestigatorReceived;
-    public void SetDateTimeInvestigatorReceived() {
-        dateTimeInvestigatorReceived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
-    }
-    // timings for investigator on case
-    private DateTime dateTimeInvestigatorFilledUp;
-    public DateTime DateTimeInvestigatorFilledUp => dateTimeInvestigatorFilledUp;
+    
 
     // item flags
     private bool canWriteNotepad, canWriteEvidencePackSeal, hasCheckedTimeOfArrival, hasCheckedPulse, hasWrittenTimeOfArrival, hasWrittenPulse, canWriteForm;
@@ -261,8 +185,9 @@ public class ManagerGlobal : MonoBehaviour {
 
     private void Awake() {
 
-        //Init DialogueManager
+        //Init Refactored Managers
         dialogueManager.Init(player);
+        timelineManager.InitIncident(DateTime.Now.AddHours(-0.5f));
 
         Instance = this;
 
@@ -283,9 +208,7 @@ public class ManagerGlobal : MonoBehaviour {
         canWriteForm = false;
         pulse = 0;
         // todo: this is only scene 1. make it adapt
-        dateTimeIncident = DateTime.Now.AddHours(-0.5f);
-        dateTimeReported = dateTimeIncident.AddHours(0.25f);
-        dateTimeFirstResponderArrived = dateTimeReported.AddHours(0.25f);
+
 
         if (thoughtManager != null)
             thoughtManager.ClearCurrentThought();
@@ -415,7 +338,7 @@ public class ManagerGlobal : MonoBehaviour {
             dictPlayers.Add(typeRole, player);
 
             if (player.TypeRole == TypeRole.InvestigatorOnCase) {
-                dateTimeInvestigatorArrived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
+                timelineManager.SetEventNow(TimelineEvent.FirstResponderArrived, timelineManager.GetEventTime(TimelineEvent.Incident).Value);
             }
         }
         player.SetActive(true);
@@ -434,158 +357,16 @@ public class ManagerGlobal : MonoBehaviour {
     private void SecondaryButtonRight(InputAction.CallbackContext context) {
         // todo: add a function here
     }
-    private void PinchLeft(InputAction.CallbackContext context) {
-        if (context.performed) { Pinch(TypeItemLeft, TypeItemRight); }
+    private void PinchLeft(InputAction.CallbackContext context)
+    {
+        if (context.performed) interactionManager.OnPinchLeft();
     }
-    private void PinchRight(InputAction.CallbackContext context) {
-        if (context.performed) { Pinch(TypeItemRight, TypeItemLeft); }
+
+    private void PinchRight(InputAction.CallbackContext context)
+    {
+        if (context.performed) interactionManager.OnPinchRight();
     }
-    private void Pinch(TypeItem typeItem1, TypeItem typeItem2) {
-        // pen
-        if (typeItem1 == TypeItem.Pen) {
-            // pen on notepad
-            if (canWriteNotepad && typeItem2 == TypeItem.Notepad) {
-                while (true) {
-                    if (!hasWrittenTimeOfArrival && hasCheckedTimeOfArrival) {
-                        notepad.SetTextTime(dateTimeFirstResponderArrived.ToString("HH: mm"));
-                        hasWrittenTimeOfArrival = true;
-                        break;
-                    }
-                    if (!hasWrittenPulse && hasCheckedPulse) {
-                        notepad.SetTextPulse($"{pulse} BPM");
-                        hasWrittenPulse = true;
-                        break;
-                    }
-                    break;
-                }
-            }
-            // pen on form
-            if (canWriteForm && typeItem2 == TypeItem.Form) {
-                form.WriteOnPage();
-            }
-            // pen on evidence pack
-            if (canWriteEvidencePackSeal && typeItem2 == TypeItem.EvidencePack) {
-                if (evidencePack.EvidencePackSeal.IsTaped) {
-                    evidencePack.EvidencePackSeal.SetMarked(true);
-                }
-            }
-        }
 
-        // police tape
-        if (typeItem1 == TypeItem.PoliceTapeRoll) {
-            policeTapeRoll.TriggerTape();
-
-            // todo: set time cordoned to after cordoning, not at the start
-            dateTimeCordoned = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
-        }
-
-        // command post set-up
-        if (typeItem1 == TypeItem.CommandPost) {
-            if (commandPostCopy == null) {
-                commandPostCopy = Instantiate(HolderData.PrefabCommandPostCopy);
-            }
-
-            Vector3 pos = player.transform.position;
-            pos.y = 0.486f;
-            commandPostCopy.transform.SetPositionAndRotation(pos, Quaternion.Euler(new Vector3(0, -player.transform.eulerAngles.y, 0)));
-        }
-
-        // any form
-        if (typeItem1 == TypeItem.Form) {
-            form.TogglePage();
-        }
-
-        // evidence marker
-        if (typeItem1 == TypeItem.EvidenceMarkerItem) {
-            _evidenceMarkerIndex = listEvidenceMarkerItemCopies.Count;
-            for (int i = 0; i < listEvidenceMarkerItemCopies.Count; i++) {
-                if (listEvidenceMarkerItemCopies[i] == null) {
-                    _evidenceMarkerIndex = i;
-                    break;
-                }
-            }
-
-            _evidenceMarkerCopy = Instantiate(HolderData.PrefabEvidenceMarkerCopy, containerEvidenceMarker).GetComponent<EvidenceMarkerCopy>();
-            _evidenceMarkerCopy.Init(TypeEvidenceMarker.Item, _evidenceMarkerIndex, evidenceMarkerItem.transform);
-            if (_evidenceMarkerIndex == listEvidenceMarkerItemCopies.Count) {
-                listEvidenceMarkerItemCopies.Add(_evidenceMarkerCopy);
-            } else {
-                listEvidenceMarkerItemCopies[_evidenceMarkerIndex] = _evidenceMarkerCopy;
-            }
-        }
-
-        if (typeItem1 == TypeItem.EvidenceMarkerBody) {
-            _evidenceMarkerIndex = listEvidenceMarkerBodyCopies.Count;
-            for (int i = 0; i < listEvidenceMarkerBodyCopies.Count; i++) {
-                if (listEvidenceMarkerBodyCopies[i] == null) {
-                    _evidenceMarkerIndex = i;
-                    break;
-                }
-            }
-
-            _evidenceMarkerCopy = Instantiate(HolderData.PrefabEvidenceMarkerCopy, containerEvidenceMarker).GetComponent<EvidenceMarkerCopy>();
-            _evidenceMarkerCopy.Init(TypeEvidenceMarker.Body, _evidenceMarkerIndex, evidenceMarkerBody.transform);
-            if (_evidenceMarkerIndex == listEvidenceMarkerBodyCopies.Count) {
-                listEvidenceMarkerBodyCopies.Add(_evidenceMarkerCopy);
-            } else {
-                listEvidenceMarkerBodyCopies[_evidenceMarkerIndex] = _evidenceMarkerCopy;
-            }
-        }
-
-        // wipes
-        if (typeItem1 == TypeItem.Wipes) {
-            wipes.SpawnWipe();
-        }
-
-        // fingerprint tape
-        if (typeItem1 == TypeItem.FingerprintTapeRoll) {
-            if (fingerprintTapeRoll.FingerprintTapeLifted == null) {
-                fingerprintTapeRoll.ExtendTape();
-            } else {
-                if (fingerprintTapeRoll.CanLiftFingerprint) {
-                    fingerprintTapeRoll.LiftFingerprint();
-                } else {
-                    if (fingerprintTapeRoll.CanAttachToForm) {
-                        fingerprintTapeRoll.AttachToForm();
-                    }
-                }
-            }
-        }
-
-        // fingerprint ink
-        if (typeItem1 == TypeItem.FingerprintInk) {
-            fingerprintInk.ApplyInk();
-        }
-
-        // fingerprint ink roller
-        if (typeItem1 == TypeItem.FingerprintInkRoller) {
-            fingerprintInkRoller.SpreadInk();
-        }
-
-        // fingerprint record strip
-        if (typeItem1 == TypeItem.FingerprintRecordStrip) {
-            fingerprintRecordStrip.ToggleSpoon();
-        }
-
-        // fingerprint record strip
-        if (typeItem1 == TypeItem.FingerprintSpoon) {
-            fingerprintSpoon.MoveStrip();
-        }
-
-        // evidence pack
-        if (typeItem1 == TypeItem.EvidencePack) {
-            if (evidencePack.EvidenceCurrent != null) {
-                evidencePack.PackEvidence();
-            }
-        }
-
-        // evidence pack seal tape on evidence pack
-        if (typeItem1 == TypeItem.EvidencePackSealTapeRoll && typeItem2 == TypeItem.EvidencePack) {
-            if (evidencePackSealTapeRoll.EvidencePackSealCurrent != null) {
-                evidencePackSealTapeRoll.EvidencePackSealCurrent.SetTaped(true);
-            }
-        }
-    }
     private void ThumbstickLeftTap(InputAction.CallbackContext context) {
         ThumbstickTap(context.ReadValue<Vector2>());
     }
@@ -624,7 +405,7 @@ public class ManagerGlobal : MonoBehaviour {
     public void CheckWristwatch(GameObject sender) {
         if (!hasCheckedTimeOfArrival) {
             // todo: this is only scene 1. make it adapt
-            dateTimeFirstResponderArrived = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
+            timelineManager.SetEventNow(TimelineEvent.FirstResponderArrived, timelineManager.GetEventTime(TimelineEvent.Incident).Value);
             hasCheckedTimeOfArrival = true;
         }
         thoughtManager.ShowThought(sender, "They have no more pulse...");
@@ -655,9 +436,9 @@ public class ManagerGlobal : MonoBehaviour {
     public bool SpawnFormFirstResponder(Player firstResponder) {
         if (Vector3.Distance(firstResponder.transform.position, player.transform.position) > DIST_CONVERSE) { return false; }
 
-
-
-        dateTimeFirstResponderFilledUp = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
+        //TimeLineManager event
+        timelineManager.SetEventNow(TimelineEvent.FirstResponderFilledUp,
+                               timelineManager.GetEventTime(TimelineEvent.Incident).Value);
 
         HandItem form = Instantiate(HolderData.PrefabFormFirstResponder).GetComponent<HandItem>();
         form.SetPaused(true);
@@ -671,7 +452,7 @@ public class ManagerGlobal : MonoBehaviour {
 
 
 
-        dateTimeInvestigatorFilledUp = StaticUtils.DateTimeNowInEvening(DateTimeIncident);
+        timelineManager.SetEventNow(TimelineEvent.InvestigatorFilledUp, timelineManager.GetEventTime(TimelineEvent.Incident).Value);
 
         HandItem form = Instantiate(HolderData.PrefabFormInvestigatorOnCase).GetComponent<HandItem>();
         form.SetPaused(true);

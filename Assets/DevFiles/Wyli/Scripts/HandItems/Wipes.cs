@@ -1,33 +1,42 @@
 using UnityEngine;
 
-
-
-public class Wipes : HandItemBriefcase {
-
+public class Wipes : HandItemBriefcase
+{
     private Wipe wipe;
 
+    public void SpawnWipe()
+    {
+        if (wipe != null) return;
 
+        var mgr = ManagerGlobal.Instance;
+        if (mgr == null || mgr.InteractionManager == null || mgr.HolderData == null) return;
 
-    public void SpawnWipe() {
-        if (wipe != null) { return; }
+        var prefab = mgr.HolderData.PrefabWipe;
+        var parent = mgr.InteractionManager.ContainerWipes;
 
-        wipe = Instantiate(ManagerGlobal.Instance.HolderData.PrefabWipe, ManagerGlobal.Instance.ContainerWipes).GetComponent<Wipe>();
+        wipe = Object.Instantiate(prefab, parent).GetComponent<Wipe>();
         wipe.SetOwner(this);
     }
-    public void GetWipe(Wipe w) {
-        if (wipe == null) { return; }
 
-        if (wipe == w) {
-            wipe = null;
-        }
+    public void GetWipe(Wipe w)
+    {
+        if (wipe == null) return;
+        if (wipe == w) wipe = null;
     }
 
-    private void Update() {
-        if (wipe != null) {
+    private void Update()
+    {
+        if (wipe != null)
+        {
+            var mgr = ManagerGlobal.Instance;
+            if (mgr == null || mgr.HolderData == null) return;
+
+            float offsetY = mgr.HolderData.PrefabWipe.transform.localPosition.y;
+
             wipe.transform.SetPositionAndRotation(
-                transform.position + transform.up * ManagerGlobal.Instance.HolderData.PrefabWipe.transform.position.y,
-                transform.rotation);
+                transform.position + transform.up * offsetY,
+                transform.rotation
+            );
         }
     }
-
 }

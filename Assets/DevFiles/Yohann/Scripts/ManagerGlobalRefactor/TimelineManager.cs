@@ -1,71 +1,61 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages all time-based events for a crime scene timeline.
+/// </summary>
+/// 
+public enum TimelineEvent
+{
+    Incident,
+    Reported,
+    FirstResponderArrived,
+    Cordoned,
+    CalledTOC,
+    FirstResponderFilledUp,
+    InvestigatorArrived,
+    InvestigatorReceived,
+    InvestigatorFilledUp,
+    SketchFilledUp,
+
+    // Extend with more events (e.g. EvidenceCollected, SceneReleased)
+}
 public class TimelineManager : MonoBehaviour
 {
-    private DateTime dateTimeIncident;
+    private readonly Dictionary<TimelineEvent, DateTime> _events
+        = new Dictionary<TimelineEvent, DateTime>();
 
-    private DateTime dateTimeReported;
-    private DateTime dateTimeFirstResponderArrived;
-    private DateTime dateTimeCordoned;
-    private DateTime dateTimeCalledTOC;
-    private DateTime dateTimeFirstResponderFilledUp;
-    private DateTime dateTimeInvestigatorArrived;
-    private DateTime dateTimeInvestigatorReceived;
-    private DateTime dateTimeInvestigatorFilledUp;
-
-    // Properties
-    public DateTime DateTimeIncident => dateTimeIncident;
-    public DateTime DateTimeReported => dateTimeReported;
-    public DateTime DateTimeFirstResponderArrived => dateTimeFirstResponderArrived;
-    public DateTime DateTimeCordoned => dateTimeCordoned;
-    public DateTime DateTimeCalledTOC => dateTimeCalledTOC;
-    public DateTime DateTimeFirstResponderFilledUp => dateTimeFirstResponderFilledUp;
-    public DateTime DateTimeInvestigatorArrived => dateTimeInvestigatorArrived;
-    public DateTime DateTimeInvestigatorReceived => dateTimeInvestigatorReceived;
-    public DateTime DateTimeInvestigatorFilledUp => dateTimeInvestigatorFilledUp;
-
-    public void Init()
+    public DateTime? GetEventTime(TimelineEvent evt)
     {
-        // Scene 1 default setup
-        dateTimeIncident = DateTime.Now.AddHours(-0.5f);
-        dateTimeReported = dateTimeIncident.AddHours(0.25f);
-        dateTimeFirstResponderArrived = dateTimeReported.AddHours(0.25f);
+        return _events.TryGetValue(evt, out var time) ? time : null;
     }
 
-    // Setters (called by ManagerGlobal or gameplay scripts)
-    public void SetDateTimeFirstResponderArrived()
+    public void SetEventTime(TimelineEvent evt, DateTime time)
     {
-        dateTimeFirstResponderArrived = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
+        _events[evt] = time;
     }
 
-    public void SetDateTimeCordoned()
+    public void SetEventNow(TimelineEvent evt, DateTime baseIncident)
     {
-        dateTimeCordoned = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
+        _events[evt] = StaticUtils.DateTimeNowInEvening(baseIncident);
     }
 
-    public void SetDateTimeCalledTOC()
+    public bool HasEvent(TimelineEvent evt) => _events.ContainsKey(evt);
+
+    public void RemoveEvent(TimelineEvent evt)
     {
-        dateTimeCalledTOC = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
+        if (_events.ContainsKey(evt))
+            _events.Remove(evt);
     }
 
-    public void SetDateTimeFirstResponderFilledUp()
+    /// <summary>
+    /// Initializes the timeline with a base incident time.
+    /// </summary>
+    public void InitIncident(DateTime incidentTime)
     {
-        dateTimeFirstResponderFilledUp = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
-    }
-
-    public void SetDateTimeInvestigatorArrived()
-    {
-        dateTimeInvestigatorArrived = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
-    }
-
-    public void SetDateTimeInvestigatorReceived()
-    {
-        dateTimeInvestigatorReceived = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
-    }
-
-    public void SetDateTimeInvestigatorFilledUp()
-    {
-        dateTimeInvestigatorFilledUp = StaticUtils.DateTimeNowInEvening(dateTimeIncident);
+        SetEventTime(TimelineEvent.Incident, incidentTime);
+        SetEventTime(TimelineEvent.Reported, incidentTime.AddHours(0.25f));
+        SetEventTime(TimelineEvent.FirstResponderArrived, incidentTime.AddHours(0.5f));
     }
 }
