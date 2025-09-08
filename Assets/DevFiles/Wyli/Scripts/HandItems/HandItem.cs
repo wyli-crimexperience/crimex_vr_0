@@ -23,7 +23,7 @@ public class HandItem : MonoBehaviour
         }
     }
 
-    public void Release()
+    public virtual void Release()
     {
         if (ManagerGlobal.Instance != null && ManagerGlobal.Instance.InteractionManager != null)
         {
@@ -35,6 +35,9 @@ public class HandItem : MonoBehaviour
 
     public void SetPaused(bool b)
     {
+        SetKinematic(b);
+    }
+    public void SetKinematic(bool b) {
         rb.isKinematic = b;
     }
 }

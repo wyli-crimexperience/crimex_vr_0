@@ -4,6 +4,8 @@ using System.Collections;
 
 public class ThoughtManager : MonoBehaviour
 {
+    public static ThoughtManager Instance;
+
     [SerializeField] private GameObject goThought;
     [SerializeField] private CanvasGroup cgThought;
     [SerializeField] private TextMeshProUGUI txtThought;
@@ -14,6 +16,7 @@ public class ThoughtManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         goThought.SetActive(false);
     }
 

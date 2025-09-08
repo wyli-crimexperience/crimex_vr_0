@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,15 +29,33 @@ public class FingerprintRecordStrip : HandItemBriefcase {
     }
 
     public void ToggleSpoon() {
-        if (fingerprintSpoon == null) {
-            if (fingerprintSpoonColliding != null) {
-                fingerprintSpoon = fingerprintSpoonColliding;
-                fingerprintSpoon.SetStrip(this);
-            }
-        } else {
+        if (fingerprintSpoon != null) { return; }
+
+        if (fingerprintSpoonColliding != null && !fingerprintSpoonColliding.HasStrip) {
+            Interactable.interactionManager.SelectExit(Interactable.firstInteractorSelecting, Interactable);
+
+            fingerprintSpoon = fingerprintSpoonColliding;
+            fingerprintSpoon.SetStrip(this);
+        }
+    }
+    public override void Grab() {
+        base.Grab();
+
+        if (fingerprintSpoon != null) {
             fingerprintSpoon.SetStrip(null);
             fingerprintSpoon = null;
         }
+    }
+    public override void Release() {
+        base.Release();
+
+        StartCoroutine(IE_Release());
+    }
+    private IEnumerator IE_Release() {
+        yield return new WaitForEndOfFrame();
+
+        SetKinematic(false);
+        transform.parent = ManagerGlobal.Instance.transform.parent;
     }
 
     public void MoveStrip() {

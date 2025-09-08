@@ -1,4 +1,7 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 
 
@@ -7,17 +10,9 @@ public class FingerprintSpoon : HandItemBriefcase {
     [SerializeField] private Transform containerStrip;
 
     private FingerprintRecordStrip fingerprintRecordStrip;
+    public bool HasStrip => fingerprintRecordStrip != null;
 
 
-
-    private void OnCollisionEnter(Collision collision) {
-        fingerprintRecordStrip = collision.gameObject.GetComponent<FingerprintRecordStrip>();
-    }
-    private void OnCollisionExit(Collision collision) {
-        if (fingerprintRecordStrip != null && collision.collider.gameObject == fingerprintRecordStrip.gameObject) {
-            fingerprintRecordStrip = null;
-        }
-    }
 
     // to be called only from FingerprintRecordStrip.cs
     public void SetStrip(FingerprintRecordStrip _fingerprintRecordStrip) {
@@ -25,7 +20,14 @@ public class FingerprintSpoon : HandItemBriefcase {
 
         if (fingerprintRecordStrip == null) { return; }
 
+        StartCoroutine(IE_SetStrip());
+    }
+    private IEnumerator IE_SetStrip() {
+        yield return new WaitForEndOfFrame();
+
+        fingerprintRecordStrip.SetKinematic(true);
         fingerprintRecordStrip.transform.parent = containerStrip;
+        fingerprintRecordStrip.transform.localRotation = Quaternion.Euler(Vector3.zero);
         SetStripPosition(0);
     }
     public void MoveStrip() {
