@@ -12,6 +12,8 @@ public class FingerprintRecordStrip : HandItemBriefcase {
     private FingerprintSpoon fingerprintSpoonColliding, fingerprintSpoon;
     private int stripPosition;
 
+    private bool[] isFilled = new bool[5];
+
 
 
     private void Start() {
@@ -67,15 +69,20 @@ public class FingerprintRecordStrip : HandItemBriefcase {
     }
     public void SetStripPosition(int _stripPosition) {
         stripPosition = _stripPosition;
-        transform.localPosition = new Vector3(-0.0625f + stripPosition * 0.03125f, 0, 0);
+        transform.localPosition = new Vector3(0.0625f - stripPosition * 0.03125f, 0, 0);
+        //transform.localPosition = new Vector3(-0.0625f + stripPosition * 0.03125f, 0, 0); // if reverse order
     }
 
     public bool LiftFingerprint() {
         if (fingerprintSpoon == null) { return false; }
 
-        imgsFingerprints[stripPosition].sprite = ManagerGlobal.Instance.HolderData.GetSpriteFingerprintRecordStrip(leftOrRight, true, stripPosition);
-
-        return true;
+        if (isFilled[stripPosition] == false) {
+            imgsFingerprints[stripPosition].sprite = ManagerGlobal.Instance.HolderData.GetSpriteFingerprintRecordStrip(leftOrRight, true, stripPosition);
+            isFilled[stripPosition] = true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
