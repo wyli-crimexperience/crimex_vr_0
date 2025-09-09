@@ -106,11 +106,11 @@ public class Briefcase : MonoBehaviour
 
         if (interactorLeft != null && interactorLeft.firstInteractableSelected as XRSimpleInteractable == lid)
         {
-            handGrabbingLid = mgr.HandLeftTarget;
+            handGrabbingLid = mgr.RoleManager.HandLeftTarget;
         }
         else if (interactorRight != null && interactorRight.firstInteractableSelected as XRSimpleInteractable == lid)
         {
-            handGrabbingLid = mgr.HandRightTarget;
+            handGrabbingLid = mgr.RoleManager.HandRightTarget;
         }
     }
 

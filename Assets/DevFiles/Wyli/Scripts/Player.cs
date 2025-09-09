@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
             if (ManagerGlobal.Instance.TypeRolePlayer == TypeRole.InvestigatorOnCase &&
                 typeRole == TypeRole.FirstResponder)
             {
-                if (ManagerGlobal.Instance.SpawnFormFirstResponder(this))
+                if (ManagerGlobal.Instance.FormManager.SpawnFormFirstResponder(this))
                 {
                     isDoneConversing = true;
                 }
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
             else if (ManagerGlobal.Instance.TypeRolePlayer == TypeRole.SOCOTeamLead &&
                      typeRole == TypeRole.InvestigatorOnCase)
             {
-                if (ManagerGlobal.Instance.SpawnFormInvestigatorOnCase(this))
+                if (ManagerGlobal.Instance.FormManager.SpawnFormInvestigatorOnCase(this))
                 {
                     isDoneConversing = true;
                 }

@@ -1,6 +1,10 @@
 using UnityEngine;
 using TMPro;
-
+// DIALOGUE MANAGER
+// Handles the display and flow of dialogues between the player and interactable objects (Witnesses and Phones).
+// It manages starting, progressing, and stopping conversations based on player proximity and interaction.
+// The script activates a dialogue UI, updates dialogue text, and ensures only one conversation occurs at a time.
+// When the player moves out of range, or the dialogue ends, it cleans up and notifies the relevant object. (To be Improved)
 public class DialogueManager : MonoBehaviour
 {
     [SerializeField] private GameObject goDialogue;

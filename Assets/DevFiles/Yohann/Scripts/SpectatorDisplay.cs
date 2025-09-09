@@ -233,7 +233,11 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
         }
 
         var targetDisplay = Display.displays[spectatorDisplayIndex];
-        targetDisplay.Activate(spectatorDisplayResolution.x, spectatorDisplayResolution.y, 60);
+        targetDisplay.Activate(
+                       spectatorDisplayResolution.x,
+                       spectatorDisplayResolution.y,
+                       new RefreshRate { numerator = 60, denominator = 1 }
+);
 
         Debug.Log($"Activated Display {spectatorDisplayIndex + 1} at {spectatorDisplayResolution.x}x{spectatorDisplayResolution.y}");
 

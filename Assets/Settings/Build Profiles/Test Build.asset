@@ -67,7 +67,7 @@ MonoBehaviour:
     - line: '|     duration: 2.5'
     - line: '|   - logo: {fileID: 21300000, guid: d811afd5aedd46845b8f4c1fa9e49b41,
         type: 3}'
-    - line: '|     duration: 3'
+    - line: '|     duration: 2.5'
     - line: '|   m_VirtualRealitySplashScreen: {fileID: 2800000, guid: 2f101717a8b9b3044af8d824f247f0f9,'
     - line: '|     type: 3}'
     - line: '|   m_HolographicTrackingLossScreen: {instanceID: 0}'
@@ -135,7 +135,7 @@ MonoBehaviour:
     - line: '|   xboxEnableFitness: 0'
     - line: '|   visibleInBackground: 1'
     - line: '|   allowFullscreenSwitch: 1'
-    - line: '|   fullscreenMode: 3'
+    - line: '|   fullscreenMode: 1'
     - line: '|   xboxSpeechDB: 0'
     - line: '|   xboxEnableHeadOrientation: 0'
     - line: '|   xboxEnableGuest: 0'
@@ -1019,7 +1019,7 @@ MonoBehaviour:
         m_ExplicitNullChecks: 0
         m_ExplicitDivideByZeroChecks: 0
         m_ExplicitArrayBoundsChecks: 0
-        m_CompressionType: 0
+        m_CompressionType: 2
         m_InstallInBuildFolder: 0
         m_WindowsBuildAndRunDeployTarget: 0
         m_Architecture: 0

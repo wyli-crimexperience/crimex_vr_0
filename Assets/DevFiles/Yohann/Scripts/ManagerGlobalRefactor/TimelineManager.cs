@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Manages all time-based events for a crime scene timeline.
-/// </summary>
-/// 
+// TIMELINE MANAGER
+// A Unity MonoBehaviour that manages a timeline of key events in an incident scenario.
+// It uses a dictionary to map TimelineEvent enum values to their corresponding DateTime timestamps.
+// The manager provides methods to set, retrieve, check, and remove event times, as well as to initialize
+// the timeline with a base incident time and automatically populate initial events. This allows tracking
+// and updating the sequence and timing of events during gameplay or simulation.
+
 public enum TimelineEvent
 {
     Incident,
@@ -18,7 +21,7 @@ public enum TimelineEvent
     InvestigatorReceived,
     InvestigatorFilledUp,
     SketchFilledUp,
-
+    EvidenceMarked,
     // Extend with more events (e.g. EvidenceCollected, SceneReleased)
 }
 public class TimelineManager : MonoBehaviour

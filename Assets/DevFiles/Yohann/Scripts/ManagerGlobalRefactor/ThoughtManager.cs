@@ -2,6 +2,11 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 
+// THOUGHT MANAGER
+// a singleton MonoBehaviour that manages the display of "thought" messages in the UI.
+// It shows a thought bubble with animated appearance, keeps it visible for a set duration, then fades it out.
+// The ShowThought method triggers the display, and ClearCurrentThought hides and resets the thought UI.
+// The script uses a coroutine to handle the animation and timing, and tracks the sender of the current thought.
 public class ThoughtManager : MonoBehaviour
 {
     public static ThoughtManager Instance;
