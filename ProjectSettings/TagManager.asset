@@ -16,6 +16,7 @@ TagManager:
   - PlayerPaused
   - FingerprintPowder
   - FingerprintInkRollerTip
+  - SterileSwabTip
   layers:
   - Default
   - TransparentFX

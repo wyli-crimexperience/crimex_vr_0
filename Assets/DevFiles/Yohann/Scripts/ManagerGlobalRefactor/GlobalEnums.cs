@@ -67,8 +67,15 @@ public enum TypeItem
 
     // soco collector
     SterileSwab,
-    EvidencePack,
-    EvidencePackSealTapeRoll,
+    SwabDryingRack,
+    SwabWrapper,
+    SurfaceTapeRoll,
+    SurfaceTape,
+    TransparentFilm,
+    Tweezers,
+    EvidencePack, // Ziptop
+    EvidenceBox,
+    EvidenceSealTapeRoll,
 
     // ioc or soco team leader part 2
     ItemOfIdentification,

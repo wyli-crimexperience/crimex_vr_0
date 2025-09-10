@@ -324,7 +324,7 @@ public class InteractionManager : MonoBehaviour
             case TypeItem.EvidencePack:
                 HandleEvidencePackInteraction(primaryInteractor);
                 break;
-            case TypeItem.EvidencePackSealTapeRoll:
+            case TypeItem.EvidenceSealTapeRoll:
                 HandleEvidencePackSealTapeInteraction(secondaryType, primaryInteractor);
                 break;
         }
