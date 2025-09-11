@@ -1,5 +1,79 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7924273981180973110
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8344286201551027507}
+    m_Modifications:
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3358534019299611554, guid: fe11f593331b8154e99a7a7e4a992b5c,
+        type: 3}
+      propertyPath: m_Name
+      value: DigitalWristwatch
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fe11f593331b8154e99a7a7e4a992b5c, type: 3}
+--- !u!4 &5592692974228565194 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2334432044381043964, guid: fe11f593331b8154e99a7a7e4a992b5c,
+    type: 3}
+  m_PrefabInstance: {fileID: 7924273981180973110}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8378495664272251608
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -90,7 +164,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9580c958af2e77446bf67b2613421543,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5592692974228565194}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9580c958af2e77446bf67b2613421543,
         type: 3}
@@ -101,6 +179,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5092038763491126785}
   m_SourcePrefab: {fileID: 100100000, guid: 9580c958af2e77446bf67b2613421543, type: 3}
+--- !u!4 &8344286201551027507 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9580c958af2e77446bf67b2613421543,
+    type: 3}
+  m_PrefabInstance: {fileID: 8378495664272251608}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8684924406810814345 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9580c958af2e77446bf67b2613421543,

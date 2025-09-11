@@ -65,4 +65,9 @@ public class IKFootSolver : MonoBehaviour {
         return lerp < 1;
     }
 
+    public void SetStepSettings(float distance, float length)
+    {
+        stepDistance = distance;
+        stepLength = length;
+    }
 }
