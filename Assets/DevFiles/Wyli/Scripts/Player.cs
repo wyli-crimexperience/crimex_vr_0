@@ -38,9 +38,9 @@ public class Player : MonoBehaviour
     {
         typeRole = _typeRole;
 
-        ikTarget.leftHand.vrTarget = ManagerGlobal.Instance.VRTargetLeftHand;
-        ikTarget.rightHand.vrTarget = ManagerGlobal.Instance.VRTargetRightHand;
-        ikTarget.head.vrTarget = ManagerGlobal.Instance.VRTargetHead;
+        ikTarget.leftHand.vrTarget = ManagerGlobal.Instance.VRRigManager.VRTargetLeftHand;
+        ikTarget.rightHand.vrTarget = ManagerGlobal.Instance.VRRigManager.VRTargetRightHand;
+        ikTarget.head.vrTarget = ManagerGlobal.Instance.VRRigManager.VRTargetHead;
     }
 
     public void SetActive(bool b)

@@ -24,6 +24,8 @@ public class InteractionManager : MonoBehaviour
     [Header("Containers")]
     [SerializeField] private Transform containerEvidenceMarker;
     [SerializeField] private Transform containerWipes;
+    [SerializeField] private Transform containerPoliceTape;
+    public Transform ContainerPoliceTape => containerPoliceTape;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject commandPostPrefab;

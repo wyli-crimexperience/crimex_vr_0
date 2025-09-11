@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// ManagerGlobal
+// This script acts as the central manager and singleton for the scene, providing global access to all core managers (DialogueManager, ThoughtManager, TimelineManager, InteractionManager, RoleManager, InputManager, GameStateManager, EvidenceManager, FormManager).
+// It initializes and connects these managers, delegates convenience properties and methods for game state and player role, and handles input events and scene logic.
+// The script also manages evidence marker removal (with legacy support), player role switching, and scene completion events, serving as the main entry point for global game logic in the Unity scene.
 public class ManagerGlobal : MonoBehaviour
 {
     public static ManagerGlobal Instance;
@@ -19,7 +23,7 @@ public class ManagerGlobal : MonoBehaviour
     [SerializeField] private GameStateManager gameStateManager;
     [SerializeField] private EvidenceManager evidenceManager;
     [SerializeField] private FormManager formManager;
-
+    [SerializeField] private VRRigManager vrRigManager;
     public DialogueManager DialogueManager => dialogueManager;
     public ThoughtManager ThoughtManager => thoughtManager;
     public TimelineManager TimelineManager => timelineManager;
@@ -28,28 +32,8 @@ public class ManagerGlobal : MonoBehaviour
     public InputManager InputManager => inputManager;
     public GameStateManager GameStateManager => gameStateManager;
     public FormManager FormManager => formManager;
-
-
-    public void RemoveEvidenceMarker(EvidenceMarkerCopy evidenceMarkerCopy)
-    {
-        // Delegate to the new EvidenceManager if available
-        if (EvidenceManager.Instance != null)
-        {
-            EvidenceManager.Instance.RemoveEvidenceMarker(evidenceMarkerCopy);
-            return;
-        }
-
-        // Fallback to old logic
-        if (evidenceMarkerCopy.TypeEvidenceMarker == TypeEvidenceMarker.Item)
-        {
-            listEvidenceMarkerItemCopies[evidenceMarkerCopy.Index] = null;
-        }
-        else if (evidenceMarkerCopy.TypeEvidenceMarker == TypeEvidenceMarker.Body)
-        {
-            listEvidenceMarkerBodyCopies[evidenceMarkerCopy.Index] = null;
-        }
-        Destroy(evidenceMarkerCopy.gameObject);
-    }
+    public EvidenceManager EvidenceManager => evidenceManager;
+    public VRRigManager VRRigManager => vrRigManager;
 
     // Convenience properties - delegate to GameStateManager
     public bool CanWriteNotepad
@@ -97,18 +81,6 @@ public class ManagerGlobal : MonoBehaviour
     public TypeRole TypeRolePlayer => roleManager?.CurrentRole ?? TypeRole.None;
     public Player CurrentPlayer => roleManager?.CurrentPlayer;
 
-    // Other references
-    [SerializeField] private Transform containerPoliceTape;
-    public Transform ContainerPoliceTape => containerPoliceTape;
-
-    [SerializeField] private Transform vrTargetLeftHand, vrTargetRightHand, vrTargetHead;
-    public Transform VRTargetLeftHand => vrTargetLeftHand;
-    public Transform VRTargetRightHand => vrTargetRightHand;
-    public Transform VRTargetHead => vrTargetHead;
-
-    // Evidence markers (to be moved to EvidenceManager)
-    private List<EvidenceMarkerCopy> listEvidenceMarkerItemCopies = new List<EvidenceMarkerCopy>();
-    private List<EvidenceMarkerCopy> listEvidenceMarkerBodyCopies = new List<EvidenceMarkerCopy>();
 
     private void Awake()
     {
@@ -221,18 +193,6 @@ public class ManagerGlobal : MonoBehaviour
     {
         Debug.Log("Scene completed!");
         // Handle scene completion logic
-    }
-
-    // Game logic methods - delegate to GameStateManager
-
-    public void CheckWristwatch(GameObject sender)
-    {
-        gameStateManager?.CheckWristwatch(sender);
-    }
-
-    public void CheckPulse(GameObject sender)
-    {
-        gameStateManager?.CheckPulse(sender);
     }
 
     public void OnSceneEnd()

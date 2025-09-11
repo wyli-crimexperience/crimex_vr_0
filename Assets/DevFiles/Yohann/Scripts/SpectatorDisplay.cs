@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
-
+// SPECTATOR DISPLAY MANAGER
+// This script manages a multi-display spectator system for VR in Unity. 
+// It enables a second display for spectator viewing, sets up a dedicated camera and UI canvas for the spectator view, 
+// and provides runtime controls for window mode (windowed, maximized, fullscreen, borderless, etc.) on Windows. 
+// The script also handles window styling (title bar, resize, minimize/maximize/close buttons), 
+// updates the spectator display with the correct render texture, and shows overlay information about the current spectator camera. 
+// It uses Windows API calls to control window properties when running on Windows standalone builds.
 public class MultiDisplaySpectatorManager : MonoBehaviour
 {
     [Header("Multi-Display Settings")]
     [SerializeField] private bool useSecondDisplay = true;
     [SerializeField] private int spectatorDisplayIndex = 1;
-    [SerializeField] private Vector2Int spectatorDisplayResolution = new Vector2Int(1920, 1080);
+    [SerializeField] private Vector2Int spectatorDisplayResolution = new(1920, 1080);
 
     [Header("Window Style Settings")]
     [SerializeField] private WindowMode spectatorWindowMode = WindowMode.Windowed;
-    [SerializeField] private Vector2Int windowedSize = new Vector2Int(1280, 720);
-    [SerializeField] private Vector2Int windowedPosition = new Vector2Int(100, 100);
+    [SerializeField] private Vector2Int windowedSize = new(1280, 720);
+    [SerializeField] private Vector2Int windowedPosition = new(100, 100);
     [SerializeField] private bool showTitleBar = true;
     [SerializeField] private bool allowWindowResize = true;
     [SerializeField] private bool showMinimizeButton = true;
@@ -529,14 +535,19 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
     public void SetWindowMode(WindowMode mode)
     {
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-        if (isInitialized)
+    if (isInitialized)
+    {
+        // Apply to all window handles
+        foreach (var handle in windowHandles)
         {
-            ApplyWindowMode(mode);
+            ApplyWindowMode(mode, handle);
         }
-        else
-        {
-            spectatorWindowMode = mode;
-        }
+        currentWindowMode = mode;
+    }
+    else
+    {
+        spectatorWindowMode = mode;
+    }
 #endif
     }
 
@@ -586,10 +597,14 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
     {
         showTitleBar = show;
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-        if (isInitialized)
+    if (isInitialized)
+    {
+        // Apply to all window handles
+        foreach (var handle in windowHandles)
         {
-            ApplyWindowStyle();
+            ApplyWindowStyle(handle);
         }
+    }
 #endif
     }
 
@@ -600,10 +615,14 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
         showCloseButton = close;
 
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-        if (isInitialized)
+    if (isInitialized)
+    {
+        // Apply to all window handles
+        foreach (var handle in windowHandles)
         {
-            ApplyWindowStyle();
+            ApplyWindowStyle(handle);
         }
+    }
 #endif
     }
 

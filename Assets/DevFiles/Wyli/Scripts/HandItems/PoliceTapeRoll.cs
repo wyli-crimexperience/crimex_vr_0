@@ -43,8 +43,10 @@ public class PoliceTapeRoll : HandItemBriefcase {
 
 
         if (policeTapeCurrent == null) {
-            policeTapeCurrent = Instantiate(prefabPoliceTape, ManagerGlobal.Instance.ContainerPoliceTape).GetComponent<PoliceTape>();
-            posPoliceTapeStart = transform.position;
+            policeTapeCurrent = Instantiate(
+                prefabPoliceTape,
+                ManagerGlobal.Instance.InteractionManager.ContainerPoliceTape
+            ).GetComponent<PoliceTape>();
             isTaping = true;
         } else {
             policeTapeCurrent = null;

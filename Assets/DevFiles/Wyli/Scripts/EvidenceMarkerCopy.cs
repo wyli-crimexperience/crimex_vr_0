@@ -117,10 +117,6 @@ public class EvidenceMarkerCopy : MonoBehaviour
         {
             EvidenceManager.Instance.RemoveEvidenceMarker(this);
         }
-        else if (ManagerGlobal.Instance != null)
-        {
-            ManagerGlobal.Instance.RemoveEvidenceMarker(this);
-        }
         else
         {
             Debug.LogWarning("[EvidenceMarkerCopy] No manager available to remove evidence marker");
