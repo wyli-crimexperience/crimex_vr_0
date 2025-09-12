@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     private Witness currentWitness;
     private Phone currentPhone;
     private int dialogueIndex;
+    public bool IsInDialogue { get; private set; }
 
     private const float DIST_CONVERSE = 1.5f;
     private Player player;
@@ -26,17 +27,21 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
+        // This check is still useful for ending a conversation if the player walks away.
         if (currentWitness != null && Vector3.Distance(currentWitness.transform.position, player.transform.position) > DIST_CONVERSE)
         {
             StopDialogue();
+            currentWitness.DoneConversing();
             currentWitness = null;
         }
         if (currentPhone != null && Vector3.Distance(currentPhone.transform.position, player.transform.position) > DIST_CONVERSE)
         {
             StopDialogue();
+            currentPhone.DoneConversing();
             currentPhone = null;
         }
     }
+
 
     public void StartConversation(Witness witness)
     {
@@ -46,6 +51,7 @@ public class DialogueManager : MonoBehaviour
         currentWitness = witness;
         currentDialogue = witness.DialogueData;
         BeginDialogue();
+        IsInDialogue = true; // Set to true when dialogue begins
     }
 
     public void StartConversation(Phone phone)
@@ -56,7 +62,9 @@ public class DialogueManager : MonoBehaviour
         currentPhone = phone;
         currentDialogue = phone.DialogueData;
         BeginDialogue();
+        IsInDialogue = true; // Set to true when dialogue begins
     }
+
 
     private void BeginDialogue()
     {
@@ -93,6 +101,7 @@ public class DialogueManager : MonoBehaviour
     {
         goDialogue.SetActive(false);
         currentDialogue = null;
+        IsInDialogue = false; // Set to false when dialogue stops
     }
 
     private void ClearConversation()
@@ -101,5 +110,4 @@ public class DialogueManager : MonoBehaviour
         currentPhone = null;
     }
 
-    public bool IsInDialogue => currentDialogue != null;
 }

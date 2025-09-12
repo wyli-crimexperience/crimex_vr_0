@@ -143,3 +143,13 @@ public enum TypeEvidenceMarker
     Item,
     Body
 }
+public enum TypePhoneContact
+{
+    None,
+    DSWD,
+    FireMarshal,
+    TacticalOperationsCenter,
+    UnitDispatchOffice,
+    ChiefSOCO,
+    BombSquad
+}

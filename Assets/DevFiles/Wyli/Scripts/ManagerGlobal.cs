@@ -35,6 +35,9 @@ public class ManagerGlobal : MonoBehaviour
     public EvidenceManager EvidenceManager => evidenceManager;
     public VRRigManager VRRigManager => vrRigManager;
 
+    //Dialogue Manager
+    public GameObject CurrentInteractable { get; private set; }
+
     // Convenience properties - delegate to GameStateManager
     public bool CanWriteNotepad
     {
@@ -138,14 +141,32 @@ public class ManagerGlobal : MonoBehaviour
 
     private void HandlePrimaryButton()
     {
-        if (!dialogueManager.IsInDialogue)
+        if (dialogueManager.IsInDialogue)
         {
-            thoughtManager.ClearCurrentThought();
-            roleManager.ToggleRoleMenu();
+            dialogueManager.NextDialogue();
+        }
+        else if (CurrentInteractable != null)
+        {
+            // Get the relevant component from the interactable
+            Witness witness = CurrentInteractable.GetComponent<Witness>();
+            Phone phone = CurrentInteractable.GetComponent<Phone>();
+
+            if (witness != null)
+            {
+                witness.AttemptConversation();
+            }
+            else if (phone != null)
+            {
+                phone.AttemptConversation();
+            }
+
+            // Clear the interactable after the button press
+            ClearCurrentInteractable();
         }
         else
         {
-            dialogueManager.NextDialogue();
+            thoughtManager.ClearCurrentThought();
+            roleManager.ToggleRoleMenu();
         }
     }
 
@@ -170,9 +191,9 @@ public class ManagerGlobal : MonoBehaviour
             }
         }
     }
-
     #endregion
 
+    #region Role Change
     private void OnRoleChanged(TypeRole oldRole, TypeRole newRole)
     {
         // Handle role-specific timeline events
@@ -189,6 +210,33 @@ public class ManagerGlobal : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Dialogue Interaction
+
+    public void SetCurrentInteractable(GameObject interactable)
+    {
+        // Make sure we are not already in dialogue before showing a new prompt
+        if (CurrentInteractable == null && !dialogueManager.IsInDialogue)
+        {
+            CurrentInteractable = interactable;
+            // Logic to display the "Press X/A to Talk" prompt
+            // This could involve activating a UI element on the interactable object.
+        }
+    }
+
+
+    public void ClearCurrentInteractable()
+    {
+        if (CurrentInteractable != null)
+        {
+            // Logic to hide the "Press X/A to Talk" prompt
+            CurrentInteractable = null;
+        }
+    }
+    #endregion
+
+    #region Scene Events
     private void OnSceneCompleted()
     {
         Debug.Log("Scene completed!");
@@ -204,4 +252,5 @@ public class ManagerGlobal : MonoBehaviour
     {
         // Cleanup is handled by individual managers
     }
+    #endregion
 }
