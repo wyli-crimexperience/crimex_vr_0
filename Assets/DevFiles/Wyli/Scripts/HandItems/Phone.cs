@@ -17,9 +17,37 @@ public class Phone : HandItemBriefcase
 
     private void Start()
     {
-        // ... (existing code for populating contacts)
-    }
+        List<TypePhoneContact> bagContacts = new List<TypePhoneContact>();
+        for (int i = 1; i < System.Enum.GetValues(typeof(TypePhoneContact)).Length; i++)
+        {
+            bagContacts.Add((TypePhoneContact)i);
+        }
+        bagContacts.Remove(correctContact);
 
+        // add correct contact
+        PhoneButton contact;
+        contact = Instantiate(prefabPhoneButtonContact, containerContacts).GetComponent<PhoneButton>();
+        contact.Init(this, correctContact);
+        contact.SetSelected(false);
+        contacts.Add(contact);
+
+        // fill in other contacts
+        for (int i = 0; i < 3; i++)
+        {
+            contact = Instantiate(prefabPhoneButtonContact, containerContacts).GetComponent<PhoneButton>();
+            contact.Init(this, bagContacts[Random.Range(0, bagContacts.Count - 1)]);
+            contact.SetSelected(false);
+            contacts.Add(contact);
+
+            bagContacts.Remove(contact.TypePhoneContact);
+        }
+
+        // randomize order
+        foreach (PhoneButton pb in contacts)
+        {
+            pb.transform.SetSiblingIndex(Random.Range(0, contacts.Count - 1));
+        }
+    }
     public void SelectContact(PhoneButton phoneButton)
     {
         currentContact = phoneButton;
