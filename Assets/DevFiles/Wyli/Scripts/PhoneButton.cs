@@ -20,25 +20,33 @@ public class PhoneButton : MonoBehaviour {
     private TypePhoneContact typePhoneContact;
     public TypePhoneContact TypePhoneContact => typePhoneContact;
 
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.CompareTag("Fingertip"))
+        {
+            switch (typePhoneButton)
+            {
+                case TypePhoneButton.Contact:
+                    {
+                        phone.SelectContact(this);
+                    }
+                    break;
 
+                case TypePhoneButton.Call:
+                    {
+                        // --- OLD CODE ---
+                        // phone.CallContact(); 
 
-    private void OnTriggerEnter(Collider collider) {
-        if (collider.CompareTag("Fingertip")) {
-            switch (typePhoneButton) {
-                case TypePhoneButton.Contact: {
-                    phone.SelectContact(this);
-                } break;
-
-                case TypePhoneButton.Call: {
-                    phone.CallContact();
-                }
-                break;
+                        // --- NEW CODE ---
+                        // Call the method that actually contains the conversation logic.
+                        phone.AttemptConversation();
+                    }
+                    break;
 
                 default: break;
             }
         }
     }
-
 
 
     public void Init(Phone _phone, TypePhoneContact _typePhoneContact) {

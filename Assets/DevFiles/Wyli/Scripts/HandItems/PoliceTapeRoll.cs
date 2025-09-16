@@ -37,18 +37,25 @@ public class PoliceTapeRoll : HandItemBriefcase {
 
 
 
-    public void TriggerTape() {
+    public void TriggerTape()
+    {
         if (!canTape) { return; }
 
+        if (policeTapeCurrent == null)
+        {
+            // --- FIX: Record the starting position right here ---
+            posPoliceTapeStart = transform.position;
 
-
-        if (policeTapeCurrent == null) {
             policeTapeCurrent = Instantiate(
                 prefabPoliceTape,
                 ManagerGlobal.Instance.InteractionManager.ContainerPoliceTape
             ).GetComponent<PoliceTape>();
+
+            // This should come AFTER you've set the start position and instantiated
             isTaping = true;
-        } else {
+        }
+        else
+        {
             policeTapeCurrent = null;
             isTaping = false;
         }

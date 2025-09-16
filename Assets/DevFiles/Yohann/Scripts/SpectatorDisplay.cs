@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 // SPECTATOR DISPLAY MANAGER
 // This script manages a multi-display spectator system for VR in Unity. 
 // It enables a second display for spectator viewing, sets up a dedicated camera and UI canvas for the spectator view, 
@@ -29,8 +30,8 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
     [SerializeField] private string spectatorWindowTitle = "VR Spectator View";
 
     [Header("Runtime Window Controls")]
-    [SerializeField] private KeyCode toggleFullscreenKey = KeyCode.F11;
-    [SerializeField] private KeyCode toggleWindowModeKey = KeyCode.F10;
+    [SerializeField] private Key toggleFullscreenKey = Key.F11;
+    [SerializeField] private Key toggleWindowModeKey = Key.F10;
 
     [Header("References - REQUIRED")]
     [SerializeField] private VRSpectatorCameraManager spectatorCameraManager;
@@ -207,12 +208,15 @@ public class MultiDisplaySpectatorManager : MonoBehaviour
 
     void HandleWindowControls()
     {
-        if (Input.GetKeyDown(toggleFullscreenKey))
+        // It's good practice to check if a keyboard is present
+        if (Keyboard.current == null) return;
+
+        if (Keyboard.current[toggleFullscreenKey].wasPressedThisFrame)
         {
             ToggleFullscreen();
         }
 
-        if (Input.GetKeyDown(toggleWindowModeKey))
+        if (Keyboard.current[toggleWindowModeKey].wasPressedThisFrame)
         {
             CycleWindowMode();
         }
