@@ -37,6 +37,7 @@ public class ManagerGlobal : MonoBehaviour
 
     //Dialogue Manager
     public GameObject CurrentInteractable { get; private set; }
+    public bool IsPlayerEngaged { get; set; } = false;
 
     // Convenience properties - delegate to GameStateManager
     public bool CanWriteNotepad

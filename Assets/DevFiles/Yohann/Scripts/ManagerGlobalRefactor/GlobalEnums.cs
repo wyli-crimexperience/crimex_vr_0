@@ -153,3 +153,11 @@ public enum TypePhoneContact
     ChiefSOCO,
     BombSquad
 }
+
+public enum NpcState
+{
+    Idle,               // Not engaged with the player
+    ListeningForSpeech, // Passively listening for the player to talk
+    StreamingSpeech,    // Actively streaming the player's speech to Gemini
+    WaitingForResponse  // Player has finished, waiting for Gemini's full reply
+}
