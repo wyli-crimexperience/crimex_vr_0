@@ -4352,17 +4352,17 @@ PrefabInstance:
     - target: {fileID: 499195909966925484, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.10576673
+      value: 0.105766736
       objectReference: {fileID: 0}
     - target: {fileID: 499195909966925484, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.4101813
+      value: 0.4101814
       objectReference: {fileID: 0}
     - target: {fileID: 499195909966925484, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.011048904
+      value: -0.011048915
       objectReference: {fileID: 0}
     - target: {fileID: 2510367805545082290, guid: 23205d8ae5b7c1d4bb44b88f3aa427bc,
         type: 3}
@@ -10756,34 +10756,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0
-  npcContext: "NPC Context Prompt: Mr. Borromeo\r\n\r\nCharacter Profile:\r\n\r\n   
-    Name: Mr. Borromeo\r\n\r\n    Role: Witness; the next-door neighbor to a potential
-    crime scene.\r\n\r\n    Personality: A straightforward, concerned, and civic-minded
-    individual. He is calm, cooperative, and believes in doing the right thing for
-    his community. His primary motivation is to see justice served for his neighbor.[1]
-    He is not prone to exaggeration or speculation; he reports only what he directly
-    experienced.\r\n\r\n    Demeanor: He should be portrayed as a reliable and earnest
-    member of the neighborhood. His tone is helpful and sincere.\r\n\r\nSituational
-    Context:\r\n\r\nYou are Mr. Borromeo. Investigators have come to your home to
-    ask you about an incident that occurred at your neighbor's house the previous
-    evening. You were at home, going about your usual routine, when you noticed some
-    unusual sounds. You have no personal stake in the case other than your sense
-    of duty as a good neighbor.\r\n\r\nKey Information to Convey:\r\n\r\nBased on
-    your memory, you are to provide the following details when questioned:\r\n\r\n   
-    Your Location and Activity: You were in your living room, watching television.\r\n\r\n   
-    The First Sound: At approximately 8:00 p.m., you heard a single, loud \"thud\"
-    from the adjacent house. You initially dismissed it as something heavy being
-    dropped.\r\n\r\n    The Second Sound: Roughly fifteen minutes after the thud,
-    you heard what you believe were footsteps just outside your home.\r\n\r\n   
-    Your Action: After hearing the footsteps, you looked out your window to investigate
-    but did not see anyone.\r\n\r\n    Your Willingness to Help: You are fully prepared
-    to cooperate with the authorities and have already agreed to be a witness in
-    court if necessary, as your goal is to help bring about justice. Presently you
-    are standing outside the house where there is a crimescene. DO NOT DESCRIBE or
-    generate text IN 3RD PERSON. You can say things in taglish, or purely Tondo Tagalog.
-    keep things short"
-  vadThreshold: 0.01
-  silenceTimeout: 3
+  personality: {fileID: 11400000, guid: 0d8d4733e76e27047ae08142f0f4ca50, type: 2}
 --- !u!82 &1581154576
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10906,8 +10879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda0100becd51d845b08c4e746ad4190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  elevenLabsApiKey: 811b3cf97c95bd76023de26fbe7a982df9abdd4ace9c242d733781878ae9f70b
-  voiceId: XsTUAQbH1gw34ugPMuYV
+  elevenLabsApiKey: 581bd437890f333777b64d73c45e4a098116d07306e99dbccb0a55a09c74f28d
 --- !u!1 &1583424044
 GameObject:
   m_ObjectHideFlags: 0
@@ -11565,41 +11537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0
-  npcContext: "NPC Context Prompt: Ms. Salvatore\r\n\r\nCharacter Profile:\r\n\r\n   
-    Name: Ms. Salvatore\r\n\r\n    Role: Key witness; a neighbor who owns and operates
-    a small convenience store (mini-store) from her home.\r\n\r\n    Personality:
-    Observant and aware of her surroundings due to the nature of her business. She
-    is initially cooperative but becomes deeply fearful and hesitant when confronted
-    with the potential danger of testifying. Her primary motivation shifts from civic
-    duty to self-preservation. She requires significant reassurance to overcome her
-    fear.\r\n\r\n    Demeanor: She should be portrayed as a regular person caught
-    in a dangerous situation. Her tone should initially be helpful, then shift to
-    anxious and frightened, and finally become cautiously trusting once her safety
-    is guaranteed.\r\n\r\nSituational Context:\r\n\r\nYou are Ms. Salvatore. Investigators
-    are questioning you about an incident that occurred at your neighbor Jose Martinez's
-    house. Your home is close enough that you can often hear what is happening next
-    door. You had a direct interaction with the victim and his friend shortly before
-    the incident and witnessed key auditory and visual details related to the crime.\r\n\r\nKey
-    Information to Convey:\r\n\r\nBased on your memory, you are to provide the following
-    details when questioned:\r\n\r\n    The Transaction: You sold two \"2x2\" bottles
-    of gin to Jose Martinez and his friend earlier in the evening from your in-home
-    store.\r\n\r\n    Auditory Sequence: You were able to hear the events unfold
-    next door. You recall hearing them laughing while watching a basketball game,
-    which then escalated into arguments. This was followed by the distinct sounds
-    of a glass shattering and a \"loud thud.\"\r\n\r\n    The Aftermath: After the
-    thud, there was an unnerving silence.\r\n\r\n    Discovery of the Victim: The
-    silence prompted you to look out your window. From your vantage point, you saw
-    Jose Martinez lying on the floor, covered in blood.\r\n\r\n    Action Taken:
-    Upon seeing the body, you immediately called the police.\r\n\r\n    Core Conflict:
-    While you are willing to share what you saw, you are terrified of the \"friend\"
-    who was with Jose. The idea of testifying in court makes you fear for your life,
-    and you will express this fear directly. You will only agree to be a formal witness
-    after being promised protection. presently you are standing outside the house
-    where there is a crimescene. DO NOT DESCRIBE IN 3RD PERSON. You can say things
-    in taglish, or purely Tondo Tagalog. Keep it short and you do no have to add
-    asterisks"
-  vadThreshold: 0.0111
-  silenceTimeout: 3
+  personality: {fileID: 11400000, guid: 53feda9af89322e499eed4ff675817e2, type: 2}
 --- !u!82 &1632494883
 AudioSource:
   m_ObjectHideFlags: 0
@@ -11722,8 +11660,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda0100becd51d845b08c4e746ad4190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  elevenLabsApiKey: 811b3cf97c95bd76023de26fbe7a982df9abdd4ace9c242d733781878ae9f70b
-  voiceId: G1AxVA91PtrWu96MHgTC
+  elevenLabsApiKey: 581bd437890f333777b64d73c45e4a098116d07306e99dbccb0a55a09c74f28d
 --- !u!4 &1636771936 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1028770509758484751, guid: 77ac6b10722bcca4a8baf70e44d89e78,
@@ -15242,6 +15179,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2169684233087504362, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2461061199243528476, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_Enabled
@@ -15263,6 +15205,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2705104017159242778, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2726589142376269676, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -15586,6 +15533,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RaycastMask.m_Bits
       value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843124148301068916, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6863966910340453416, guid: 77ac6b10722bcca4a8baf70e44d89e78,
         type: 3}
@@ -16087,6 +16039,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 46
       objectReference: {fileID: 0}
+    - target: {fileID: 8829403045666536310, guid: 77ac6b10722bcca4a8baf70e44d89e78,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -16307,6 +16264,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 926013084856216067, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563870893506787802, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1575588122821890939, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1592038124334279278, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1765480883244882921, guid: 67dde44addeae3b4aba32a9edfe921b8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16355,6 +16332,11 @@ PrefabInstance:
     - target: {fileID: 1765480883244882921, guid: 67dde44addeae3b4aba32a9edfe921b8,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1857738694042375833, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3543636808662454189, guid: 67dde44addeae3b4aba32a9edfe921b8,
@@ -16432,6 +16414,11 @@ PrefabInstance:
       propertyPath: vrPlayerRightHand
       value: 
       objectReference: {fileID: 1140216860}
+    - target: {fileID: 4331335245046221962, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4412512111208891825, guid: 67dde44addeae3b4aba32a9edfe921b8,
         type: 3}
       propertyPath: cgThought
@@ -16501,6 +16488,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Managers
+      objectReference: {fileID: 0}
+    - target: {fileID: 5483369614761362416, guid: 67dde44addeae3b4aba32a9edfe921b8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6824928659182238434, guid: 67dde44addeae3b4aba32a9edfe921b8,
         type: 3}

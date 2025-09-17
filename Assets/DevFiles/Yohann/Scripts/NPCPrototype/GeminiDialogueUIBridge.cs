@@ -1,4 +1,4 @@
-// GeminiDialogueUIBridge.cs (Final Final Version)
+// In GeminiDialogueUIBridge.cs
 using UnityEngine;
 
 [RequireComponent(typeof(GeminiNPC))]
@@ -16,17 +16,19 @@ public class GeminiDialogueUIBridge : MonoBehaviour
 
     private void OnEnable()
     {
-        // Unsubscribe from all events first to be safe
+        // Unsubscribe first to be safe
         geminiNpc.OnPlayerTranscriptReceived -= HandlePlayerSpeech;
         geminiNpc.OnNPCResponseReceived -= HandleStreamingNPCSpeech;
         geminiNpc.OnNPCTurnEnded -= HandleFinalNPCSpeech;
-        speechSynthesizer.OnSpeechFinished -= HandleSpeechFinished; // Unsubscribe from our new event
+        speechSynthesizer.OnSpeechFinished -= HandleSpeechFinished;
+        geminiNpc.OnConversationEnded -= HandleConversationEnded; // --- NEW ---
 
         // Subscribe to all events
         geminiNpc.OnPlayerTranscriptReceived += HandlePlayerSpeech;
         geminiNpc.OnNPCResponseReceived += HandleStreamingNPCSpeech;
         geminiNpc.OnNPCTurnEnded += HandleFinalNPCSpeech;
-        speechSynthesizer.OnSpeechFinished += HandleSpeechFinished; // Subscribe to our new event
+        speechSynthesizer.OnSpeechFinished += HandleSpeechFinished;
+        geminiNpc.OnConversationEnded += HandleConversationEnded; // --- NEW ---
     }
 
     private void OnDisable()
@@ -36,6 +38,7 @@ public class GeminiDialogueUIBridge : MonoBehaviour
             geminiNpc.OnPlayerTranscriptReceived -= HandlePlayerSpeech;
             geminiNpc.OnNPCResponseReceived -= HandleStreamingNPCSpeech;
             geminiNpc.OnNPCTurnEnded -= HandleFinalNPCSpeech;
+            geminiNpc.OnConversationEnded -= HandleConversationEnded; // --- NEW ---
         }
         if (speechSynthesizer != null)
         {
@@ -50,7 +53,6 @@ public class GeminiDialogueUIBridge : MonoBehaviour
 
     private void HandleStreamingNPCSpeech(string streamingResponse)
     {
-        // Add GetInstanceID() to the log. This gives a unique ID for the component.
         Debug.Log($"<color=yellow>UIBridge ({GetInstanceID()}):</color> Streaming Update: '{streamingResponse}'");
         ManagerGlobal.Instance.DialogueManager.DisplayDynamicLine(gameObject.name, streamingResponse);
     }
@@ -58,14 +60,24 @@ public class GeminiDialogueUIBridge : MonoBehaviour
     private void HandleFinalNPCSpeech(string finalResponse)
     {
         Debug.Log($"<color=lime>UIBridge ({GetInstanceID()}):</color> Final Response. Speaking: '{finalResponse}'");
-        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "..."); // Thinking/Speaking indicator
-        speechSynthesizer.Speak(finalResponse);
+        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "...");
+        speechSynthesizer.Speak(finalResponse, geminiNpc.Personality); // Assuming you're using the NPCPersonality version
     }
 
-    // --- NEW CODE: This is called by the synthesizer when it's done ---
     private void HandleSpeechFinished()
     {
-        // Tell the NPC it's now safe to start listening for the player again.
         geminiNpc.ResumeListening();
+    }
+
+    // --- ADD THIS ENTIRE METHOD ---
+    /// <summary>
+    /// Called by the GeminiNPC.OnConversationEnded event.
+    /// This method is responsible for cleaning up the UI.
+    /// </summary>
+    private void HandleConversationEnded()
+    {
+        Debug.Log("<color=cyan>UIBridge:</color> Conversation ended. Hiding dialogue UI.");
+        // Use the specific method in DialogueManager for hiding the AI-driven dialogue
+        ManagerGlobal.Instance.DialogueManager.HideDynamicDialogue();
     }
 }

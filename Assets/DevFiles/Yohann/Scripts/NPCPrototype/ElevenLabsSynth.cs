@@ -10,9 +10,6 @@ public class ElevenLabsSynthesizer : MonoBehaviour
     [Tooltip("Your API Key from the ElevenLabs website.")]
     [SerializeField] private string elevenLabsApiKey;
 
-    [Tooltip("The ID of the voice you want to use.")]
-    [SerializeField] private string voiceId = "21m00Tcm4TlvDq8ikWAM"; // Default: Rachel's Voice ID
-
     private const string TTS_API_URL_TEMPLATE = "https://api.elevenlabs.io/v1/text-to-speech/{0}";
     private AudioSource audioSource;
 
@@ -27,7 +24,7 @@ private void Awake()
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void Speak(string textToSpeak)
+    public void Speak(string textToSpeak, NPCPersonality personality)
     {
         if (string.IsNullOrEmpty(textToSpeak) || string.IsNullOrEmpty(elevenLabsApiKey))
         {
@@ -41,16 +38,20 @@ private void Awake()
             StopCoroutine(speechCoroutine);
         }
 
-        speechCoroutine = StartCoroutine(SynthesizeAndPlaySpeechCoroutine(textToSpeak));
+        speechCoroutine = StartCoroutine(SynthesizeAndPlaySpeechCoroutine(textToSpeak, personality));
     }
 
 
-    private IEnumerator SynthesizeAndPlaySpeechCoroutine(string text)
+    private IEnumerator SynthesizeAndPlaySpeechCoroutine(string text, NPCPersonality personality)
     {
-        string url = string.Format(TTS_API_URL_TEMPLATE, voiceId);
+        string url = string.Format(TTS_API_URL_TEMPLATE, personality.ElevenLabsVoiceId);
 
-        // ... (JSON and UnityWebRequest setup remains the same) ...
-        var requestBody = new TTSRequest { text = text, voice_settings = new VoiceSettings() };
+        var voiceSettings = new VoiceSettings
+        {
+            stability = personality.VoiceStability,
+            similarity_boost = personality.VoiceSimilarityBoost
+        };
+        var requestBody = new TTSRequest { text = text, voice_settings = voiceSettings };
         string jsonBody = JsonUtility.ToJson(requestBody);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
 
