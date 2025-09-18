@@ -38,4 +38,4 @@ MonoBehaviour:
   GoogleTTS_Pitch: 0
   GoogleTTS_SpeakingRate: 1.2
   VadThreshold: 0.073
-  SilenceTimeout: 5
+  SilenceTimeout: 1

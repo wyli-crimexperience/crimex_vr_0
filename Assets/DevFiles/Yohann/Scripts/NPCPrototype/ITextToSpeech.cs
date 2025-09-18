@@ -1,22 +1,16 @@
-// ITextToSpeech.cs
+// ITextToSpeech.cs (Upgraded for Streaming)
 using System;
+using System.Collections;
+using UnityEngine;
 
-// This interface defines the essential capabilities of any Text-to-Speech service.
 public interface ITextToSpeech
 {
-    // Event fired when the audio clip has finished playing.
-    event Action OnSpeechFinished;
-    // Event fired if the API call or audio playback fails.
-    event Action<string> OnSpeechFailed;
+    // Synthesizes audio and returns the clip via a callback.
+    // This is the primary method for the streaming system.
+    IEnumerator Synthesize(string textToSpeak, NPCPersonality personality, Action<AudioClip> onClipReady);
 
-    // Starts the process of synthesizing and speaking the provided text.
-    void Speak(string textToSpeak, NPCPersonality personality);
-
-    // Immediately stops any currently playing speech.
+    // Immediately stops any active synthesis or playback.
     void Stop();
-
-    // Returns true if the synthesizer is currently generating or playing audio.
-    bool IsSpeaking();
 
     // A check to see if the service is configured with a valid API key.
     bool HasValidAPIKey();

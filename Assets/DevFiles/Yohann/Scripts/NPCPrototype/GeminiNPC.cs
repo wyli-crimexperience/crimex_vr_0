@@ -23,6 +23,7 @@ public class GeminiNPC : MonoBehaviour
     public event Action<string> OnNPCTurnEnded;
     public event Action OnConversationEnded;
     public event Action OnConversationConcludedByAI;
+    public event Action<string> OnSentenceReceived;
     #endregion
 
     public bool IsConversationActive { get; private set; } = false;
@@ -44,6 +45,7 @@ public class GeminiNPC : MonoBehaviour
     private StringBuilder jsonBuffer = new StringBuilder();
     private string accumulatedResponse = "";
     private List<Content> conversationHistory = new List<Content>();
+    private int lastProcessedIndex = 0;
 
     #region JSON Data Structures
     [Serializable] public class Content { public string role; public BasePart[] parts; }
@@ -119,6 +121,7 @@ public class GeminiNPC : MonoBehaviour
         if (IsConversationActive || ManagerGlobal.Instance.IsPlayerEngaged) return;
         StopAllCoroutines(); // Stop any lingering shutdown coroutines from a previous, aborted interaction
         IsConversationActive = true;
+        lastProcessedIndex = 0;
         isRecording = true;
         isWaitingForResponse = false;
         shutdownRequested = false;
@@ -146,17 +149,16 @@ public class GeminiNPC : MonoBehaviour
 
     private IEnumerator GracefulShutdownCoroutine()
     {
-        // Wait one frame. This gives the SpeechManager time to start its own web request
-        // and for its IsSpeaking state to become true once audio playback begins.
+        // Wait one frame to let the synthesis process begin and set the IsBusy flag.
         yield return null;
 
-        // Now, patiently wait as long as the speech system is busy.
-        while (speechManager != null && speechManager.IsSpeaking())
+        // --- THE FIX: Wait while the SpeechManager is busy synthesizing OR playing. ---
+        while (speechManager != null && speechManager.IsBusy)
         {
             yield return null;
         }
 
-        Debug.Log("<color=orange>GeminiNPC:</color> Speech has finished. Finalizing shutdown.");
+        Debug.Log("<color=orange>GeminiNPC:</color> Speech system is no longer busy. Finalizing shutdown.");
         FinalizeShutdown();
     }
 
@@ -287,8 +289,15 @@ public class GeminiNPC : MonoBehaviour
                 OnConversationConcludedByAI?.Invoke();
                 EndConversation();
             }
+            if (lastProcessedIndex < accumulatedResponse.Length)
+            {
+                string remainingText = accumulatedResponse.Substring(lastProcessedIndex);
+                if (!string.IsNullOrWhiteSpace(remainingText))
+                {
+                    OnSentenceReceived?.Invoke(remainingText);
+                }
+            }
         }
-
         activeRequest.Dispose();
         activeRequest = null;
     }
@@ -371,6 +380,7 @@ public class GeminiNPC : MonoBehaviour
                     }
 
                     // Fire the event with the CLEANED text.
+                    ProcessAccumulatedResponseForSentences();
                     OnNPCResponseReceived?.Invoke(displayResponse);
                 }
             }
@@ -379,6 +389,29 @@ public class GeminiNPC : MonoBehaviour
         }
     }
     #endregion
+    private void ProcessAccumulatedResponseForSentences()
+    {
+        // Find the last occurrence of a sentence-ending punctuation mark
+        char[] sentenceEnders = { '.', '!', '?' };
+        int sentenceEndIndex = accumulatedResponse.LastIndexOfAny(sentenceEnders, lastProcessedIndex);
+
+        if (sentenceEndIndex > -1)
+        {
+            // Extract the complete sentence(s)
+            int length = sentenceEndIndex - lastProcessedIndex + 1;
+            string completeSentences = accumulatedResponse.Substring(lastProcessedIndex, length);
+
+            // Fire the event for the new sentence(s)
+            OnSentenceReceived?.Invoke(completeSentences);
+
+            // Update the index so we don't process this part again
+            lastProcessedIndex = sentenceEndIndex + 1;
+        }
+
+        // Always update the UI with the full, cleaned text so far
+        string displayResponse = accumulatedResponse.Replace("[END_CONVERSATION]", "").Trim();
+        OnNPCResponseReceived?.Invoke(displayResponse);
+    }
 
     #region Audio Utilities
     private float GetMicrophoneVolume()

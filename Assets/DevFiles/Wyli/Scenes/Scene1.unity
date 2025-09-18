@@ -122,6 +122,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &45091512 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c58714f61178c1649ad08760bf7395ec,
+    type: 3}
+  m_PrefabInstance: {fileID: 1500662321}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &64380573
 GameObject:
   m_ObjectHideFlags: 0
@@ -4304,6 +4310,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4607428429233221380}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &638327871 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5446102434bcb614683eab4565568a5a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1508218841}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &643576881 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7960896337995949517, guid: 77ac6b10722bcca4a8baf70e44d89e78,
@@ -5631,6 +5643,19 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1508218841}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &766088460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 638327871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3be9d4b44d12a94885da5eb01d9fea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speechManager: {fileID: 1581154588}
 --- !u!1 &773031489
 GameObject:
   m_ObjectHideFlags: 0
@@ -9752,7 +9777,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c58714f61178c1649ad08760bf7395ec,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1500662324}
   m_SourcePrefab: {fileID: 100100000, guid: c58714f61178c1649ad08760bf7395ec, type: 3}
 --- !u!4 &1500662322 stripped
 Transform:
@@ -9760,6 +9789,19 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1500662321}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1500662324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45091512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3be9d4b44d12a94885da5eb01d9fea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speechManager: {fileID: 1632494895}
 --- !u!1001 &1508218841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9878,10 +9920,25 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: e559414350e669e4f8ebf6c091187350, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 5446102434bcb614683eab4565568a5a,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'mixamorig:Hips'\n\tTransform 'mixamorig:LeftFoot'\n\tTransform
+        'mixamorig:LeftHandThumb2'\n\tTransform 'mixamorig:LeftHandIndex1'\n\tTransform
+        'mixamorig:LeftHandPinky2'\n\tTransform 'mixamorig:RightHandRing2'\n\tTransform
+        'mixamorig:Spine1'\n\tTransform 'mixamorig:LeftHandThumb3'\n\tTransform 'mixamorig:RightArm'\n\tTransform
+        'mixamorig:LeftLeg'\n\tand more ...\n\tFrom animation clip 'mixamo.com'"
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5446102434bcb614683eab4565568a5a,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 766088460}
   m_SourcePrefab: {fileID: 100100000, guid: 5446102434bcb614683eab4565568a5a, type: 3}
 --- !u!1 &1509006979
 GameObject:
@@ -10872,6 +10929,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47df0edc7c06fe946adb4dcbd52c23a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedMultiplier: 1.3
+  minCharDelay: 0.02
+  maxCharDelay: 0.1
 --- !u!114 &1581154585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11687,6 +11747,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47df0edc7c06fe946adb4dcbd52c23a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedMultiplier: 1.3
+  minCharDelay: 0.02
+  maxCharDelay: 0.1
 --- !u!114 &1632494892
 MonoBehaviour:
   m_ObjectHideFlags: 0

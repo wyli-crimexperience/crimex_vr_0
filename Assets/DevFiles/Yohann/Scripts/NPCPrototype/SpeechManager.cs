@@ -1,102 +1,83 @@
-// SpeechManager.cs
+// SpeechManager.cs (Upgraded with Unified Busy State)
 using UnityEngine;
 using System;
+using System.Collections;
 
 [RequireComponent(typeof(ElevenLabsSynthesizer))]
 [RequireComponent(typeof(GoogleCloudTTS))]
+[RequireComponent(typeof(AudioSource))]
 public class SpeechManager : MonoBehaviour
 {
-    // The single point of contact for other scripts
-    public event Action OnSpeechFinished;
-
     private ITextToSpeech elevenLabs;
     private ITextToSpeech googleTTS;
-    private ITextToSpeech activeSynthesizer;
-    private NPCPersonality currentPersonality;
-    private string currentTextToSpeak;
+    private AudioSource playbackSource;
+
+    // --- NEW: Unified state property ---
+    public bool IsBusy { get; private set; } = false;
 
     private void Awake()
     {
-        // Get references to our available TTS "strategies"
         elevenLabs = GetComponent<ElevenLabsSynthesizer>();
         googleTTS = GetComponent<GoogleCloudTTS>();
+        playbackSource = GetComponent<AudioSource>();
     }
 
-    public void Speak(string textToSpeak, NPCPersonality personality)
+    public IEnumerator Synthesize(string textToSpeak, NPCPersonality personality, Action<AudioClip> onClipReady)
     {
-        currentTextToSpeak = textToSpeak;
-        currentPersonality = personality;
+        // --- Mark as busy as soon as we start synthesis ---
+        IsBusy = true;
 
-        // --- Primary Strategy: Try ElevenLabs first ---
-        if (elevenLabs.HasValidAPIKey())
-        {
-            Debug.Log("<color=green>SpeechManager:</color> Attempting to speak with ElevenLabs.");
-            activeSynthesizer = elevenLabs;
-            SubscribeToEvents(activeSynthesizer);
-            activeSynthesizer.Speak(currentTextToSpeak, currentPersonality);
-        }
-        // --- Fallback Strategy: If ElevenLabs key is missing, try Google ---
-        else if (googleTTS.HasValidAPIKey())
-        {
-            Debug.Log("<color=orange>SpeechManager:</color> ElevenLabs key missing. Falling back to Google TTS.");
-            activeSynthesizer = googleTTS;
-            SubscribeToEvents(activeSynthesizer);
-            activeSynthesizer.Speak(currentTextToSpeak, currentPersonality);
-        }
-        // --- No valid strategy ---
+        ITextToSpeech activeSynthesizer;
+        if (elevenLabs.HasValidAPIKey()) activeSynthesizer = elevenLabs;
+        else if (googleTTS.HasValidAPIKey()) activeSynthesizer = googleTTS;
         else
         {
-            Debug.LogError("SpeechManager: No valid API key found for any TTS service. Speech aborted.");
-            OnSpeechFinished?.Invoke();
+            Debug.LogError("SpeechManager: No valid TTS service available for synthesis.");
+            onClipReady?.Invoke(null);
+            IsBusy = false; // Un-mark if we fail early
+            yield break;
         }
+
+        yield return StartCoroutine(activeSynthesizer.Synthesize(textToSpeak, personality, onClipReady));
     }
 
-    private void HandleSpeechFinished()
+    public void PlayClip(AudioClip clip)
     {
-        UnsubscribeFromEvents(activeSynthesizer);
-        OnSpeechFinished?.Invoke();
-    }
-
-    private void HandleSpeechFailed(string error)
-    {
-        UnsubscribeFromEvents(activeSynthesizer);
-        Debug.LogWarning($"SpeechManager: {activeSynthesizer.GetType().Name} failed. Reason: {error}");
-
-        // If the failed service was ElevenLabs, retry with Google
-        if (activeSynthesizer == elevenLabs && googleTTS.HasValidAPIKey())
+        if (clip != null && playbackSource != null)
         {
-            Debug.Log("<color=orange>SpeechManager:</color> ElevenLabs failed. Retrying with Google TTS.");
-            activeSynthesizer = googleTTS;
-            SubscribeToEvents(activeSynthesizer);
-            activeSynthesizer.Speak(currentTextToSpeak, currentPersonality);
+            playbackSource.clip = clip;
+            playbackSource.Play();
+            // We are already busy, so no need to set the flag here.
         }
-        else
+    }
+
+    public void Stop()
+    {
+        StopAllCoroutines();
+        if (playbackSource != null && playbackSource.isPlaying)
         {
-            Debug.LogError($"SpeechManager: All available TTS services have failed. Speech aborted.");
-            OnSpeechFinished?.Invoke();
+            playbackSource.Stop();
         }
+        elevenLabs.Stop();
+        googleTTS.Stop();
+        IsBusy = false; // Force stop means we are no longer busy.
     }
 
-    private void SubscribeToEvents(ITextToSpeech synthesizer)
-    {
-        if (synthesizer == null) return;
-        synthesizer.OnSpeechFinished += HandleSpeechFinished;
-        synthesizer.OnSpeechFailed += HandleSpeechFailed;
-    }
-
-    private void UnsubscribeFromEvents(ITextToSpeech synthesizer)
-    {
-        if (synthesizer == null) return;
-        synthesizer.OnSpeechFinished -= HandleSpeechFinished;
-        synthesizer.OnSpeechFailed -= HandleSpeechFailed;
-    }
+    /// <summary>
+    /// This is the primary state check for external scripts.
+    /// It returns true if we are synthesizing OR playing audio.
+    /// </summary>
     public bool IsSpeaking()
     {
-        // The activeSynthesizer is the single source of truth for what's currently playing.
-        if (activeSynthesizer != null)
-        {
-            return activeSynthesizer.IsSpeaking();
-        }
-        return false;
+        return playbackSource != null && playbackSource.isPlaying;
+    }
+
+    // --- NEW: Method to be called by the bridge when the queue is finished ---
+    public void NotifyQueueEmpty()
+    {
+        // Only set IsBusy to false if we are truly done.
+        // A check against IsSpeaking might be needed if synthesis can happen while playing.
+        // For our sequential queue, this is safe.
+        IsBusy = false;
     }
 }
