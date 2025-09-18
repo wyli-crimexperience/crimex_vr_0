@@ -1,57 +1,63 @@
-// ElevenLabsSynthesizer.cs
+// ElevenLabsSynthesizer.cs (Refactored)
 using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Collections;
 
 [RequireComponent(typeof(AudioSource))]
-public class ElevenLabsSynthesizer : MonoBehaviour
+public class ElevenLabsSynthesizer : MonoBehaviour, ITextToSpeech // Implement the interface
 {
     [Tooltip("Your API Key from the ElevenLabs website.")]
     [SerializeField] private string elevenLabsApiKey;
 
     private const string TTS_API_URL_TEMPLATE = "https://api.elevenlabs.io/v1/text-to-speech/{0}";
     private AudioSource audioSource;
+    private Coroutine speechCoroutine;
 
+    // --- Interface Events ---
     public event Action OnSpeechFinished;
-    private Coroutine speechCoroutine; // To manage the active speech task
+    public event Action<string> OnSpeechFailed;
 
     [Serializable] private class TTSRequest { public string text; public string model_id = "eleven_turbo_v2"; public VoiceSettings voice_settings; }
-    [Serializable] private class VoiceSettings { public float stability = 0.7f; public float similarity_boost = 0.7f; }
+    [Serializable] private class VoiceSettings { public float stability; public float similarity_boost; }
 
-private void Awake()
+    private void Awake() { audioSource = GetComponent<AudioSource>(); }
+
+    // --- Interface Methods ---
+    public bool HasValidAPIKey() => !string.IsNullOrEmpty(elevenLabsApiKey);
+
+    public bool IsSpeaking() => (speechCoroutine != null || (audioSource != null && audioSource.isPlaying));
+
+    public void Stop()
     {
-        audioSource = GetComponent<AudioSource>();
+        if (speechCoroutine != null) StopCoroutine(speechCoroutine);
+        if (audioSource.isPlaying) audioSource.Stop();
+        speechCoroutine = null;
     }
 
     public void Speak(string textToSpeak, NPCPersonality personality)
     {
-        if (string.IsNullOrEmpty(textToSpeak) || string.IsNullOrEmpty(elevenLabsApiKey))
+        if (!HasValidAPIKey())
         {
-            if (string.IsNullOrEmpty(elevenLabsApiKey)) Debug.LogError("ElevenLabs API Key is not set.");
+            OnSpeechFailed?.Invoke("ElevenLabs API Key is not set.");
             return;
         }
-
-        // If a speech coroutine is already running, stop it
-        if (speechCoroutine != null)
-        {
-            StopCoroutine(speechCoroutine);
-        }
-
+        if (IsSpeaking()) Stop();
         speechCoroutine = StartCoroutine(SynthesizeAndPlaySpeechCoroutine(textToSpeak, personality));
     }
-
 
     private IEnumerator SynthesizeAndPlaySpeechCoroutine(string text, NPCPersonality personality)
     {
         string url = string.Format(TTS_API_URL_TEMPLATE, personality.ElevenLabsVoiceId);
-
-        var voiceSettings = new VoiceSettings
+        var requestBody = new TTSRequest
         {
-            stability = personality.VoiceStability,
-            similarity_boost = personality.VoiceSimilarityBoost
+            text = text,
+            voice_settings = new VoiceSettings
+            {
+                stability = personality.VoiceStability,
+                similarity_boost = personality.VoiceSimilarityBoost
+            }
         };
-        var requestBody = new TTSRequest { text = text, voice_settings = voiceSettings };
         string jsonBody = JsonUtility.ToJson(requestBody);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
 
@@ -61,14 +67,13 @@ private void Awake()
             request.downloadHandler = new DownloadHandlerAudioClip(url, AudioType.MPEG);
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("xi-api-key", elevenLabsApiKey);
-
             yield return request.SendWebRequest();
 
             if (request.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"ElevenLabs API Error: {request.error} - {request.downloadHandler.text}");
-                // --- NEW CODE: Fire completion event even on error so we don't get stuck ---
-                OnSpeechFinished?.Invoke();
+                string error = $"ElevenLabs API Error: {request.error} - {request.downloadHandler.text}";
+                Debug.LogError(error);
+                OnSpeechFailed?.Invoke(error);
                 yield break;
             }
 
@@ -77,19 +82,17 @@ private void Awake()
             {
                 audioSource.clip = clip;
                 audioSource.Play();
-
-                // --- NEW CODE: Wait for the audio to finish playing ---
                 yield return new WaitWhile(() => audioSource.isPlaying);
             }
             else
             {
-                Debug.LogError("Failed to get AudioClip from ElevenLabs response.");
+                string error = "Failed to get AudioClip from ElevenLabs response.";
+                Debug.LogError(error);
+                OnSpeechFailed?.Invoke(error);
+                yield break;
             }
         }
-
-        // --- NEW CODE: Fire the completion event ---
         OnSpeechFinished?.Invoke();
         speechCoroutine = null;
     }
-
 }

@@ -14,6 +14,11 @@ public class GeminiNPC : MonoBehaviour
     [SerializeField] private string googleCloudApiKey;
     [Header("AI Personality")]
     [SerializeField] private NPCPersonality personality;
+
+    [Header("Diagnostics")]
+    [Tooltip("Optional: Assign an AudioSource to play back the recorded clip for debugging.")]
+    [SerializeField] private AudioSource debugAudioSource;
+
     public NPCPersonality Personality => personality;
     public event Action<string> OnPlayerTranscriptReceived;
     public event Action<string> OnNPCResponseReceived;
@@ -218,6 +223,22 @@ public class GeminiNPC : MonoBehaviour
 
     public void StartConversation()
     {
+        // --- DIAGNOSTIC: LIST MICROPHONES ---
+        if (!IsConversationActive) // Only log this once at the start
+        {
+            Debug.Log("--- Available Microphone Devices ---");
+            if (Microphone.devices.Length == 0)
+            {
+                Debug.LogError("No microphone devices found by Unity!");
+            }
+            foreach (var device in Microphone.devices)
+            {
+                Debug.Log("Device Name: " + device);
+            }
+            Debug.Log("------------------------------------");
+        }
+        // --- END DIAGNOSTIC ---
+
         if (IsConversationActive || ManagerGlobal.Instance.IsPlayerEngaged) return;
         IsConversationActive = true;
         isRecording = true;
@@ -265,20 +286,42 @@ public class GeminiNPC : MonoBehaviour
         isRecording = false;
         isWaitingForResponse = true;
         ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "Let me think...");
+
         int lastSample = Microphone.GetPosition(null);
         Microphone.End(null);
+
         if (lastSample == 0)
         {
             Debug.LogWarning("No audio was recorded.");
             ResumeListening();
             return;
         }
+
+        // Create a temporary clip to hold the recorded data
+        AudioClip trimmedClip = AudioClip.Create("PlayerSpeech", lastSample, recordingClip.channels, recordingClip.frequency, false);
         float[] samples = new float[lastSample];
         recordingClip.GetData(samples, 0);
-        int channels = recordingClip.channels;
-        int frequency = recordingClip.frequency;
-        Destroy(recordingClip);
+        trimmedClip.SetData(samples, 0);
+
+        // --- DIAGNOSTIC: PLAY BACK THE AUDIO ---
+        if (debugAudioSource != null)
+        {
+            Debug.Log("<color=yellow>--- Playing back recorded audio clip for debugging ---</color>");
+            debugAudioSource.clip = trimmedClip;
+            debugAudioSource.Play();
+        }
+        // --- END DIAGNOSTIC ---
+
+        // Now we get the data for the API call
+        int channels = trimmedClip.channels;
+        int frequency = trimmedClip.frequency;
+
+        // We already have the samples, no need to call GetData again
         await SendAudioToGeminiAsync(samples, channels, frequency);
+
+        // Destroy the temporary clip AFTER the async method is done or copy the data
+        // For simplicity, let's just destroy the old recordingClip from the class
+        Destroy(recordingClip);
     }
     private void Update()
     {

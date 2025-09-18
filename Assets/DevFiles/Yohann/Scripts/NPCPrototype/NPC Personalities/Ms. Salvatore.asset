@@ -20,5 +20,7 @@ MonoBehaviour:
   ElevenLabsVoiceId: 21m00Tcm4TlvDq8ikWAM
   VoiceStability: 0.7
   VoiceSimilarityBoost: 0.7
-  VadThreshold: 0.01
-  SilenceTimeout: 2
+  GoogleTTS_VoiceName: en-US-Chirp3-HD-Achernar
+  GoogleTTS_EffectsProfileIds: []
+  VadThreshold: 0.0634
+  SilenceTimeout: 5
