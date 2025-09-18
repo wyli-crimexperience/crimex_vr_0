@@ -1,17 +1,24 @@
-// WitnessTest.cs (Modified to Toggle Conversation)
+// WitnessTest.cs (Revised to use ThoughtManager for Post-AI Feedback)
 using UnityEngine;
 using TMPro;
 
 [RequireComponent(typeof(GeminiNPC))]
 public class WitnessTest : MonoBehaviour
 {
+    [Header("Interaction Settings")]
     public float InteractionDistance = 2.0f;
+
+    [Header("Post-AI Feedback")]
+    [Tooltip("The thought bubble text to show after the AI conversation has concluded.")]
+    [SerializeField] private string postConversationThought = "I've already talked to them.";
+
     private Transform playerTransform;
     private GeminiNPC geminiNpc;
 
-    private float gazeTime = 0f;
-    private const float GAZE_THRESHOLD = 0.5f;
+    // --- STATE MANAGEMENT ---
+    private bool hasConcludedAIConversation = false;
 
+    [Header("UI References")]
     [SerializeField] private GameObject talkPromptUI;
     [SerializeField] private TextMeshProUGUI promptText;
 
@@ -20,26 +27,60 @@ public class WitnessTest : MonoBehaviour
         geminiNpc = GetComponent<GeminiNPC>();
     }
 
-    // CHANGED: This method now acts as a TOGGLE
+    private void OnEnable()
+    {
+        geminiNpc.OnConversationConcludedByAI += HandleAIConversationConcluded;
+    }
+
+    private void OnDisable()
+    {
+        geminiNpc.OnConversationConcludedByAI -= HandleAIConversationConcluded;
+    }
+
+    // This is called by the GeminiNPC event when the AI sends [END_CONVERSATION]
+    private void HandleAIConversationConcluded()
+    {
+        hasConcludedAIConversation = true;
+        Debug.Log($"<color=cyan>{gameObject.name}:</color> AI conversation has been marked as concluded.");
+    }
+
+    // This is the primary interaction method called by input
     public void AttemptConversation()
     {
-        // If the conversation is already active, this call will end it.
-        if (geminiNpc.IsConversationActive)
+        // --- REVISED LOGIC ---
+        // If the AI conversation has finished, show the thought bubble instead.
+        if (hasConcludedAIConversation)
         {
-            geminiNpc.EndConversation();
+            Debug.Log("AI conversation already concluded. Showing thought bubble.");
+            // We use the player's GameObject as the "sender" of the thought.
+            ManagerGlobal.Instance.ThoughtManager.ShowThought(ManagerGlobal.Instance.CurrentPlayer.gameObject, postConversationThought);
         }
-        // Otherwise, start a new conversation.
+        // Otherwise, handle the normal AI conversation toggle.
         else
         {
-            geminiNpc.StartConversation();
+            if (geminiNpc.IsConversationActive)
+            {
+                geminiNpc.EndConversation();
+            }
+            else
+            {
+                geminiNpc.StartConversation();
+            }
         }
     }
 
-    // REMOVED DoneConversing() as it's no longer needed
-
     private void Start()
     {
-        playerTransform = ManagerGlobal.Instance.VRRigManager.VRTargetHead.transform;
+        // Use VRRigManager.VRTargetHead for accurate head position
+        if (ManagerGlobal.Instance.VRRigManager != null && ManagerGlobal.Instance.VRRigManager.VRTargetHead != null)
+        {
+            playerTransform = ManagerGlobal.Instance.VRRigManager.VRTargetHead.transform;
+        }
+        else // Fallback for non-VR or if rig isn't set up yet
+        {
+            Debug.LogWarning("WitnessTest could not find VRRigManager, falling back to main camera.");
+        }
+
         if (talkPromptUI != null)
         {
             talkPromptUI.SetActive(false);
@@ -48,12 +89,11 @@ public class WitnessTest : MonoBehaviour
 
     private void Update()
     {
-        // --- Gaze and Prompt Logic ---
+        // Gaze and Prompt Logic (remains mostly the same)
         bool isCloseEnough = Vector3.Distance(transform.position, playerTransform.position) <= InteractionDistance;
         RaycastHit hit;
         bool isGazingAt = Physics.Raycast(playerTransform.position, playerTransform.forward, out hit, InteractionDistance) && hit.collider.gameObject == this.gameObject;
 
-        // Player is engaged with ANOTHER witness, so do nothing.
         if (ManagerGlobal.Instance.IsPlayerEngaged && !geminiNpc.IsConversationActive)
         {
             if (talkPromptUI.activeSelf) talkPromptUI.SetActive(false);
@@ -61,31 +101,32 @@ public class WitnessTest : MonoBehaviour
             return;
         }
 
-        // --- Handle UI and Interaction State ---
         if (isCloseEnough && isGazingAt)
         {
-            gazeTime += Time.deltaTime;
-            if (gazeTime >= GAZE_THRESHOLD)
+            ManagerGlobal.Instance.SetCurrentInteractable(this.gameObject);
+            talkPromptUI.SetActive(true);
+
+            // Update prompt text based on the current state
+            if (hasConcludedAIConversation)
             {
-                ManagerGlobal.Instance.SetCurrentInteractable(this.gameObject);
-                talkPromptUI.SetActive(true);
-                // ADDED: Change prompt text based on conversation state
+                // We change the prompt to reflect a generic "interact" rather than "interview"
+                promptText.text = $"Interact with {this.gameObject.name}";
+            }
+            else
+            {
                 promptText.text = geminiNpc.IsConversationActive ? $"Press X/A to End Interview" : $"Press X/A to Interview {this.gameObject.name}";
             }
         }
         else
         {
-            gazeTime = 0f;
             if (ManagerGlobal.Instance.CurrentInteractable == this.gameObject)
             {
                 ManagerGlobal.Instance.ClearCurrentInteractable();
                 talkPromptUI.SetActive(false);
             }
 
-            // ADDED: If the player walks away, automatically end the conversation.
             if (geminiNpc.IsConversationActive && !isCloseEnough)
             {
-                Debug.Log("Player walked away. Ending conversation.");
                 geminiNpc.EndConversation();
             }
         }

@@ -90,5 +90,13 @@ public class SpeechManager : MonoBehaviour
         synthesizer.OnSpeechFinished -= HandleSpeechFinished;
         synthesizer.OnSpeechFailed -= HandleSpeechFailed;
     }
-
+    public bool IsSpeaking()
+    {
+        // The activeSynthesizer is the single source of truth for what's currently playing.
+        if (activeSynthesizer != null)
+        {
+            return activeSynthesizer.IsSpeaking();
+        }
+        return false;
+    }
 }

@@ -1,5 +1,6 @@
-// GeminiNPC.cs (Final Version - Corrected Manual JSON Builder)
+// GeminiNPC.cs (Definitive Version with Coroutine-based Graceful Shutdown)
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -14,24 +15,29 @@ public class GeminiNPC : MonoBehaviour
     [SerializeField] private string googleCloudApiKey;
     [Header("AI Personality")]
     [SerializeField] private NPCPersonality personality;
-
-    [Header("Diagnostics")]
-    [Tooltip("Optional: Assign an AudioSource to play back the recorded clip for debugging.")]
-    [SerializeField] private AudioSource debugAudioSource;
-
     public NPCPersonality Personality => personality;
+
+    #region Events
     public event Action<string> OnPlayerTranscriptReceived;
     public event Action<string> OnNPCResponseReceived;
     public event Action<string> OnNPCTurnEnded;
     public event Action OnConversationEnded;
+    public event Action OnConversationConcludedByAI;
+    #endregion
+
     public bool IsConversationActive { get; private set; } = false;
     private bool isRecording = false;
     private bool isWaitingForResponse = false;
     private float timeSinceLastSpeech = 0f;
     private bool isQuitting = false;
-    private const string GEMINI_API_URL = "https://generativela" + "nguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=";
+
+    private SpeechManager speechManager;
+    private bool shutdownRequested = false;
+
+    private const string GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=";
     private const int RECORDING_LENGTH_SECONDS = 60;
     private const int INPUT_SAMPLE_RATE = 16000;
+
     private AudioSource audioSource;
     private AudioClip recordingClip;
     private UnityWebRequest activeRequest;
@@ -45,7 +51,6 @@ public class GeminiNPC : MonoBehaviour
     [Serializable] public class TextPart : BasePart { public string text; }
     [Serializable] public class AudioPart : BasePart { public InlineData inline_data; }
     [Serializable] public class InlineData { public string mime_type; public string data; }
-
     [Serializable] public class GeminiLiveResponse { public GeminiCandidate[] candidates; }
     [Serializable] public class GeminiCandidate { public GeminiContentResponse content; }
     [Serializable] public class GeminiContentResponse { public TextPart[] parts; }
@@ -65,6 +70,7 @@ public class GeminiNPC : MonoBehaviour
     }
     #endregion
 
+    #region Unity Lifecycle & Initialization
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -77,54 +83,148 @@ public class GeminiNPC : MonoBehaviour
 
     private void OnApplicationQuit() { isQuitting = true; }
 
-    // --- HELPER FUNCTION TO PREPARE STRINGS FOR JSON ---
-    private string EscapeStringForJson(string s)
+    private void OnDestroy()
     {
-        if (string.IsNullOrEmpty(s)) return "";
-        return s.Replace("\\", "\\\\")
-                .Replace("\"", "\\\"")
-                .Replace("\n", "\\n")
-                .Replace("\r", "\\r")
-                .Replace("\t", "\\t");
+        StopAllCoroutines();
+        // FinalizeShutdown will be called, but we also need to ensure events are unsubscribed if manager exists.
+        if (speechManager != null)
+        {
+            // The Initialize method is the only place we subscribe, so we don't need to unsubscribe here.
+            // The speechManager will be destroyed anyway.
+        }
+        FinalizeShutdown();
     }
 
-    // --- CORRECTED MANUAL JSON BUILDER ---
-    private string BuildManualJson(string systemContext, List<Content> contents)
+    public void Initialize(SpeechManager manager)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.Append("{");
+        this.speechManager = manager;
+    }
 
-        sb.Append("\"system_instruction\": { \"parts\": [ { \"text\": \"");
-        sb.Append(EscapeStringForJson(systemContext)); // Use the helper
-        sb.Append("\" } ] },");
-
-        sb.Append("\"contents\": [");
-        for (int i = 0; i < contents.Count; i++)
+    private void Update()
+    {
+        if (isRecording)
         {
-            var content = contents[i];
-            sb.Append("{");
-            sb.Append($"\"role\": \"{content.role}\",");
-            sb.Append("\"parts\": [");
+            float currentVolume = GetMicrophoneVolume();
+            if (currentVolume > personality.VadThreshold) timeSinceLastSpeech = 0f;
+            else timeSinceLastSpeech += Time.deltaTime;
 
-            if (content.parts[0] is TextPart textPart)
-            {
-                sb.Append("{ \"text\": \"");
-                sb.Append(EscapeStringForJson(textPart.text)); // Use the helper
-                sb.Append("\" }");
-            }
-            else if (content.parts[0] is AudioPart audioPart)
-            {
-                sb.Append("{ \"inline_data\": ");
-                sb.Append(JsonUtility.ToJson(audioPart.inline_data)); // This is correct
-                sb.Append(" }");
-            }
-            sb.Append("]");
-            sb.Append("}");
-            if (i < contents.Count - 1) sb.Append(",");
+            if (timeSinceLastSpeech > personality.SilenceTimeout) EndRecordingAndSendRequest();
         }
-        sb.Append("]");
-        sb.Append("}");
-        return sb.ToString();
+    }
+    #endregion
+
+    #region Conversation Flow
+    public void StartConversation()
+    {
+        if (IsConversationActive || ManagerGlobal.Instance.IsPlayerEngaged) return;
+        StopAllCoroutines(); // Stop any lingering shutdown coroutines from a previous, aborted interaction
+        IsConversationActive = true;
+        isRecording = true;
+        isWaitingForResponse = false;
+        shutdownRequested = false;
+        ManagerGlobal.Instance.IsPlayerEngaged = true;
+        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "I'm listening...");
+        conversationHistory.Clear();
+        recordingClip = Microphone.Start(null, false, RECORDING_LENGTH_SECONDS, INPUT_SAMPLE_RATE);
+        timeSinceLastSpeech = 0f;
+    }
+
+    public void EndConversation()
+    {
+        if (shutdownRequested || !IsConversationActive) return;
+        Debug.Log("<color=orange>GeminiNPC:</color> Shutdown has been requested. Starting graceful shutdown coroutine.");
+        shutdownRequested = true;
+
+        if (isRecording)
+        {
+            if (Microphone.IsRecording(null)) Microphone.End(null);
+            isRecording = false;
+        }
+
+        StartCoroutine(GracefulShutdownCoroutine());
+    }
+
+    private IEnumerator GracefulShutdownCoroutine()
+    {
+        // Wait one frame. This gives the SpeechManager time to start its own web request
+        // and for its IsSpeaking state to become true once audio playback begins.
+        yield return null;
+
+        // Now, patiently wait as long as the speech system is busy.
+        while (speechManager != null && speechManager.IsSpeaking())
+        {
+            yield return null;
+        }
+
+        Debug.Log("<color=orange>GeminiNPC:</color> Speech has finished. Finalizing shutdown.");
+        FinalizeShutdown();
+    }
+
+    private void FinalizeShutdown()
+    {
+        if (!IsConversationActive && !shutdownRequested) return;
+
+        Debug.Log("<color=red>GeminiNPC:</color> Finalizing conversation state.");
+
+        if (Microphone.IsRecording(null)) Microphone.End(null);
+        activeRequest?.Abort();
+
+        isRecording = false;
+        isWaitingForResponse = false;
+        IsConversationActive = false;
+        conversationHistory.Clear();
+        shutdownRequested = false;
+
+        if (!isQuitting && ManagerGlobal.Instance != null)
+        {
+            Invoke(nameof(ReleasePlayerEngagement), 0.1f);
+            if (ManagerGlobal.Instance.ThoughtManager != null)
+                ManagerGlobal.Instance.ThoughtManager.ClearCurrentThought();
+        }
+
+        OnConversationEnded?.Invoke();
+    }
+
+    public void ResumeListening()
+    {
+        if (!IsConversationActive || shutdownRequested) return;
+        Debug.Log("<color=orange>GeminiNPC:</color> Speech finished. Resuming listening.");
+        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "I'm listening...");
+        isRecording = true;
+        recordingClip = Microphone.Start(null, false, RECORDING_LENGTH_SECONDS, INPUT_SAMPLE_RATE);
+        timeSinceLastSpeech = 0f;
+    }
+
+    private void ReleasePlayerEngagement()
+    {
+        if (!isQuitting && ManagerGlobal.Instance != null)
+        {
+            ManagerGlobal.Instance.IsPlayerEngaged = false;
+        }
+    }
+    #endregion
+
+    #region API Communication & Data Handling
+    private async void EndRecordingAndSendRequest()
+    {
+        isRecording = false;
+        isWaitingForResponse = true;
+        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "Let me think...");
+        int lastSample = Microphone.GetPosition(null);
+        Microphone.End(null);
+        if (lastSample == 0)
+        {
+            Debug.LogWarning("No audio was recorded.");
+            isWaitingForResponse = false;
+            ResumeListening();
+            return;
+        }
+        float[] samples = new float[lastSample];
+        recordingClip.GetData(samples, 0);
+        int channels = recordingClip.channels;
+        int frequency = recordingClip.frequency;
+        Destroy(recordingClip);
+        await SendAudioToGeminiAsync(samples, channels, frequency);
     }
 
     private async Task SendAudioToGeminiAsync(float[] samples, int channels, int frequency)
@@ -135,20 +235,15 @@ public class GeminiNPC : MonoBehaviour
 
         byte[] wavData = await Task.Run(() => EncodeToWav(samples, channels, frequency));
         string base64Audio = Convert.ToBase64String(wavData);
-
         var userTurn = new Content
         {
             role = "user",
             parts = new BasePart[] { new AudioPart { inline_data = new InlineData { mime_type = "audio/wav", data = base64Audio } } }
         };
-
         List<Content> allContents = new List<Content>(conversationHistory);
         allContents.Add(userTurn);
-
         string jsonBody = BuildManualJson(personality.SystemContext, allContents);
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
-
-        Debug.Log("<color=lime>Sending FINAL CORRECTED JSON to Gemini:</color>\n" + jsonBody);
 
         activeRequest = new UnityWebRequest(GEMINI_API_URL + googleCloudApiKey, "POST")
         {
@@ -157,18 +252,26 @@ public class GeminiNPC : MonoBehaviour
         };
         activeRequest.SetRequestHeader("Content-Type", "application/json");
 
-        Debug.Log("Sending audio request to Gemini API...");
         await activeRequest.SendWebRequest();
+
+        isWaitingForResponse = false;
 
         if (activeRequest.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError($"Gemini API Error: {activeRequest.error} - <color=red>Response Body: {activeRequest.downloadHandler?.text}</color>");
+            Debug.LogError($"Gemini API Error: {activeRequest.error} - {activeRequest.downloadHandler.text}");
             OnNPCResponseReceived?.Invoke("Sorry, I'm having trouble thinking right now.");
             OnNPCTurnEnded?.Invoke("Sorry, I'm having trouble thinking right now.");
         }
         else
         {
             Debug.Log("Successfully received full stream from Gemini.");
+            bool shouldEndConversation = accumulatedResponse.Contains("[END_CONVERSATION]");
+            if (shouldEndConversation)
+            {
+                accumulatedResponse = accumulatedResponse.Replace("[END_CONVERSATION]", "").Trim();
+                Debug.Log("<color=magenta>GeminiNPC:</color> AI has signaled the end of the conversation.");
+            }
+
             conversationHistory.Add(userTurn);
             var modelTurn = new Content
             {
@@ -176,12 +279,59 @@ public class GeminiNPC : MonoBehaviour
                 parts = new BasePart[] { new TextPart { text = accumulatedResponse } }
             };
             conversationHistory.Add(modelTurn);
+
             OnNPCTurnEnded?.Invoke(accumulatedResponse);
+
+            if (shouldEndConversation)
+            {
+                OnConversationConcludedByAI?.Invoke();
+                EndConversation();
+            }
         }
 
         activeRequest.Dispose();
         activeRequest = null;
-        isWaitingForResponse = false;
+    }
+
+    private string EscapeStringForJson(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        return s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
+    }
+
+    private string BuildManualJson(string systemContext, List<Content> contents)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("{");
+        sb.Append("\"system_instruction\": { \"parts\": [ { \"text\": \"");
+        sb.Append(EscapeStringForJson(systemContext));
+        sb.Append("\" } ] },");
+        sb.Append("\"contents\": [");
+        for (int i = 0; i < contents.Count; i++)
+        {
+            var content = contents[i];
+            sb.Append("{");
+            sb.Append($"\"role\": \"{content.role}\",");
+            sb.Append("\"parts\": [");
+            if (content.parts[0] is TextPart textPart)
+            {
+                sb.Append("{ \"text\": \"");
+                sb.Append(EscapeStringForJson(textPart.text));
+                sb.Append("\" }");
+            }
+            else if (content.parts[0] is AudioPart audioPart)
+            {
+                sb.Append("{ \"inline_data\": ");
+                sb.Append(JsonUtility.ToJson(audioPart.inline_data));
+                sb.Append(" }");
+            }
+            sb.Append("]");
+            sb.Append("}");
+            if (i < contents.Count - 1) sb.Append(",");
+        }
+        sb.Append("]");
+        sb.Append("}");
+        return sb.ToString();
     }
 
     private void ProcessStreamedData(string chunk)
@@ -209,140 +359,28 @@ public class GeminiNPC : MonoBehaviour
                 if (response?.candidates != null && response.candidates.Length > 0 && response.candidates[0].content?.parts != null)
                 {
                     string text = response.candidates[0].content.parts[0].text;
+                    // Append the raw, unfiltered text to our internal accumulator
                     accumulatedResponse += text;
-                    OnNPCResponseReceived?.Invoke(accumulatedResponse);
+
+                    // Create a separate, clean version of the text to send to the UI.
+                    // This ensures the UI never sees our special tags, but our script can still use them.
+                    string displayResponse = accumulatedResponse;
+                    if (displayResponse.Contains("[END_CONVERSATION]"))
+                    {
+                        displayResponse = displayResponse.Replace("[END_CONVERSATION]", "").Trim();
+                    }
+
+                    // Fire the event with the CLEANED text.
+                    OnNPCResponseReceived?.Invoke(displayResponse);
                 }
             }
             catch (Exception e) { Debug.LogWarning($"JSON Parse Error: {e.Message}. Object: {completeJson}"); }
             jsonBuffer.Remove(0, endIndex + 1);
         }
     }
+    #endregion
 
-    // --- All other methods (Update, Start/EndConversation, Audio Utils, etc.) are unchanged ---
-    // --- I am including them here for completeness ---
-
-    public void StartConversation()
-    {
-        // --- DIAGNOSTIC: LIST MICROPHONES ---
-        if (!IsConversationActive) // Only log this once at the start
-        {
-            Debug.Log("--- Available Microphone Devices ---");
-            if (Microphone.devices.Length == 0)
-            {
-                Debug.LogError("No microphone devices found by Unity!");
-            }
-            foreach (var device in Microphone.devices)
-            {
-                Debug.Log("Device Name: " + device);
-            }
-            Debug.Log("------------------------------------");
-        }
-        // --- END DIAGNOSTIC ---
-
-        if (IsConversationActive || ManagerGlobal.Instance.IsPlayerEngaged) return;
-        IsConversationActive = true;
-        isRecording = true;
-        isWaitingForResponse = false;
-        ManagerGlobal.Instance.IsPlayerEngaged = true;
-        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "I'm listening...");
-        conversationHistory.Clear();
-        recordingClip = Microphone.Start(null, false, RECORDING_LENGTH_SECONDS, INPUT_SAMPLE_RATE);
-        timeSinceLastSpeech = 0f;
-    }
-    public void EndConversation()
-    {
-        if (!IsConversationActive) return;
-        if (Microphone.IsRecording(null)) Microphone.End(null);
-        activeRequest?.Abort();
-        isRecording = false;
-        isWaitingForResponse = false;
-        IsConversationActive = false;
-        conversationHistory.Clear();
-        Invoke(nameof(ReleasePlayerEngagement), 0.1f);
-        if (!isQuitting && ManagerGlobal.Instance != null && ManagerGlobal.Instance.ThoughtManager != null)
-        {
-            ManagerGlobal.Instance.ThoughtManager.ClearCurrentThought();
-        }
-        OnConversationEnded?.Invoke();
-    }
-    public void ResumeListening()
-    {
-        if (!IsConversationActive) return;
-        Debug.Log("<color=orange>GeminiNPC:</color> Speech finished. Resuming listening.");
-        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "I'm listening...");
-        isRecording = true;
-        recordingClip = Microphone.Start(null, false, RECORDING_LENGTH_SECONDS, INPUT_SAMPLE_RATE);
-        timeSinceLastSpeech = 0f;
-    }
-    private void ReleasePlayerEngagement()
-    {
-        if (!isQuitting && ManagerGlobal.Instance != null)
-        {
-            ManagerGlobal.Instance.IsPlayerEngaged = false;
-        }
-    }
-    private async void EndRecordingAndSendRequest()
-    {
-        isRecording = false;
-        isWaitingForResponse = true;
-        ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "Let me think...");
-
-        int lastSample = Microphone.GetPosition(null);
-        Microphone.End(null);
-
-        if (lastSample == 0)
-        {
-            Debug.LogWarning("No audio was recorded.");
-            ResumeListening();
-            return;
-        }
-
-        // Create a temporary clip to hold the recorded data
-        AudioClip trimmedClip = AudioClip.Create("PlayerSpeech", lastSample, recordingClip.channels, recordingClip.frequency, false);
-        float[] samples = new float[lastSample];
-        recordingClip.GetData(samples, 0);
-        trimmedClip.SetData(samples, 0);
-
-        // --- DIAGNOSTIC: PLAY BACK THE AUDIO ---
-        if (debugAudioSource != null)
-        {
-            Debug.Log("<color=yellow>--- Playing back recorded audio clip for debugging ---</color>");
-            debugAudioSource.clip = trimmedClip;
-            debugAudioSource.Play();
-        }
-        // --- END DIAGNOSTIC ---
-
-        // Now we get the data for the API call
-        int channels = trimmedClip.channels;
-        int frequency = trimmedClip.frequency;
-
-        // We already have the samples, no need to call GetData again
-        await SendAudioToGeminiAsync(samples, channels, frequency);
-
-        // Destroy the temporary clip AFTER the async method is done or copy the data
-        // For simplicity, let's just destroy the old recordingClip from the class
-        Destroy(recordingClip);
-    }
-    private void Update()
-    {
-        if (isRecording)
-        {
-            float currentVolume = GetMicrophoneVolume();
-            if (currentVolume > personality.VadThreshold)
-            {
-                timeSinceLastSpeech = 0f;
-            }
-            else
-            {
-                timeSinceLastSpeech += Time.deltaTime;
-            }
-            if (timeSinceLastSpeech > personality.SilenceTimeout)
-            {
-                EndRecordingAndSendRequest();
-            }
-        }
-    }
-    private void OnDestroy() { EndConversation(); }
+    #region Audio Utilities
     private float GetMicrophoneVolume()
     {
         if (!Microphone.IsRecording(null)) return 0;
@@ -355,6 +393,7 @@ public class GeminiNPC : MonoBehaviour
         foreach (var sample in data) totalLoudness += Mathf.Abs(sample);
         return totalLoudness / sampleWindow;
     }
+
     private byte[] EncodeToWav(float[] samples, int channels, int frequency)
     {
         using (var memoryStream = new MemoryStream())
@@ -385,4 +424,5 @@ public class GeminiNPC : MonoBehaviour
             return memoryStream.ToArray();
         }
     }
+    #endregion
 }

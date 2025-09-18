@@ -10591,7 +10591,7 @@ PrefabInstance:
     - target: {fileID: 7922461455731614569, guid: 9fec93b4dee1946408439d260ef4055c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.150149
+      value: -2.78
       objectReference: {fileID: 0}
     - target: {fileID: 7922461455731614569, guid: 9fec93b4dee1946408439d260ef4055c,
         type: 3}
@@ -10601,7 +10601,7 @@ PrefabInstance:
     - target: {fileID: 7922461455731614569, guid: 9fec93b4dee1946408439d260ef4055c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -18.304592
+      value: -18.98
       objectReference: {fileID: 0}
     - target: {fileID: 7922461455731614569, guid: 9fec93b4dee1946408439d260ef4055c,
         type: 3}
@@ -10702,10 +10702,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2879909630015508939, guid: 9fec93b4dee1946408439d260ef4055c,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1581154590}
-    - targetCorrespondingSourceObject: {fileID: 2879909630015508939, guid: 9fec93b4dee1946408439d260ef4055c,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1581154588}
     - targetCorrespondingSourceObject: {fileID: 2879909630015508939, guid: 9fec93b4dee1946408439d260ef4055c,
         type: 3}
@@ -10749,6 +10745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractionDistance: 3
+  postConversationThought: I've already talked to them...
   talkPromptUI: {fileID: 1581154572}
   promptText: {fileID: 1769294968}
 --- !u!114 &1581154575
@@ -10765,7 +10762,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0
   personality: {fileID: 11400000, guid: 0d8d4733e76e27047ae08142f0f4ca50, type: 2}
-  debugAudioSource: {fileID: 1581154576}
 --- !u!82 &1581154576
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10901,19 +10897,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 955eda77d9bfab146be9dbf50325870a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1581154590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1581154573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6f1c6b89f6348f48ac590aa2a2f77b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0
 --- !u!114 &1581154591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10921,7 +10904,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581154573}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57d5d69751406754daf1eb3a94ecc554, type: 3}
   m_Name: 
@@ -11539,10 +11522,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1632494895}
-    - targetCorrespondingSourceObject: {fileID: 2879909630015508939, guid: 9fec93b4dee1946408439d260ef4055c,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1632494897}
   m_SourcePrefab: {fileID: 100100000, guid: 9fec93b4dee1946408439d260ef4055c, type: 3}
 --- !u!4 &1632494877 stripped
 Transform:
@@ -11581,6 +11560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractionDistance: 3
+  postConversationThought: I've already talked to them...
   talkPromptUI: {fileID: 1632494879}
   promptText: {fileID: 1462916689}
 --- !u!114 &1632494882
@@ -11597,7 +11577,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0
   personality: {fileID: 11400000, guid: 53feda9af89322e499eed4ff675817e2, type: 2}
-  debugAudioSource: {fileID: 1632494883}
 --- !u!82 &1632494883
 AudioSource:
   m_ObjectHideFlags: 0
@@ -11740,22 +11719,9 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1632494880}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57d5d69751406754daf1eb3a94ecc554, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0
---- !u!114 &1632494897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1632494880}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6f1c6b89f6348f48ac590aa2a2f77b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 57d5d69751406754daf1eb3a94ecc554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   googleCloudApiKey: AIzaSyAWdm9JDnTaXX4CZ_ytJuX42FdXsrfJYN0

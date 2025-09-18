@@ -12,6 +12,9 @@ public class GeminiDialogueUIBridge : MonoBehaviour
     {
         geminiNpc = GetComponent<GeminiNPC>();
         speechManager = GetComponent<SpeechManager>(); // Get the manager
+
+        // Give the GeminiNPC a reference to the speech system so it can check its state.
+        geminiNpc.Initialize(speechManager);
     }
 
     private void OnEnable()
