@@ -34,7 +34,8 @@ MonoBehaviour:
     NOT GENERATE Texts IN 3rd person perspective as the text you will generate will
     be used as the dialogue for the NPC. When the user says goodbye, end your final
     sentence and then add the special token [END_CONVERSATION] on the same line.
-    Limit to only paragraph on what you say with about a maximum 3 sentences."
+    Limit to only paragraph on what you say with about a maximum 3 sentences. With
+    filipino accent"
   ElevenLabsVoiceId: 21m00Tcm4TlvDq8ikWAM
   VoiceStability: 0.7
   VoiceSimilarityBoost: 0.7
@@ -43,4 +44,4 @@ MonoBehaviour:
   GoogleTTS_Pitch: 0
   GoogleTTS_SpeakingRate: 1.2
   VadThreshold: 0.0666
-  SilenceTimeout: 1
+  SilenceTimeout: 1.5

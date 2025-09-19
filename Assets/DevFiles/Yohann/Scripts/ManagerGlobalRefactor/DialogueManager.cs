@@ -13,6 +13,9 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject goDialogue;
     [SerializeField] private TextMeshProUGUI txtDialogue;
     [SerializeField] private TextMeshProUGUI txtSpeakerName; // OPTIONAL: Add a UI element for the speaker's name
+
+    [Header("UI Components")]
+    [SerializeField] private GameObject goLoadingIndicator;
     private DialogueData currentDialogue;
     private Witness currentWitness; // This can now be used for non-AI witnesses if you have any
     private Phone currentPhone;
@@ -122,15 +125,13 @@ public class DialogueManager : MonoBehaviour
     }
 
 
-    public void DisplayDynamicLine(string speaker, string text)
+    public void DisplayDynamicLine(string speaker, string text, bool showLoadingIndicator = false)
     {
-        // CHECKPOINT 3: Is the DialogueManager receiving the call and is the UI reference valid?
         if (txtDialogue == null)
         {
-            Debug.LogError("<color=red>DialogueManager:</color> txtDialogue is NULL! Assign it in the Inspector.");
+            Debug.LogError("<color=red>DialogueManager:</color> txtDialogue is NULL!");
             return;
         }
-        Debug.Log($"<color=lime>DialogueManager:</color> Displaying line from '{speaker}': '{text}'");
 
         if (!goDialogue.activeSelf)
         {
@@ -143,6 +144,11 @@ public class DialogueManager : MonoBehaviour
         }
 
         txtDialogue.text = text;
+
+        if (goLoadingIndicator != null)
+        {
+            goLoadingIndicator.SetActive(showLoadingIndicator);
+        }
     }
     public void HideDynamicDialogue()
     {
@@ -150,6 +156,13 @@ public class DialogueManager : MonoBehaviour
         if (!IsInDialogue)
         {
             goDialogue.SetActive(false);
+        }
+    }
+    public void SetLoadingIndicator(bool isVisible)
+    {
+        if (goLoadingIndicator != null)
+        {
+            goLoadingIndicator.SetActive(isVisible);
         }
     }
 }

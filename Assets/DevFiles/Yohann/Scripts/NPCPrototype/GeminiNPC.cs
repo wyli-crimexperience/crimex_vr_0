@@ -24,18 +24,34 @@ public class GeminiNPC : MonoBehaviour
     public event Action OnConversationEnded;
     public event Action OnConversationConcludedByAI;
     public event Action<string> OnSentenceReceived;
+    public event Action<bool> OnWaitingForResponseChanged;
+
     #endregion
 
     public bool IsConversationActive { get; private set; } = false;
     private bool isRecording = false;
-    private bool isWaitingForResponse = false;
+
+    private bool _isWaitingForResponse;
+    private bool isWaitingForResponse
+    {
+        get => _isWaitingForResponse;
+        set
+        {
+            if (_isWaitingForResponse != value)
+            {
+                _isWaitingForResponse = value;
+                OnWaitingForResponseChanged?.Invoke(_isWaitingForResponse);
+            }
+        }
+    }
+
     private float timeSinceLastSpeech = 0f;
     private bool isQuitting = false;
 
     private SpeechManager speechManager;
     private bool shutdownRequested = false;
 
-    private const string GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=";
+    private const string GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=";
     private const int RECORDING_LENGTH_SECONDS = 60;
     private const int INPUT_SAMPLE_RATE = 16000;
 
@@ -210,7 +226,7 @@ public class GeminiNPC : MonoBehaviour
     private async void EndRecordingAndSendRequest()
     {
         isRecording = false;
-        isWaitingForResponse = true;
+        isWaitingForResponse = true; // This will now fire the event
         ManagerGlobal.Instance.ThoughtManager.ShowThought(gameObject, "Let me think...");
         int lastSample = Microphone.GetPosition(null);
         Microphone.End(null);
@@ -256,10 +272,9 @@ public class GeminiNPC : MonoBehaviour
 
         await activeRequest.SendWebRequest();
 
-        isWaitingForResponse = false;
-
         if (activeRequest.result != UnityWebRequest.Result.Success)
         {
+            isWaitingForResponse = false; // This will now fire the event
             Debug.LogError($"Gemini API Error: {activeRequest.error} - {activeRequest.downloadHandler.text}");
             OnNPCResponseReceived?.Invoke("Sorry, I'm having trouble thinking right now.");
             OnNPCTurnEnded?.Invoke("Sorry, I'm having trouble thinking right now.");
@@ -270,6 +285,7 @@ public class GeminiNPC : MonoBehaviour
             bool shouldEndConversation = accumulatedResponse.Contains("[END_CONVERSATION]");
             if (shouldEndConversation)
             {
+
                 accumulatedResponse = accumulatedResponse.Replace("[END_CONVERSATION]", "").Trim();
                 Debug.Log("<color=magenta>GeminiNPC:</color> AI has signaled the end of the conversation.");
             }
@@ -281,7 +297,7 @@ public class GeminiNPC : MonoBehaviour
                 parts = new BasePart[] { new TextPart { text = accumulatedResponse } }
             };
             conversationHistory.Add(modelTurn);
-
+            isWaitingForResponse = false; // This will now fire the event
             OnNPCTurnEnded?.Invoke(accumulatedResponse);
 
             if (shouldEndConversation)

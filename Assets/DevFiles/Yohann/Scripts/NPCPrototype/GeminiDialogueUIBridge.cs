@@ -37,7 +37,9 @@ public class GeminiDialogueUIBridge : MonoBehaviour
     {
         geminiNpc.OnSentenceReceived += HandleSentenceReceived;
         geminiNpc.OnConversationEnded += HandleConversationEnded;
-        geminiNpc.OnNPCTurnEnded += OnNewAITurn;
+
+        // We will use a new event to control the loading indicator
+        geminiNpc.OnWaitingForResponseChanged += HandleWaitingForResponse;
     }
 
     private void OnDisable()
@@ -46,7 +48,7 @@ public class GeminiDialogueUIBridge : MonoBehaviour
         {
             geminiNpc.OnSentenceReceived -= HandleSentenceReceived;
             geminiNpc.OnConversationEnded -= HandleConversationEnded;
-            geminiNpc.OnNPCTurnEnded -= OnNewAITurn;
+            geminiNpc.OnWaitingForResponseChanged -= HandleWaitingForResponse;
         }
     }
 
@@ -54,6 +56,22 @@ public class GeminiDialogueUIBridge : MonoBehaviour
     {
         isNewResponse = true;
     }
+    private void HandleWaitingForResponse(bool isWaiting)
+    {
+        if (isWaiting)
+        {
+            // Show the loading indicator and clear previous text
+            isNewResponse = true;
+            displayedTextBuilder.Clear();
+            ManagerGlobal.Instance.DialogueManager.DisplayDynamicLine(gameObject.name, "", true);
+        }
+        else
+        {
+            // Hide the loading indicator
+            ManagerGlobal.Instance.DialogueManager.SetLoadingIndicator(false);
+        }
+    }
+
 
     private void HandleSentenceReceived(string sentence)
     {
@@ -63,7 +81,10 @@ public class GeminiDialogueUIBridge : MonoBehaviour
 
         if (isNewResponse)
         {
-            displayedTextBuilder.Clear();
+            // On the first sentence, we know the full response is starting to arrive,
+            // so we can hide the loading indicator.
+            ManagerGlobal.Instance.DialogueManager.SetLoadingIndicator(false);
+
             StopAllCoroutines();
             sentenceAudioQueue.Clear();
             isPlayingFromQueue = false;
